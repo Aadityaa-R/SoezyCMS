@@ -175,7 +175,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
     <>
       <header
         id="headerdiv"
-        className="w-full bg-white dark:bg-slate-900 border-b border-[#eef0f3] dark:border-slate-800 sticky top-0 z-20 shrink-0 transition-colors shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+        className="w-full bg-[#1e3a5f] border-b border-[#152a45] sticky top-0 z-20 shrink-0 transition-colors shadow-sm"
       >
         <div className="max-w-[1920px] mx-auto px-3 sm:px-6 flex items-center justify-between h-14">
           {/* Left Section: Logo & Mobile Toggle */}
@@ -184,24 +184,27 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
               type="button"
               data-sidebar-ignore-outside="true"
               onClick={onToggleSidebar || toggleSidebar}
-              className="w-9 h-9 flex items-center justify-center p-2 rounded-lg lg:hidden cursor-pointer text-slate-600 hover:bg-slate-100 transition-colors"
+              className="w-9 h-9 flex items-center justify-center p-2 rounded-lg lg:hidden cursor-pointer text-white hover:bg-white/10 transition-colors"
               title={isSidebarOpen ? 'Close menu' : 'Open menu'}
               aria-label={isSidebarOpen ? 'Close menu' : 'Open menu'}
             >
-              {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isSidebarOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5 text-white" />}
             </button>
 
+            {/* Slanted White Tab for SOEZY Logo matching Login page */}
             <button
               type="button"
               onClick={() => onNavigate?.('dashboard')}
-              className="flex items-center cursor-pointer outline-none focus:outline-none group py-1"
+              className="bg-white h-14 px-6 sm:px-8 flex items-center justify-center -skew-x-[26deg] shadow-md -ml-3 sm:-ml-6 cursor-pointer outline-none focus:outline-none"
               title="SOEZY Web Dashboard"
             >
-              <img
-                src="/soezy-logo.png"
-                alt="Soezy"
-                className="h-7 sm:h-8 w-auto object-contain select-none"
-              />
+              <div className="skew-x-[26deg] flex items-center justify-center py-1">
+                <img
+                  src="/soezy-logo.png"
+                  alt="Soezy"
+                  className="h-7 sm:h-8 w-auto object-contain select-none"
+                />
+              </div>
             </button>
           </div>
 
@@ -216,11 +219,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
                   onClick={tab.onClick}
                   className={`h-14 px-2.5 xl:px-3 flex items-center gap-1.5 text-xs font-medium transition-all relative border-b-2 cursor-pointer whitespace-nowrap outline-none ${
                     tab.isActive
-                      ? 'border-[#00c853] text-[#00c853] font-semibold bg-emerald-50/40 dark:bg-emerald-950/20'
-                      : 'border-transparent text-slate-600 dark:text-slate-300 hover:text-[#00c853] hover:border-slate-200'
+                      ? 'border-[#00c853] text-white font-bold bg-white/10'
+                      : 'border-transparent text-slate-200 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${tab.isActive ? 'text-[#00c853]' : 'text-slate-400'}`} />
+                  <Icon className={`w-3.5 h-3.5 ${tab.isActive ? 'text-[#00c853]' : 'text-slate-300'}`} />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -232,11 +235,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
                 type="button"
                 onClick={() => setIsMoreOpen(!isMoreOpen)}
                 className={`h-14 px-2.5 xl:px-3 flex items-center gap-1 text-xs font-medium transition-colors border-b-2 border-transparent cursor-pointer outline-none ${
-                  isMoreOpen ? 'text-[#00c853] border-[#00c853]' : 'text-slate-600 dark:text-slate-300 hover:text-[#00c853]'
+                  isMoreOpen ? 'text-white border-[#00c853] bg-white/10' : 'text-slate-200 hover:text-white hover:bg-white/5'
                 }`}
               >
                 <span>More</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                <ChevronDown className="w-3.5 h-3.5 text-slate-300" />
               </button>
 
               {isMoreOpen && (
@@ -286,12 +289,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
               <button
                 type="button"
                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer relative outline-none"
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer relative outline-none"
                 aria-label={`Notifications (${unreadCount} unread)`}
               >
                 <Bell className="w-4 h-4" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#00c853] rounded-full ring-2 ring-white dark:ring-slate-900" />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#00c853] rounded-full ring-2 ring-[#1e3a5f]" />
                 )}
               </button>
 
@@ -333,20 +336,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
             {/* Doctor Profile Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <div
-                className="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                className="flex items-center gap-2 cursor-pointer py-1 px-2 rounded-lg hover:bg-white/10 transition-colors"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 role="button"
                 tabIndex={0}
               >
                 <div className="profile-info text-right hidden sm:block">
-                  <span className="name font-bold text-slate-800 dark:text-slate-200 text-xs block leading-tight">
+                  <span className="name font-bold text-white text-xs block leading-tight">
                     {currentUser?.name || 'Doctor'}
                   </span>
-                  <span className="speciality text-[11px] text-slate-500 dark:text-slate-400 block leading-tight">
+                  <span className="speciality text-[11px] text-slate-300 block leading-tight">
                     {currentRole === 'doctor' ? 'General Medicine' : currentRole.replace('_', ' ')}
                   </span>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-700 flex items-center justify-center text-emerald-800 dark:text-emerald-200 font-bold text-xs shrink-0">
+                <div className="w-8 h-8 rounded-full bg-emerald-600 border border-emerald-400 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-sm">
                   {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'D'}
                 </div>
               </div>
