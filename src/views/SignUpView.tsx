@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { DatePicker } from '@/components/ui/DatePicker';
-import { Building2, User, Mail, Phone, Lock, Eye, EyeOff, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { User, Mail, Phone, Lock, Eye, EyeOff, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { validatePasswordPolicy } from '@/lib/auth';
 import { useAuth } from '@/context/AuthContext';
 import { EcgBackground } from '@/components/auth/EcgBackground';
@@ -134,7 +134,7 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
           setSuccessInfo({
             title: 'Account Created: Verification Pending',
             message:
-              'A patient record matching your details was found at Beacon Health Clinic. Your account is waiting to be linked by a clinic receptionist. You will be able to access your full health portal once approved.',
+              'A patient record matching your details was found at SOEZY Clinic. Your account is waiting to be linked by a clinic receptionist. You will be able to access your full health portal once approved.',
           });
         } else {
           setSuccessInfo({
@@ -453,14 +453,11 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
       <EcgBackground />
       {/* Brand Header */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md z-10 text-center">
-        <div className="flex justify-center">
-          <div className="w-14 h-14 rounded-2xl bg-teal-600 flex items-center justify-center text-white">
-            <Building2 className="w-8 h-8" />
+        <div className="flex justify-center mb-3">
+          <div className="bg-white px-5 py-2 rounded-xl shadow-md inline-block">
+            <img src="/soezy-logo.png" alt="SOEZY" className="h-9 w-auto object-contain" />
           </div>
         </div>
-        <h1 className="mt-4 text-center text-2xl font-bold tracking-tight text-white">
-          Beacon Health Clinic
-        </h1>
         <p className="mt-1 text-center text-xs text-slate-400">
           Self-Registration Portal
         </p>

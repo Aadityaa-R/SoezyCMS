@@ -7,7 +7,6 @@ import {
   Menu,
   X,
   Bell,
-  Building2,
   User,
   Settings,
   LogOut,
@@ -173,14 +172,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
             className="flex items-center gap-2.5 text-left cursor-pointer outline-none focus:outline-none focus:ring-0 group"
             title={currentRole === 'patient' ? 'Go to My Portal' : 'Go to Dashboard'}
           >
-            <div className="w-[var(--nav-cell)] h-[var(--nav-cell)] lg:w-8 lg:h-8 rounded-lg bg-teal-600 flex items-center justify-center text-white font-bold ring-2 ring-teal-500/20 group-hover:bg-teal-700 transition-colors shrink-0 nav-touch-target">
-              <Building2 className="w-5 h-5 lg:w-4 lg:h-4" />
-            </div>
-            <div className="min-w-0 text-left">
-              <h1 className="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base leading-tight tracking-tight truncate max-w-[190px] sm:max-w-none">
-                SOEZY
-              </h1>
-            </div>
+            <img
+              src="/soezy-logo.png"
+              alt="SOEZY"
+              className="h-7 sm:h-8 w-auto object-contain select-none"
+            />
           </button>
         </div>
 

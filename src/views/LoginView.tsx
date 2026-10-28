@@ -162,44 +162,12 @@ export const LoginView: React.FC = () => {
       <header className="bg-[#1e3a5f] h-14 flex items-center justify-between px-4 sm:px-12 lg:px-24 relative shadow-sm shrink-0">
         {/* Slanted White SOEZY Logo Tab */}
         <div className="bg-white h-14 px-7 sm:px-10 flex items-center justify-center -skew-x-[26deg] shadow-md ml-0 sm:ml-4">
-          <div className="skew-x-[26deg] flex items-center justify-center">
-            {/* Exact SVG recreation of SOEZY Logo with stylized red S, oEzy and tagline */}
-            <svg
-              width="130"
-              height="40"
-              viewBox="0 0 160 50"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="select-none"
-              aria-label="SOEZY - It's All Easy"
-            >
-              <path d="M12 40 L34 16 L145 16 L140 23 L42 23 L24 40 Z" fill="#cc0000" />
-              <path d="M22 40 L38 21 L142 21 L145 16 L34 16 L12 40 Z" fill="#e60000" />
-              <path d="M18 40 L32 25 L65 25 L56 33 L32 33 L26 40 Z" fill="#990000" />
-              <text
-                x="56"
-                y="40"
-                fontFamily="'Arial Black', Impact, sans-serif"
-                fontWeight="900"
-                fontStyle="italic"
-                fontSize="27"
-                fill="#475569"
-                letterSpacing="-1"
-              >
-                oEzy
-              </text>
-              <text
-                x="68"
-                y="48"
-                fontFamily="'Segoe UI', Arial, sans-serif"
-                fontWeight="600"
-                fontSize="7.5"
-                fill="#64748b"
-                letterSpacing="0.4"
-              >
-                It's All Easy
-              </text>
-            </svg>
+          <div className="skew-x-[26deg] flex items-center justify-center py-1">
+            <img
+              src="/soezy-logo.png"
+              alt="SOEZY - It's All Easy"
+              className="h-8 sm:h-9 w-auto object-contain select-none"
+            />
           </div>
         </div>
 
