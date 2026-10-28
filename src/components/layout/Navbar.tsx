@@ -178,7 +178,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
             </div>
             <div className="min-w-0 text-left">
               <h1 className="font-bold text-slate-900 dark:text-slate-100 text-sm sm:text-base leading-tight tracking-tight truncate max-w-[190px] sm:max-w-none">
-                Beacon Health Clinic
+                SOEZY
               </h1>
             </div>
           </button>
