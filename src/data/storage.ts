@@ -48,8 +48,6 @@ export function getRepository<T extends { id: string }>(collection: CollectionNa
     const settings = getStorageSettings();
     if (settings.mode === 'memory') {
       repositories[collection] = new MemoryRepository<T>();
-    } else if (isSupabaseConfigured) {
-      repositories[collection] = new SupabaseRepository<T>(collection);
     } else {
       repositories[collection] = new BrowserRepository<T>(collection);
     }
@@ -72,6 +70,7 @@ export function getStorageSettings(): StorageSettings {
       if (parsed && (parsed.mode === 'browser' || parsed.mode === 'memory' || parsed.mode === 'supabase')) {
         return {
           ...parsed,
+          mode: parsed.mode === 'supabase' ? 'browser' : parsed.mode,
           schemaVersion: typeof parsed.schemaVersion === 'number' ? parsed.schemaVersion : 1,
         };
       }
