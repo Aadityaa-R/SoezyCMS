@@ -14,8 +14,6 @@ import {
   ClaimRequest,
 } from '../types/storage';
 import { BrowserRepository, MemoryRepository, Repository } from './repository';
-import { SupabaseRepository } from './supabaseRepository';
-import { isSupabaseConfigured } from '../lib/supabase';
 import { hashPassword } from '../lib/auth';
 import { normalizeActor } from '../lib/billing';
 import { migrateConsultationFee } from '../lib/money';
