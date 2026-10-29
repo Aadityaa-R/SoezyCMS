@@ -80,7 +80,7 @@ export const Tabs: React.FC<TabsProps> = ({
 
   return (
     <div
-      className={`tab-row flex items-end justify-between border-b border-slate-200 dark:border-slate-800 w-full shrink-0 ${className}`}
+      className={`tab-row flex items-end justify-between w-full shrink-0 ${className}`}
     >
       <div
         ref={tablistRef}
@@ -123,7 +123,7 @@ export const Tabs: React.FC<TabsProps> = ({
                   : 'text-[1.0625rem] px-[1.125rem]'
               } ${
                 isSelected
-                  ? 'font-bold text-[#28465a] dark:text-emerald-400 after:content-[""] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[0.1875rem] after:bg-[#00c060] after:rounded-full'
+                  ? 'font-bold text-[#00c060] dark:text-emerald-400'
                   : 'font-medium text-[var(--text-muted)] hover:text-[var(--text)]'
               } ${tab.disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
             >

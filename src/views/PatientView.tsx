@@ -485,7 +485,7 @@ export const PatientView: React.FC<PatientViewProps> = ({ activeTab: _activeTab 
                                         onChange={(e) => setEditingAllergyText(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleSaveInspectedAllergies()}
                                         placeholder="e.g. Penicillin, Peanuts (or None)"
-                                        className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0 focus:border-[#00c060] transition-colors shadow-xs font-medium"
+                                        className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0 focus:border-slate-400 transition-colors shadow-xs font-medium"
                                       />
                                       <Button
                                         size="xs"

@@ -321,8 +321,8 @@ export const LoginView: React.FC = () => {
                     }
                     className={`w-full h-11 px-3.5 pr-10 border rounded-xl text-sm text-slate-800 placeholder-slate-400 outline-none transition-all ${
                       identifierError
-                        ? 'border-rose-400 focus:ring-1 focus:ring-rose-400'
-                        : 'border-slate-300 focus:border-[#00c060] focus:ring-1 focus:ring-[#00c060]'
+                        ? 'border-rose-400'
+                        : 'border-slate-300 focus:border-slate-400'
                     }`}
                   />
                   <UserIcon className="w-4 h-4 text-slate-400 absolute right-3 pointer-events-none" />
@@ -346,8 +346,8 @@ export const LoginView: React.FC = () => {
                     placeholder="Password"
                     className={`w-full h-11 px-3.5 pr-16 border rounded-xl text-sm text-slate-800 placeholder-slate-400 outline-none transition-all ${
                       passwordError
-                        ? 'border-rose-400 focus:ring-1 focus:ring-rose-400'
-                        : 'border-slate-300 focus:border-[#00c060] focus:ring-1 focus:ring-[#00c060]'
+                        ? 'border-rose-400'
+                        : 'border-slate-300 focus:border-slate-400'
                     }`}
                   />
                   <div className="absolute right-3 flex items-center gap-1.5">
@@ -391,7 +391,7 @@ export const LoginView: React.FC = () => {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#00c060] focus:ring-[#00c060] cursor-pointer"
+                    className="w-4 h-4 rounded border-slate-300 text-[#00c060] focus:ring-0 cursor-pointer"
                   />
                   <span>Remember me</span>
                 </label>

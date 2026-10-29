@@ -445,7 +445,7 @@ html.dark {
 
   input:focus,
   input:focus-visible {
-    @apply border-teal-500 outline-none ring-0;
+    @apply border-slate-400 outline-none ring-0;
     box-shadow: none;
   }
 
@@ -481,7 +481,7 @@ html.dark {
 
   textarea:focus,
   textarea:focus-visible {
-    @apply border-teal-500 outline-none ring-0;
+    @apply border-slate-400 outline-none ring-0;
     box-shadow: none;
   }
 
@@ -506,7 +506,7 @@ html.dark {
 
   select:focus,
   select:focus-visible {
-    @apply border-teal-500 outline-none ring-0;
+    @apply border-slate-400 outline-none ring-0;
     box-shadow: none;
   }
 

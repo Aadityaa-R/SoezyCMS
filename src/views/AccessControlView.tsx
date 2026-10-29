@@ -3245,7 +3245,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
               Description (optional)
             </label>
             <textarea
-              className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#00c060] resize-none h-16"
+              className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline-none outline-none focus:border-slate-400 resize-none h-16"
               placeholder="Operational scope and privileges granted by this role..."
               value={createModuleDesc}
               onChange={(e) => setCreateModuleDesc(e.target.value)}
@@ -3326,7 +3326,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => {}}
-                      className="mt-0.5 rounded text-[#00c060] focus:ring-[#00c060] border-slate-300 dark:border-slate-700 dark:bg-slate-800 cursor-pointer shrink-0"
+                      className="mt-0.5 rounded text-[#00c060] focus:ring-0 border-slate-300 dark:border-slate-700 dark:bg-slate-800 cursor-pointer shrink-0"
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
@@ -3439,7 +3439,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
               Description (optional)
             </label>
             <textarea
-              className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#00c060] resize-none h-20"
+              className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline-none outline-none focus:border-slate-400 resize-none h-20"
               placeholder="Operational permissions, clinical scope, or workstation actions granted by this privilege..."
               value={newAccessDesc}
               onChange={(e) => setNewAccessDesc(e.target.value)}
@@ -3519,7 +3519,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
               Description (optional)
             </label>
             <textarea
-              className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#00c060] resize-none h-20"
+              className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline-none outline-none focus:border-slate-400 resize-none h-20"
               value={editModuleDesc}
               onChange={(e) => setEditModuleDesc(e.target.value)}
             />
@@ -3818,7 +3818,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                       Operational Reason <span className="text-rose-500">*</span>
                     </label>
                     <textarea
-                      className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#00c060] resize-none h-16"
+                      className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline-none outline-none focus:border-slate-400 resize-none h-16"
                       placeholder="Operational justification for granting administrative access..."
                       value={addMemberAdminReason}
                       onChange={(e) => setAddMemberAdminReason(e.target.value)}
@@ -4002,7 +4002,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                       Operational Reason <span className="text-rose-500">*</span>
                     </label>
                     <textarea
-                      className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#00c060] resize-none h-16"
+                      className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline-none outline-none focus:border-slate-400 resize-none h-16"
                       placeholder="Operational justification for granting administrative access..."
                       value={consoleAddModuleAdminReason}
                       onChange={(e) => setConsoleAddModuleAdminReason(e.target.value)}

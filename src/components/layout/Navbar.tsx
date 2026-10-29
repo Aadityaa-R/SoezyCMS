@@ -205,10 +205,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
                   key={tab.id}
                   type="button"
                   onClick={tab.onClick}
-                  className={`h-14 px-2 xl:px-3 flex flex-col items-center justify-center text-center transition-all relative border-b-2 cursor-pointer whitespace-nowrap outline-none select-none ${
+                  className={`h-11 my-auto px-2.5 xl:px-3.5 flex flex-col items-center justify-center text-center transition-all relative rounded-lg cursor-pointer whitespace-nowrap outline-none select-none ${
                     tab.isActive
-                      ? 'border-[#00c853] text-white font-bold bg-white/10'
-                      : 'border-transparent text-slate-200 hover:text-white hover:bg-white/5'
+                      ? 'text-white font-bold bg-white/15'
+                      : 'text-slate-200 hover:text-white hover:bg-white/5'
                   }`}
                   title={tab.label}
                 >
@@ -225,8 +225,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
               <button
                 type="button"
                 onClick={() => setIsMoreOpen(!isMoreOpen)}
-                className={`h-14 px-2 xl:px-3 flex flex-col items-center justify-center transition-colors border-b-2 cursor-pointer outline-none select-none ${
-                  isMoreOpen ? 'text-white border-[#00c853] bg-white/10' : 'text-slate-200 hover:text-white hover:bg-white/5 border-transparent'
+                className={`h-11 my-auto px-2.5 xl:px-3.5 flex flex-col items-center justify-center transition-colors rounded-lg cursor-pointer outline-none select-none ${
+                  isMoreOpen ? 'text-white bg-white/15' : 'text-slate-200 hover:text-white hover:bg-white/5'
                 }`}
                 title="More"
               >
@@ -447,7 +447,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
                 <select
                   value={pendingBranch}
                   onChange={(e) => setPendingBranch(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded border border-slate-300 focus:border-[#00c853] focus:outline-none"
+                  className="w-full text-xs p-2.5 rounded border border-slate-300 focus:border-slate-400 focus:outline-none"
                 >
                   <option value="SOEZY Clinic - Main Pune">SOEZY Clinic - Main Pune</option>
                   <option value="SOEZY Clinic - Metro Center (Mumbai)">SOEZY Clinic - Metro Center (Mumbai)</option>
