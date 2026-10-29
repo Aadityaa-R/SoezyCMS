@@ -584,7 +584,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const completeNavigation = () => {
         const targetAudience = audienceOf(result.matchedRole || audience);
         clearRememberedLastPage();
-        const landingTab = targetAudience === 'admin' ? 'getstarted' : 'dashboard';
+        const landingTab = targetAudience === 'admin' ? 'access_control' : 'dashboard';
         try {
           const pathname = window.location.pathname.startsWith('/profile') ? '/' : window.location.pathname;
           window.history.replaceState(

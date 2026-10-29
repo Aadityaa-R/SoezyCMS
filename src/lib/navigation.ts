@@ -80,14 +80,15 @@ export function getAllowedNavItems(
     items.push({ id: 'dashboard', label: 'Dashboard' });
   }
 
-  if (hasCapability(user, 'consultationWorkstation', modules)) {
+  if (hasCapability(user, 'consultationWorkstation', modules) || isAdmin(user, modules)) {
     items.push({ id: 'doctor', label: 'Consultation Desk' });
   }
 
   if (
     hasCapability(user, 'patientRegistration', modules) ||
     hasCapability(user, 'patientCheckIn', modules) ||
-    hasCapability(user, 'paymentRecording', modules)
+    hasCapability(user, 'paymentRecording', modules) ||
+    isAdmin(user, modules)
   ) {
     items.push({ id: 'role_receptionist', label: 'Reception' });
     items.push({ id: 'patient', label: 'Patient Records' });
@@ -116,7 +117,6 @@ export function isTabAllowed(
   const cleanTab = tab.toLowerCase();
 
   if (cleanTab === 'profile') return true;
-  if (cleanTab === 'getstarted') return true;
 
   if (role === 'patient') {
     return [
@@ -135,11 +135,11 @@ export function isTabAllowed(
   }
 
   if (cleanTab === 'doctor' || cleanTab === 'role_doctor') {
-    return hasCapability(user, 'consultationWorkstation', modules);
+    return hasCapability(user, 'consultationWorkstation', modules) || isAdmin(user, modules);
   }
 
   if (cleanTab === 'consulting_calendar') {
-    return hasCapability(user, 'consultingCalendar', modules);
+    return hasCapability(user, 'consultingCalendar', modules) || isAdmin(user, modules);
   }
 
   if (
@@ -191,7 +191,6 @@ export function getPageTitle(tab: string, role: UserRole): string {
   }
 
   const titles: Record<string, string> = {
-    getstarted: 'Get Started',
     dashboard: 'Dashboard',
     doctor: 'Consultation Desk',
     role_doctor: 'Consultation Desk',

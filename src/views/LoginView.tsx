@@ -211,18 +211,6 @@ export const LoginView: React.FC = () => {
         </div>
       </header>
 
-      {/* Translucent SOEZY Watermark Design in Background */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden"
-      >
-        <img
-          src="/soezy-logo.png"
-          alt=""
-          className="w-[1150px] max-w-[95vw] opacity-[0.11] select-none transform scale-110"
-        />
-      </div>
-
       {/* Main Centered Card Container */}
       <main className="flex-1 flex items-center justify-center py-8 px-4 w-full relative z-10">
         {/* Minimal Auth Card */}

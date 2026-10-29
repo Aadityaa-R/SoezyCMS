@@ -68,6 +68,7 @@ import { handlePrint } from '@/lib/print';
 
 interface DoctorViewProps {
   activeTab?: string;
+  isReadOnlyView?: boolean;
 }
 
 const formatAppointmentStatus = (status: string) => {
@@ -105,7 +106,7 @@ export const deduplicateList = (items?: (string | null | undefined)[]): string[]
   return result;
 };
 
-export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview' }) => {
+export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview', isReadOnlyView: isReadOnlyProp }) => {
   const { currentUser, currentRole, addAuditLogEntry } = useAuth();
   const [selectedTab, setSelectedTab] = useState<string>(activeTab || 'overview');
 
@@ -143,7 +144,7 @@ export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview' }
     return 'doc-1';
   });
 
-  const isReadOnlyView = false;
+  const isReadOnlyView = Boolean(isReadOnlyProp || currentRole === 'md' || currentRole === 'admin' || isAdmin(currentUser));
 
   useEffect(() => {
     if (currentRole === 'doctor') {
@@ -204,7 +205,7 @@ export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview' }
   const activePatient = activeAppointment ? patients.find((p) => p.id === activeAppointment.patientId) : null;
   const activeVitals = activePatient ? vitals.find((v) => v.patientId === activePatient.id) : null;
 
-  const isVitalsReadOnly = !isDoctorStaff(currentUser);
+  const isVitalsReadOnly = isReadOnlyView || !isDoctorStaff(currentUser);
 
   const consultationApt =
     (activeAppointment && activeAppointment.status === 'in_consultation' ? activeAppointment : null) ||
@@ -1468,6 +1469,17 @@ export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview' }
         }}
       />
 
+            {/* Administrator Inspection Notice */}
+      {isReadOnlyView && (
+        <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-center justify-between gap-3 animate-fadeIn">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+            <span className="font-semibold">Administrator View-Only Clearance:</span>
+            <span>You have view-only access to the Doctor Consultation Desk. Clinical modifications and prescribing actions are disabled.</span>
+          </div>
+        </div>
+      )}
+
       {/* Real-time Feedback Notification Banner */}
       {notification && (
         <div role="status" aria-live="polite" className="p-3.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs flex items-center justify-between gap-3 transition-all animate-fadeIn">
@@ -1670,7 +1682,8 @@ export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview' }
                       </div>
 
                       {/* Consultation Desk Actions Footer */}
-                      <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-[#eef0f3] dark:border-slate-800 flex-none">
+                      {!isReadOnlyView ? (
+                        <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-[#eef0f3] dark:border-slate-800 flex-none">
                           {activeAppointment.status === 'checked_in' && (
                             <Button
                               size="sm"
@@ -1721,6 +1734,11 @@ export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview' }
                             </Button>
                           )}
                         </div>
+                      ) : (
+                        <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 text-xs text-slate-500 italic mt-4">
+                          <span>Administrator View-Only: Consultation actions and prescription authoring are disabled.</span>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

@@ -20,7 +20,7 @@ import { Activity, Pill, Calendar } from 'lucide-react';
 import { useNotifications } from '@/context/NotificationContext';
 import { Appointment, Patient, AccessAuditLogEntry } from '@/types';
 import { getScopedPatients, getScopedAppointments } from '@/lib/selectors';
-import { getAssignedDoctorId, hasCapability } from '@/lib/permissions';
+import { getAssignedDoctorId, hasCapability, isAdmin } from '@/lib/permissions';
 import { isDoctorAvailable, getStoredAttendanceData } from '@/lib/availability';
 import { getAvailableSlots, validateBooking } from '@/lib/scheduling';
 import { getRepository } from '@/data/storage';
@@ -40,12 +40,13 @@ import { formatLocalDate, formatDate, formatTime } from '@/lib/time';
 
 interface ReceptionistViewProps {
   activeTab?: string;
+  isReadOnlyView?: boolean;
 }
 
-export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 'lounge' }) => {
+export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 'lounge', isReadOnlyView: isReadOnlyProp }) => {
   const { currentUser, currentRole, addAuditLogEntry } = useAuth();
   const { addNotification } = useNotifications();
-  const isMD = currentRole === 'md' || currentRole === 'admin' || currentUser?.role === 'md';
+  const isMD = Boolean(isReadOnlyProp || currentRole === 'md' || currentRole === 'admin' || currentUser?.role === 'md' || isAdmin(currentUser));
 
   // Map legacy and new tab ids
   const normalizeTab = (tabId: string): string => {
@@ -995,7 +996,7 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
         const isConcluded = apt.status === 'in_consultation' || apt.status === 'completed';
         const pat = rawPatients.find((p) => p.id === apt.patientId);
         const actions: RowActionItem[] = [];
-        if (!isConcluded) {
+        if (!isConcluded && !isMD) {
           actions.push({
             label: 'Call Next',
             onClick: () => handleCallNext(apt),
@@ -1018,6 +1019,12 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
               ariaLabel: `Transfer ${apt.patientName} to another doctor`,
             });
           }
+        } else if (pat) {
+          actions.push({
+            label: 'View Record',
+            onClick: () => handleOpenViewRecord(pat),
+            ariaLabel: `View record for ${apt.patientName}`,
+          });
         }
         return (
           <RowActions
@@ -1093,7 +1100,7 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
         const pat = rawPatients.find((p) => p.id === apt.patientId);
         const actions: RowActionItem[] = [];
 
-        if (canCheckInItem) {
+        if (canCheckInItem && !isMD) {
           actions.push({
             label: 'Check In',
             variant: 'primary',
@@ -1110,7 +1117,7 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
           });
         }
 
-        if (apt.status !== 'completed' && apt.status !== 'in_consultation' && pat) {
+        if (apt.status !== 'completed' && apt.status !== 'in_consultation' && pat && !isMD) {
           actions.push({
             label: 'Transfer',
             onClick: () => handleOpenTransferModal(pat),
@@ -1177,25 +1184,30 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
       isActions: true,
       render: (p) => {
         const isUnassigned = !getAssignedDoctorId(p.id, patientAssignments);
+        const actions: RowActionItem[] = [
+          {
+            label: 'View Record',
+            onClick: () => handleOpenViewRecord(p),
+            ariaLabel: `View medical record for ${p.firstName} ${p.lastName}`,
+          },
+        ];
+        if (!isMD) {
+          actions.push(
+            {
+              label: 'Edit',
+              onClick: () => handleOpenEditPatient(p),
+              ariaLabel: `Edit information for ${p.firstName} ${p.lastName}`,
+            },
+            {
+              label: isUnassigned ? 'Assign' : 'Transfer',
+              onClick: () => handleOpenTransferModal(p),
+              ariaLabel: `${isUnassigned ? 'Assign' : 'Transfer'} care for ${p.firstName} ${p.lastName}`,
+            }
+          );
+        }
         return (
           <RowActions
-            actions={[
-              {
-                label: 'View Record',
-                onClick: () => handleOpenViewRecord(p),
-                ariaLabel: `View medical record for ${p.firstName} ${p.lastName}`,
-              },
-              {
-                label: 'Edit',
-                onClick: () => handleOpenEditPatient(p),
-                ariaLabel: `Edit information for ${p.firstName} ${p.lastName}`,
-              },
-              {
-                label: isUnassigned ? 'Assign' : 'Transfer',
-                onClick: () => handleOpenTransferModal(p),
-                ariaLabel: `${isUnassigned ? 'Assign' : 'Transfer'} care for ${p.firstName} ${p.lastName}`,
-              },
-            ]}
+            actions={actions}
             subject={`${p.firstName} ${p.lastName}`}
           />
         );
@@ -1317,7 +1329,7 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
         return (
           <RowActions
             actions={
-              canManageRegistration
+              canManageRegistration && !isMD
                 ? [
                     {
                       label: 'Approve',
@@ -1522,7 +1534,8 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
               appointments={rawAppointments}
               doctors={doctors}
               todayStr={todayStr}
-              onOpenWalkInModal={() => setIsWalkInOpen(true)}
+              hideCheckInButton={isMD}
+              onOpenWalkInModal={isMD ? undefined : () => setIsWalkInOpen(true)}
             />
           )}
         </div>

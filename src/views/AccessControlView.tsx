@@ -12,7 +12,7 @@ import { Pagination } from '@/components/ui/Pagination';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableTruncate } from '@/components/ui/Table';
 import { Tabs } from '@/components/ui/Tabs';
 import { RowActions } from '@/components/ui/RowActions';
-import { Filter, ArrowLeft, X, ShieldCheck, Play } from 'lucide-react';
+import { Filter, ArrowLeft, X, ShieldCheck } from 'lucide-react';
 import { User, UserRole, StaffAccessRecord, StaffPermission, AccessModule, StandardCapability } from '@/types';
 import { PendingStaffApproval, INITIAL_PENDING_APPROVALS } from '@/data/mockData';
 import { getAccessItem } from '@/data/accessCatalog';
@@ -95,7 +95,7 @@ const getFocusableElements = (container: HTMLElement | null): HTMLElement[] => {
   );
 };
 
-export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab = 'modules', onNavigate }) => {
+export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab = 'modules' }) => {
   const [selectedSubTab, setSelectedSubTab] = useState<'add_users' | 'edit_users' | 'modules' | 'ledger' | 'data' | 'formulary'>(() => {
     if (activeTab === 'edit_users' || activeTab === 'add_users' || activeTab === 'ledger' || activeTab === 'data' || activeTab === 'formulary') return activeTab;
     return 'modules';
@@ -1326,16 +1326,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
           </div>
         </div>
 
-        {onNavigate && (
-          <button
-            type="button"
-            onClick={() => onNavigate('getstarted')}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#28465a] hover:bg-[#1e3545] text-white transition-colors cursor-pointer shadow-sm self-start sm:self-auto shrink-0"
-          >
-            <Play className="w-3.5 h-3.5 text-[#00c060]" />
-            <span>Get Started Hub (18 Tiles)</span>
-          </button>
-        )}
+
       </div>
 
       {/* Sub-Workstation Navigation Tabs (scrollable on mobile) */}

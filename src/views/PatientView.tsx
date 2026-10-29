@@ -40,10 +40,13 @@ import { PatientPortal } from './PatientPortal';
 
 interface PatientViewProps {
   activeTab?: string;
+  isReadOnlyView?: boolean;
 }
 
-export const PatientView: React.FC<PatientViewProps> = ({ activeTab: _activeTab = 'overview' }) => {
-  const { currentUser } = useAuth();
+export const PatientView: React.FC<PatientViewProps> = ({ activeTab: _activeTab = 'overview', isReadOnlyView: isReadOnlyProp }) => {
+  const { currentUser, currentRole } = useAuth();
+  const isMD = currentRole === 'md' || currentRole === 'admin' || currentUser?.role === 'md';
+  const isReadOnly = Boolean(isReadOnlyProp || isMD);
   const {
     patients: rawPatients,
     appointments: rawAppointments,
@@ -278,6 +281,17 @@ export const PatientView: React.FC<PatientViewProps> = ({ activeTab: _activeTab 
         </div>
       )}
 
+            {/* Administrator Inspection Notice */}
+      {isReadOnly && (
+        <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-center justify-between gap-3 animate-fadeIn">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+            <span className="font-semibold">Administrator View-Only Clearance:</span>
+            <span>You have view-only access to Outpatient Medical Profiles. Profile modifications and registration actions are disabled.</span>
+          </div>
+        </div>
+      )}
+
       {/* Patient Governance Bar: Side-by-Side Search & Filter */}
       <Card className="!overflow-visible px-4 py-2.5 sm:px-5 sm:py-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
@@ -473,23 +487,29 @@ export const PatientView: React.FC<PatientViewProps> = ({ activeTab: _activeTab 
                                     </span>
                                   </div>
 
-                                  <div className="flex items-center gap-2 flex-1 sm:max-w-md">
-                                    <input
-                                      type="text"
-                                      value={editingAllergyText}
-                                      onChange={(e) => setEditingAllergyText(e.target.value)}
-                                      onKeyDown={(e) => e.key === 'Enter' && handleSaveInspectedAllergies()}
-                                      placeholder="e.g. Penicillin, Peanuts (or None)"
-                                      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0 focus:border-teal-500 transition-colors shadow-xs font-medium"
-                                    />
-                                    <Button
-                                      size="xs"
-                                      variant="secondary"
-                                      onClick={handleSaveInspectedAllergies}
-                                    >
-                                      Save
-                                    </Button>
-                                  </div>
+                                  {!isReadOnly ? (
+                                    <div className="flex items-center gap-2 flex-1 sm:max-w-md">
+                                      <input
+                                        type="text"
+                                        value={editingAllergyText}
+                                        onChange={(e) => setEditingAllergyText(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleSaveInspectedAllergies()}
+                                        placeholder="e.g. Penicillin, Peanuts (or None)"
+                                        className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-0 focus:border-[#00c060] transition-colors shadow-xs font-medium"
+                                      />
+                                      <Button
+                                        size="xs"
+                                        variant="secondary"
+                                        onClick={handleSaveInspectedAllergies}
+                                      >
+                                        Save
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs">
+                                      {editingAllergyText || 'None recorded'}
+                                    </span>
+                                  )}
                                 </div>
 
                                 {/* Patient Clinical Ledger Tabs Breakdown */}

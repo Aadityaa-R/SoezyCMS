@@ -15,7 +15,6 @@ import {
   MessageSquare,
   BarChart3,
   ShieldCheck,
-  Play,
   MoreHorizontal,
   User,
   BookOpen,
@@ -23,7 +22,6 @@ import {
   Building2,
   Phone,
   CheckCircle2,
-  Rocket,
   Sun,
   Moon,
 } from 'lucide-react';
@@ -49,8 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isChangeClinicOpen, setIsChangeClinicOpen] = useState(false);
-  const [isGetStartedOpen, setIsGetStartedOpen] = useState(false);
-  const [isCommunicationOpen, setIsCommunicationOpen] = useState(false);
+    const [isCommunicationOpen, setIsCommunicationOpen] = useState(false);
   const [isBlogOpen, setIsBlogOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isPublicQuestionsOpen, setIsPublicQuestionsOpen] = useState(false);
@@ -108,13 +105,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
 
   // Main SOEZY navigation tabs
   const navTabs = [
-    {
-      id: 'getstarted',
-      label: 'GET STARTED',
-      icon: Play,
-      isActive: activeTab === 'getstarted',
-      onClick: () => onNavigate?.('getstarted'),
-    },
+
     {
       id: 'dashboard',
       label: 'DASHBOARD',
@@ -133,7 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
       id: 'patients',
       label: 'PATIENTS',
       icon: Users,
-      isActive: activeTab === 'receptionist',
+      isActive: activeTab === 'receptionist' || activeTab === 'patient' || activeTab === 'patients',
       onClick: () => onNavigate?.('receptionist'),
     },
     {
@@ -207,24 +198,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
           <nav className="hidden lg:flex items-center h-full space-x-0.5 xl:space-x-1 overflow-x-auto">
             {navTabs.map((tab) => {
               const Icon = tab.icon;
-              const isGetStartedActive = tab.id === 'getstarted' && tab.isActive;
 
-              if (isGetStartedActive) {
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={tab.onClick}
-                    className="h-14 px-3 sm:px-4 flex flex-col items-center justify-center bg-white cursor-pointer select-none transition-all outline-none"
-                    title={tab.label}
-                  >
-                    <Play className="w-4 h-4 fill-none stroke-[2.2] text-[#ea580c]" />
-                    <span className="text-[10px] font-bold tracking-wide mt-1 uppercase text-[#ea580c]">
-                      {tab.label}
-                    </span>
-                  </button>
-                );
-              }
 
               return (
                 <button
@@ -504,67 +478,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
         </div>
       )}
 
-      {/* 2. GET STARTED MODAL */}
-      <Modal
-        isOpen={isGetStartedOpen}
-        onClose={() => setIsGetStartedOpen(false)}
-        title="Get Started with SOEZY"
-        description="India's 1st Integrated Digital Healthcare Platform"
-        maxWidth="md"
-        footer={
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={() => setIsGetStartedOpen(false)}
-            className="!bg-[#00c853] hover:!bg-[#00b048]"
-          >
-            Start Practicing
-          </Button>
-        }
-      >
-        <div className="space-y-4 text-xs text-slate-700">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <div className="flex items-center gap-2 font-bold text-slate-900 mb-1">
-                <Calendar className="w-4 h-4 text-[#00c853]" />
-                <span>1. Appointments</span>
-              </div>
-              <p className="text-[11px] text-slate-600">
-                Manage today's patient queue, schedule recurring consultations, and track check-ins.
-              </p>
-            </div>
-            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <div className="flex items-center gap-2 font-bold text-slate-900 mb-1">
-                <Rocket className="w-4 h-4 text-[#00c853]" />
-                <span>2. Issue e-Rx</span>
-              </div>
-              <p className="text-[11px] text-slate-600">
-                Prescribe medicines, dosage regimens, investigations, and print clinical slips instantly.
-              </p>
-            </div>
-            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <div className="flex items-center gap-2 font-bold text-slate-900 mb-1">
-                <Users className="w-4 h-4 text-[#00c853]" />
-                <span>3. Patient Records</span>
-              </div>
-              <p className="text-[11px] text-slate-600">
-                Access full longitudinal medical histories, past visits, vital signs, and diagnostics.
-              </p>
-            </div>
-            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <div className="flex items-center gap-2 font-bold text-slate-900 mb-1">
-                <BarChart3 className="w-4 h-4 text-[#00c853]" />
-                <span>4. Billing & Analytics</span>
-              </div>
-              <p className="text-[11px] text-slate-600">
-                Generate GST compliant receipts, track collections, and analyze daily practice trends.
-              </p>
-            </div>
-          </div>
-        </div>
-      </Modal>
-
-      {/* 3. COMMUNICATION MODAL */}
+            {/* 3. COMMUNICATION MODAL */}
       <Modal
         isOpen={isCommunicationOpen}
         onClose={() => setIsCommunicationOpen(false)}

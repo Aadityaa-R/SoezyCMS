@@ -8,7 +8,6 @@ import { LoginView } from '@/views/LoginView';
 
 // Role views
 import { DashboardView } from '@/views/DashboardView';
-import { GetStartedView } from '@/views/GetStartedView';
 import { DoctorView } from '@/views/DoctorView';
 import { PatientView } from '@/views/PatientView';
 import { ReceptionistView } from '@/views/ReceptionistView';
@@ -78,7 +77,7 @@ export const AppLayout: React.FC = () => {
     const hasDashboard = currentRole === 'patient' || allowed.some((item) => item.id === 'dashboard');
     const defaultLandingTab = currentRole === 'patient'
       ? 'dashboard'
-      : (currentRole === 'md' ? 'getstarted' : (hasDashboard ? 'dashboard' : (allowed[0]?.id || 'dashboard')));
+      : (currentRole === 'md' ? 'access_control' : (hasDashboard ? 'dashboard' : (allowed[0]?.id || 'dashboard')));
 
     // 1. Fresh sign-in: set active page to Dashboard, clear remembered last page, keep only ?as=<audience>&tab=dashboard
     if (!prevAuthRef.current) {
@@ -297,24 +296,20 @@ export const AppLayout: React.FC = () => {
       return <PatientView activeTab={activeSubTab || (activeTab === 'dashboard' ? 'overview' : activeTab)} />;
     }
 
-    if (activeTab === 'getstarted') {
-      return <GetStartedView onNavigate={handleNavigate} />;
-    }
-
     if (activeTab === 'dashboard') {
       return <DashboardView onNavigate={handleNavigate} />;
     }
 
     if (activeTab === 'doctor' || activeTab === 'role_doctor') {
-      if (hasCapability(currentUser, 'consultationWorkstation', modules)) {
-        return <DoctorView activeTab={activeSubTab || 'overview'} />;
+      if (hasCapability(currentUser, 'consultationWorkstation', modules) || isAdmin(currentUser, modules)) {
+        return <DoctorView activeTab={activeSubTab || 'overview'} isReadOnlyView={isAdmin(currentUser, modules)} />;
       }
       return <DashboardView onNavigate={handleNavigate} />;
     }
 
     if (activeTab === 'consulting_calendar') {
-      if (hasCapability(currentUser, 'consultingCalendar', modules)) {
-        return <DoctorView activeTab={activeSubTab || 'overview'} />;
+      if (hasCapability(currentUser, 'consultingCalendar', modules) || isAdmin(currentUser, modules)) {
+        return <DoctorView activeTab={activeSubTab || 'overview'} isReadOnlyView={isAdmin(currentUser, modules)} />;
       }
       return <DashboardView onNavigate={handleNavigate} />;
     }
@@ -327,7 +322,7 @@ export const AppLayout: React.FC = () => {
         hasCapability(currentUser, 'paymentRecording', modules) ||
         isAdmin(currentUser, modules)
       ) {
-        return <ReceptionistView activeTab={activeTab === 'calendar' ? 'calendar' : (activeSubTab || 'overview')} />;
+        return <ReceptionistView activeTab={activeTab === 'calendar' ? 'calendar' : (activeSubTab || 'overview')} isReadOnlyView={isAdmin(currentUser, modules)} />;
       }
       return <DashboardView onNavigate={handleNavigate} />;
     }
@@ -339,8 +334,8 @@ export const AppLayout: React.FC = () => {
       return <DashboardView onNavigate={handleNavigate} />;
     }
 
-    if (activeTab === 'role_patient' || activeTab === 'patient') {
-      return <PatientView activeTab={activeSubTab || 'overview'} />;
+    if (activeTab === 'role_patient' || activeTab === 'patient' || activeTab === 'patients') {
+      return <PatientView activeTab={activeSubTab || 'overview'} isReadOnlyView={isAdmin(currentUser, modules)} />;
     }
 
     if (activeTab === 'admin_billing' || activeTab === 'billing') {
