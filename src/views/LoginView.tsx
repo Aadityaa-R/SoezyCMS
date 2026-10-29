@@ -156,7 +156,7 @@ export const LoginView: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-700 flex flex-col justify-between font-sans select-none relative overflow-hidden">
       {/* 1. TOP HEADER LIKE PREVIOUS PART */}
-      <header className="bg-[#1e3a5f] h-14 flex items-center justify-between px-4 sm:px-12 lg:px-24 relative shadow-sm shrink-0 w-full z-10">
+      <header className="bg-[#28465a] h-14 flex items-center justify-between px-4 sm:px-12 lg:px-24 relative shadow-sm shrink-0 w-full z-10">
         {/* Slanted White SOEZY Logo Tab */}
         <div className="bg-white h-14 px-7 sm:px-10 flex items-center justify-center -skew-x-[26deg] shadow-md ml-0 sm:ml-4">
           <div className="skew-x-[26deg] flex items-center justify-center py-1">

@@ -170,7 +170,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
     <>
       <header
         id="headerdiv"
-        className="w-full bg-[#1e3a5f] border-b border-[#152a45] sticky top-0 z-20 shrink-0 transition-colors shadow-sm"
+        className="w-full bg-[#28465a] border-b border-[#1e3545] sticky top-0 z-20 shrink-0 transition-colors shadow-sm"
       >
         <div className="max-w-[1920px] mx-auto px-3 sm:px-6 flex items-center justify-between h-14">
           {/* Left Section: Logo & Mobile Toggle */}
@@ -323,7 +323,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
               >
                 <Bell className="w-4 h-4" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#00c853] rounded-full ring-2 ring-[#1e3a5f]" />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#00c853] rounded-full ring-2 ring-[#28465a]" />
                 )}
               </button>
 
