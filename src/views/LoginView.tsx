@@ -154,22 +154,36 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-700 flex flex-col justify-between items-center py-10 px-4 font-sans select-none">
-      <div />
-
-      {/* Main Centered Card Container */}
-      <main className="w-full max-w-[390px] my-auto">
-        {/* Brand Logo Centered */}
-        <div className="flex justify-center mb-6">
-          <img
-            src="/soezy-logo.png"
-            alt="SOEZY"
-            className="h-10 sm:h-11 w-auto object-contain select-none"
-          />
+    <div className="min-h-screen bg-slate-50 text-slate-700 flex flex-col justify-between font-sans select-none">
+      {/* 1. TOP HEADER LIKE PREVIOUS PART */}
+      <header className="bg-[#1e3a5f] h-14 flex items-center justify-between px-4 sm:px-12 lg:px-24 relative shadow-sm shrink-0 w-full">
+        {/* Slanted White SOEZY Logo Tab */}
+        <div className="bg-white h-14 px-7 sm:px-10 flex items-center justify-center -skew-x-[26deg] shadow-md ml-0 sm:ml-4">
+          <div className="skew-x-[26deg] flex items-center justify-center py-1">
+            <img
+              src="/soezy-logo.png"
+              alt="SOEZY - It's All Easy"
+              className="h-8 sm:h-9 w-auto object-contain select-none"
+            />
+          </div>
         </div>
 
+        {/* Support Phone on Right */}
+        <div className="flex flex-col items-end text-white">
+          <span className="text-[10px] text-slate-300 leading-tight">For Support</span>
+          <a
+            href="tel:+919543279999"
+            className="text-xs sm:text-sm font-bold tracking-wide flex items-center gap-1.5 text-white hover:text-slate-200 transition-colors"
+          >
+            <span>+ 91 9543279999</span>
+          </a>
+        </div>
+      </header>
+
+      {/* Main Centered Card Container */}
+      <main className="flex-1 flex items-center justify-center py-10 px-4 w-full">
         {/* Minimal Auth Card */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-7 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <div className="w-full max-w-[390px] bg-white border border-slate-200/90 rounded-2xl p-7 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
           <h1 className="text-xl font-bold text-slate-800 text-center tracking-tight mb-6">
             Sign In
           </h1>
