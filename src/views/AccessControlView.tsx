@@ -12,7 +12,7 @@ import { Pagination } from '@/components/ui/Pagination';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableTruncate } from '@/components/ui/Table';
 import { Tabs } from '@/components/ui/Tabs';
 import { RowActions } from '@/components/ui/RowActions';
-import { Filter, ArrowLeft, X } from 'lucide-react';
+import { Filter, ArrowLeft, X, ShieldCheck, Play } from 'lucide-react';
 import { User, UserRole, StaffAccessRecord, StaffPermission, AccessModule, StandardCapability } from '@/types';
 import { PendingStaffApproval, INITIAL_PENDING_APPROVALS } from '@/data/mockData';
 import { getAccessItem } from '@/data/accessCatalog';
@@ -38,6 +38,7 @@ import { FormularyTab } from './FormularyTab';
 
 interface AccessControlViewProps {
   activeTab?: 'add_users' | 'edit_users' | 'modules' | 'ledger' | 'data' | 'formulary' | string;
+  onNavigate?: (tab: string, subTab?: string) => void;
 }
 
 const getInitials = (name: string): string => {
@@ -51,8 +52,11 @@ const getInitials = (name: string): string => {
 
 const getRoleAvatarStyles = (role: UserRole) => {
   switch (role) {
+    case 'md':
+    case 'admin':
+      return 'bg-[#28465a]/10 dark:bg-[#28465a]/30 text-[#28465a] dark:text-slate-200 border border-[#28465a]/30';
     case 'doctor':
-      return 'bg-teal-100 dark:bg-teal-900/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800';
+      return 'bg-[#20b2aa]/15 dark:bg-[#20b2aa]/30 text-[#008080] dark:text-teal-300 border border-[#20b2aa]/30';
     case 'receptionist':
       return 'bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
     default:
@@ -91,7 +95,7 @@ const getFocusableElements = (container: HTMLElement | null): HTMLElement[] => {
   );
 };
 
-export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab = 'modules' }) => {
+export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab = 'modules', onNavigate }) => {
   const [selectedSubTab, setSelectedSubTab] = useState<'add_users' | 'edit_users' | 'modules' | 'ledger' | 'data' | 'formulary'>(() => {
     if (activeTab === 'edit_users' || activeTab === 'add_users' || activeTab === 'ledger' || activeTab === 'data' || activeTab === 'formulary') return activeTab;
     return 'modules';
@@ -1279,7 +1283,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
               className={`w-2 h-2 rounded-full shrink-0 ${
                 feedbackNotification.type === 'error'
                   ? 'bg-rose-500'
-                  : 'bg-teal-500'
+                  : 'bg-[#00c060]'
               }`}
             />
             <span className="font-semibold text-slate-900 dark:text-slate-100">
@@ -1300,6 +1304,39 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
           </button>
         </div>
       )}
+
+      {/* SOEZY Admin Header Banner */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-[#28465a] flex items-center justify-center text-white shrink-0 shadow-sm">
+            <ShieldCheck className="w-6 h-6 text-[#00c060]" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+                Clinic Administration & Access Control
+              </h1>
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#00c060]/10 text-[#00964b] border border-[#00c060]/20">
+                SOEZY Admin Engine
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Beacon Health Care Administrative Architecture • RBAC Modules, Staff Clearance, Approvals & Security Ledger
+            </p>
+          </div>
+        </div>
+
+        {onNavigate && (
+          <button
+            type="button"
+            onClick={() => onNavigate('getstarted')}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#28465a] hover:bg-[#1e3545] text-white transition-colors cursor-pointer shadow-sm self-start sm:self-auto shrink-0"
+          >
+            <Play className="w-3.5 h-3.5 text-[#00c060]" />
+            <span>Get Started Hub (18 Tiles)</span>
+          </button>
+        )}
+      </div>
 
       {/* Sub-Workstation Navigation Tabs (scrollable on mobile) */}
       <Tabs
@@ -1359,7 +1396,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                       className="mt-3 gap-2"
                       onClick={() => setSelectedModuleId(null)}
                     >
-                      <ArrowLeft className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                      <ArrowLeft className="w-4 h-4 text-[#00c060] dark:text-emerald-400" />
                       Back to Roles
                     </Button>
                   </div>
@@ -1383,7 +1420,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                       className="gap-2 text-xs w-fit"
                       onClick={() => setSelectedModuleId(null)}
                     >
-                      <ArrowLeft className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                      <ArrowLeft className="w-4 h-4 text-[#00c060] dark:text-emerald-400" />
                       Back to Roles
                     </Button>
                   </div>
@@ -1695,7 +1732,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
 
                   <div className="w-full sm:w-64 shrink-0">
                     <Select
-                      icon={<Filter className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" />}
+                      icon={<Filter className="w-3.5 h-3.5 text-[#00c060] dark:text-emerald-400 shrink-0" />}
                       searchable={true}
                       searchPlaceholder="Search roles..."
                       value={selectedModuleId || ''}
@@ -1868,7 +1905,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                       className="gap-2 text-xs w-fit"
                       onClick={handleCloseConsole}
                     >
-                      <ArrowLeft className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                      <ArrowLeft className="w-4 h-4 text-[#00c060] dark:text-emerald-400" />
                       Back to Staff Directory
                     </Button>
                     <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
@@ -1881,7 +1918,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                   </div>
 
                   {/* Dedicated Access Console Card */}
-                  <Card className="border border-teal-500/60 dark:border-teal-500/40">
+                  <Card className="border border-[#00c060]/60 dark:border-emerald-500/40">
                     <CardHeader
                       action={
                         <button
@@ -1913,7 +1950,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                               className={`text-xs font-semibold ${
                                 isRevoked
                                   ? 'text-rose-600 dark:text-rose-400'
-                                  : 'text-teal-600 dark:text-teal-400'
+                                  : 'text-[#00c060] dark:text-emerald-400'
                               }`}
                             >
                               • {isRevoked ? 'Suspended' : 'Active'}
@@ -1932,7 +1969,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                         <div className="flex items-center gap-2">
                           <span
                             className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-                              isRevoked ? 'bg-rose-500' : 'bg-teal-500'
+                              isRevoked ? 'bg-rose-500' : 'bg-[#00c060]'
                             }`}
                           />
                           <span className="font-semibold text-slate-800 dark:text-slate-200">
@@ -2172,7 +2209,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                   </div>
                   <div className="w-full sm:w-56 shrink-0">
                     <Select
-                      icon={<Filter className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" />}
+                      icon={<Filter className="w-3.5 h-3.5 text-[#00c060] dark:text-emerald-400 shrink-0" />}
                       searchable={true}
                       searchPlaceholder="Search types..."
                       value={selectedTypeFilter}
@@ -2286,7 +2323,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                                 <button
                                   type="button"
                                   onClick={(e) => togglePersonSelection(person.id, e.currentTarget)}
-                                  className="inline-flex items-center justify-center font-medium bg-transparent border-none shadow-none p-0 min-h-[44px] text-xs cursor-pointer select-none whitespace-nowrap text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 focus-visible:outline-2 focus-visible:outline-teal-600 focus-visible:outline-offset-[-2px]"
+                                  className="inline-flex items-center justify-center font-medium bg-transparent border-none shadow-none p-0 min-h-[44px] text-xs cursor-pointer select-none whitespace-nowrap text-[#00c060] dark:text-emerald-400 hover:text-teal-700 dark:hover:text-teal-300 focus-visible:outline-2 focus-visible:outline-[#00c060] focus-visible:outline-offset-[-2px]"
                                   aria-label={`Manage access for ${person.staffName}`}
                                 >
                                   Manage Access
@@ -2836,7 +2873,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                       setAddFormRole('doctor');
                       setAddUserStep('doctor');
                     }}
-                    className="flex flex-col items-center justify-center p-6 border-2 border-slate-200 dark:border-slate-700 hover:border-teal-500 dark:hover:border-teal-500 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-teal-50/30 dark:hover:bg-teal-950/20 transition-all font-semibold text-base min-h-[120px]"
+                    className="flex flex-col items-center justify-center p-6 border-2 border-slate-200 dark:border-slate-700 hover:border-[#00c060] dark:hover:border-emerald-500 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-[#00c060]/10 dark:hover:bg-emerald-950/20 transition-all font-semibold text-base min-h-[120px]"
                   >
                     <span className="text-base font-bold">Doctor</span>
                     <span className="text-xs font-normal text-slate-500 dark:text-slate-400 mt-1">Directly Add Doctor</span>
@@ -2850,7 +2887,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                       setAddFormRole('receptionist');
                       setAddUserStep('receptionist');
                     }}
-                    className="flex flex-col items-center justify-center p-6 border-2 border-slate-200 dark:border-slate-700 hover:border-teal-500 dark:hover:border-teal-500 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-teal-50/30 dark:hover:bg-teal-950/20 transition-all font-semibold text-base min-h-[120px]"
+                    className="flex flex-col items-center justify-center p-6 border-2 border-slate-200 dark:border-slate-700 hover:border-[#00c060] dark:hover:border-emerald-500 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-[#00c060]/10 dark:hover:bg-emerald-950/20 transition-all font-semibold text-base min-h-[120px]"
                   >
                     <span className="text-base font-bold">Receptionist</span>
                     <span className="text-xs font-normal text-slate-500 dark:text-slate-400 mt-1">Directly Add Receptionist</span>
@@ -2863,7 +2900,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                       resetPatientForm();
                       setAddUserStep('patient');
                     }}
-                    className="flex flex-col items-center justify-center p-6 border-2 border-slate-200 dark:border-slate-700 hover:border-teal-500 dark:hover:border-teal-500 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-teal-50/30 dark:hover:bg-teal-950/20 transition-all font-semibold text-base min-h-[120px]"
+                    className="flex flex-col items-center justify-center p-6 border-2 border-slate-200 dark:border-slate-700 hover:border-[#00c060] dark:hover:border-emerald-500 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-[#00c060]/10 dark:hover:bg-emerald-950/20 transition-all font-semibold text-base min-h-[120px]"
                   >
                     <span className="text-base font-bold">Patient</span>
                     <span className="text-xs font-normal text-slate-500 dark:text-slate-400 mt-1">Register Patient</span>
@@ -2941,7 +2978,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
             )}
 
             <div className="p-3 bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 text-xs flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-teal-500 shrink-0" />
+              <span className="w-2 h-2 rounded-full bg-[#00c060] shrink-0" />
               <span className="text-slate-600 dark:text-slate-300">
                 This account will be instantly initialized with active clearance status and standard workstation permissions.
               </span>
@@ -3241,7 +3278,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
               Description (optional)
             </label>
             <textarea
-              className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-teal-600 resize-none h-16"
+              className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#00c060] resize-none h-16"
               placeholder="Operational scope and privileges granted by this role..."
               value={createModuleDesc}
               onChange={(e) => setCreateModuleDesc(e.target.value)}
@@ -3265,7 +3302,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                     setNewAccessError('');
                     setIsCreateAccessModalOpen(true);
                   }}
-                  className="text-teal-600 dark:text-teal-400 hover:underline font-semibold cursor-pointer"
+                  className="text-[#00c060] dark:text-emerald-400 hover:underline font-semibold cursor-pointer"
                 >
                   + Add New Access
                 </button>
@@ -3273,7 +3310,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                 <button
                   type="button"
                   onClick={() => setCreateModuleSelectedAccesses(accessCatalog.map((a) => a.id))}
-                  className="text-teal-600 dark:text-teal-400 hover:underline font-medium cursor-pointer"
+                  className="text-[#00c060] dark:text-emerald-400 hover:underline font-medium cursor-pointer"
                 >
                   Select all
                 </button>
@@ -3314,7 +3351,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                     }}
                     className={`flex items-start gap-2.5 p-2 rounded-md cursor-pointer transition-colors ${
                       isSelected
-                        ? 'bg-teal-50/70 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-900/60'
+                        ? 'bg-[#00c060]/10 dark:bg-emerald-950/40 border border-[#00c060]/30 dark:border-emerald-900/60'
                         : 'hover:bg-white dark:hover:bg-slate-800 border border-transparent'
                     }`}
                   >
@@ -3322,12 +3359,12 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => {}}
-                      className="mt-0.5 rounded text-teal-600 focus:ring-teal-500 border-slate-300 dark:border-slate-700 dark:bg-slate-800 cursor-pointer shrink-0"
+                      className="mt-0.5 rounded text-[#00c060] focus:ring-[#00c060] border-slate-300 dark:border-slate-700 dark:bg-slate-800 cursor-pointer shrink-0"
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5">
                         <span className={`text-xs font-medium ${
-                          isSelected ? 'text-teal-900 dark:text-teal-200 font-semibold' : 'text-slate-800 dark:text-slate-200'
+                          isSelected ? 'text-[#28465a] dark:text-emerald-200 font-semibold' : 'text-slate-800 dark:text-slate-200'
                         }`}>
                           {item.label}
                         </span>
@@ -3341,7 +3378,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                         {item.description}
                       </p>
                       {isDocOnly && isSelected && (
-                        <p className="text-[0.625rem] text-teal-700 dark:text-teal-400 mt-1 italic">
+                        <p className="text-[0.625rem] text-[#00964b] dark:text-teal-400 mt-1 italic">
                           Includes required EMR Records Access dependency.
                         </p>
                       )}
@@ -3435,7 +3472,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
               Description (optional)
             </label>
             <textarea
-              className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-teal-600 resize-none h-20"
+              className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#00c060] resize-none h-20"
               placeholder="Operational permissions, clinical scope, or workstation actions granted by this privilege..."
               value={newAccessDesc}
               onChange={(e) => setNewAccessDesc(e.target.value)}
@@ -3515,7 +3552,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
               Description (optional)
             </label>
             <textarea
-              className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-teal-600 resize-none h-20"
+              className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#00c060] resize-none h-20"
               value={editModuleDesc}
               onChange={(e) => setEditModuleDesc(e.target.value)}
             />
@@ -3814,7 +3851,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                       Operational Reason <span className="text-rose-500">*</span>
                     </label>
                     <textarea
-                      className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-teal-600 resize-none h-16"
+                      className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#00c060] resize-none h-16"
                       placeholder="Operational justification for granting administrative access..."
                       value={addMemberAdminReason}
                       onChange={(e) => setAddMemberAdminReason(e.target.value)}
@@ -3998,7 +4035,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                       Operational Reason <span className="text-rose-500">*</span>
                     </label>
                     <textarea
-                      className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-teal-600 resize-none h-16"
+                      className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus-visible:outline focus-visible:outline-1 focus-visible:outline-[#00c060] resize-none h-16"
                       placeholder="Operational justification for granting administrative access..."
                       value={consoleAddModuleAdminReason}
                       onChange={(e) => setConsoleAddModuleAdminReason(e.target.value)}

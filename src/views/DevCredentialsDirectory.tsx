@@ -45,7 +45,7 @@ export const DevCredentialsDirectory: React.FC<DevCredentialsDirectoryProps> = (
   const audienceLabel =
     currentAudience === 'patient'
       ? 'Patient Accounts'
-      : currentAudience === 'staff'
+      : currentAudience === 'admin' ? 'Administrator Accounts' : currentAudience === 'staff'
       ? 'Clinic Staff Accounts'
       : 'Accounts';
 

@@ -111,7 +111,7 @@ export const Tabs: React.FC<TabsProps> = ({
                 }
               }}
               style={isFirst ? { paddingInlineStart: 0 } : undefined}
-              className={`relative inline-flex items-center whitespace-nowrap cursor-pointer transition-colors shrink-0 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-600 dark:focus-visible:outline-teal-400 focus-visible:-outline-offset-2 ${
+              className={`relative inline-flex items-center whitespace-nowrap cursor-pointer transition-colors shrink-0 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#00c060] dark:focus-visible:outline-emerald-400 focus-visible:-outline-offset-2 ${
                 isFirst ? 'justify-start text-left pl-0 [padding-inline-start:0]' : 'justify-center'
               } pt-0 pb-[0.625rem] leading-[1.3] ${
                 isSmall
@@ -123,7 +123,7 @@ export const Tabs: React.FC<TabsProps> = ({
                   : 'text-[1.0625rem] px-[1.125rem]'
               } ${
                 isSelected
-                  ? 'font-bold text-[var(--text)] after:content-[""] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[0.1875rem] after:bg-teal-600 dark:after:bg-teal-400 after:rounded-full'
+                  ? 'font-bold text-[#28465a] dark:text-emerald-400 after:content-[""] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[0.1875rem] after:bg-[#00c060] after:rounded-full'
                   : 'font-medium text-[var(--text-muted)] hover:text-[var(--text)]'
               } ${tab.disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
             >

@@ -18,7 +18,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
   ...props
 }, ref) => {
   const baseClasses =
-    'inline-flex items-center justify-center font-medium outline-none focus:outline-none focus-visible:outline-2 focus-visible:outline-teal-600 focus-visible:outline-offset-[-2px] disabled:opacity-50 disabled:pointer-events-none rounded-lg cursor-pointer select-none';
+    'inline-flex items-center justify-center font-medium outline-none focus:outline-none focus-visible:outline-2 focus-visible:outline-[#00c060] focus-visible:outline-offset-[-2px] disabled:opacity-50 disabled:pointer-events-none rounded-lg cursor-pointer select-none';
 
   const sizeClasses = {
     compact: 'text-[0.875rem] px-3 py-0 h-8 !min-h-0 leading-none gap-1.5',
@@ -30,17 +30,17 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
 
   const variantClasses = {
     primary:
-      'bg-teal-600 text-white hover:bg-teal-700 border border-transparent shadow-sm',
+      'bg-[#00c060] text-white hover:bg-[#00ab55] active:bg-[#00964b] border border-transparent shadow-sm',
     secondary:
-      'bg-transparent text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 border-none shadow-none',
+      'bg-transparent text-[#28465a] dark:text-slate-200 hover:text-[#00c060] dark:hover:text-[#00c060] border-none shadow-none',
     outline:
-      'bg-transparent text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 border-none shadow-none',
+      'bg-transparent text-[#28465a] dark:text-slate-200 hover:text-[#00c060] dark:hover:text-[#00c060] border-none shadow-none',
     danger:
       'bg-transparent text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 border-none shadow-none',
     ghost:
       'bg-transparent text-slate-600 hover:text-slate-900 border-none shadow-none',
     soft:
-      'bg-transparent text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 border-none shadow-none',
+      'bg-transparent text-[#28465a] dark:text-slate-200 hover:text-[#00c060] dark:hover:text-[#00c060] border-none shadow-none',
   };
 
   return (

@@ -584,12 +584,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const completeNavigation = () => {
         const targetAudience = audienceOf(result.matchedRole || audience);
         clearRememberedLastPage();
+        const landingTab = targetAudience === 'admin' ? 'getstarted' : 'dashboard';
         try {
           const pathname = window.location.pathname.startsWith('/profile') ? '/' : window.location.pathname;
           window.history.replaceState(
             {},
             '',
-            `${pathname}?as=${targetAudience}&tab=dashboard`
+            `${pathname}?as=${targetAudience}&tab=${landingTab}`
           );
         } catch {}
         setIsAuthenticated(true);

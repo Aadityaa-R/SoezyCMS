@@ -12,7 +12,7 @@ import {
 } from '../lib/auth';
 import { SESSION_STORAGE_KEY } from '../lib/authConstants';
 
-export type AuthAudience = 'patient' | 'staff';
+export type AuthAudience = 'patient' | 'staff' | 'admin';
 
 export type LoginResultCode =
   | 'success'
@@ -49,6 +49,9 @@ export function audienceOf(
   const role = typeof account === 'string' ? account.toLowerCase() : account.role?.toLowerCase();
   if (role === 'patient') {
     return 'patient';
+  }
+  if (role === 'md' || role === 'admin') {
+    return 'admin';
   }
   return 'staff';
 }
@@ -189,18 +192,33 @@ export async function login(
   }
 
   // Password is valid: check audience portal match
-  const targetAudience = audienceOf(account);
-  if (targetAudience !== audience) {
-    const msg =
-      targetAudience === 'staff'
-        ? 'This is a clinic staff account. Use the Clinic Staff option.'
-        : 'This is a patient account. Use the Patient option.';
-    return {
-      code: 'wrongPortal',
-      success: false,
-      expectedAudience: targetAudience,
-      error: msg,
-    };
+  if (audience === 'admin') {
+    if (account.role !== 'md' && account.role !== 'admin') {
+      return {
+        code: 'wrongPortal',
+        success: false,
+        expectedAudience: 'staff',
+        error: 'This account does not have Administrator privileges. Please sign in through the Staff portal.',
+      };
+    }
+  } else if (audience === 'staff') {
+    if (account.role === 'patient') {
+      return {
+        code: 'wrongPortal',
+        success: false,
+        expectedAudience: 'patient',
+        error: 'This is a patient account. Use the Patient option.',
+      };
+    }
+  } else if (audience === 'patient') {
+    if (account.role !== 'patient') {
+      return {
+        code: 'wrongPortal',
+        success: false,
+        expectedAudience: (account.role === 'md' || account.role === 'admin') ? 'admin' : 'staff',
+        error: 'This is a clinic staff account. Use the Staff or Admin option.',
+      };
+    }
   }
 
   // Reset failed login attempts upon valid authentication

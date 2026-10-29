@@ -73,12 +73,12 @@ export const AppLayout: React.FC = () => {
       return;
     }
 
-    const targetAudience = currentRole === 'patient' ? 'patient' : 'staff';
+    const targetAudience = currentRole === 'patient' ? 'patient' : (currentRole === 'md' ? 'admin' : 'staff');
     const allowed = getAllowedNavItems(currentRole, currentUser, modules);
     const hasDashboard = currentRole === 'patient' || allowed.some((item) => item.id === 'dashboard');
     const defaultLandingTab = currentRole === 'patient'
       ? 'dashboard'
-      : (hasDashboard ? 'dashboard' : (allowed[0]?.id || 'dashboard'));
+      : (currentRole === 'md' ? 'getstarted' : (hasDashboard ? 'dashboard' : (allowed[0]?.id || 'dashboard')));
 
     // 1. Fresh sign-in: set active page to Dashboard, clear remembered last page, keep only ?as=<audience>&tab=dashboard
     if (!prevAuthRef.current) {
@@ -92,7 +92,7 @@ export const AppLayout: React.FC = () => {
         window.history.replaceState(
           {},
           '',
-          `${pathname}?as=${targetAudience}&tab=dashboard`
+          `${pathname}?as=${targetAudience}&tab=${defaultLandingTab}`
         );
       } catch {}
       return;
@@ -109,7 +109,7 @@ export const AppLayout: React.FC = () => {
         window.history.replaceState(
           {},
           '',
-          `${pathname}?as=${targetAudience}&tab=dashboard`
+          `${pathname}?as=${targetAudience}&tab=${defaultLandingTab}`
         );
       } catch {}
       return;
@@ -133,7 +133,7 @@ export const AppLayout: React.FC = () => {
           window.history.replaceState(
             {},
             '',
-            `${pathname}?as=${targetAudience}&tab=dashboard`
+            `${pathname}?as=${targetAudience}&tab=${defaultLandingTab}`
           );
         } catch {}
       }
@@ -334,7 +334,7 @@ export const AppLayout: React.FC = () => {
 
     if (activeTab === 'access_control') {
       if (isAdmin(currentUser, modules)) {
-        return <AccessControlView activeTab={activeSubTab || 'modules'} />;
+        return <AccessControlView activeTab={activeSubTab || 'modules'} onNavigate={handleNavigate} />;
       }
       return <DashboardView onNavigate={handleNavigate} />;
     }
