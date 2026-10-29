@@ -247,67 +247,7 @@ export const AppointmentsView: React.FC = () => {
 
   return (
     <div className="space-y-5 animate-fadeIn">
-      {/* Date Selector Navigation Toolbar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handlePrevDay}
-            className="px-2.5 py-1.5 text-xs flex items-center gap-1 font-semibold"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            <span>Previous Day</span>
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleNextDay}
-            className="px-2.5 py-1.5 text-xs flex items-center gap-1 font-semibold"
-          >
-            <span>Next Day</span>
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-
-          <button
-            type="button"
-            onClick={handleToday}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
-              isToday
-                ? 'bg-[#00c060] text-white border-[#00c060] shadow-xs'
-                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Today</span>
-          </button>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 hidden sm:inline">
-            Date:
-          </span>
-          <div className="w-44 sm:w-52">
-            <DatePicker
-              value={selectedDate}
-              onChange={(newDate) => {
-                if (newDate) {
-                  setSelectedDate(newDate);
-                  setCurrentPage(1);
-                }
-              }}
-            />
-          </div>
-          <span className="text-xs font-bold text-slate-800 dark:text-slate-200 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 whitespace-nowrap">
-            {formatDisplayDate(selectedDate)}
-          </span>
-        </div>
-      </div>
-
-      {/* 2. NUMBER OF DAY-TO-DAY APPOINTMENTS METRICS CARDS */}
+      {/* 1. NUMBER OF DAY-TO-DAY APPOINTMENTS METRICS CARDS */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
         {/* Total Appointments */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex items-center gap-3">
@@ -387,20 +327,76 @@ export const AppointmentsView: React.FC = () => {
 
       {/* 3. APPOINTMENTS SCHEDULE TABLE */}
       <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-          <div>
-            <CardTitle>
-              Day's Schedule: {formatDisplayDate(selectedDate)}
-            </CardTitle>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Showing {filteredAppointments.length} appointments scheduled for this date
-            </p>
+        <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3.5 border-b border-slate-100 dark:border-slate-800">
+          {/* Day's Schedule Title & Date Navigation Controls */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div>
+              <CardTitle className="text-base font-bold text-slate-900 dark:text-slate-100">
+                Day's Schedule
+              </CardTitle>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Showing {filteredAppointments.length} appointments on {formatDisplayDate(selectedDate)}
+              </p>
+            </div>
+
+            {/* Embedded Date Selection Controls */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <Button
+                type="button"
+                variant="outline"
+                size="compact"
+                onClick={handlePrevDay}
+                className="px-2 py-1 text-xs flex items-center gap-1 font-semibold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
+                title="Previous Day"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Prev</span>
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="compact"
+                onClick={handleNextDay}
+                className="px-2 py-1 text-xs flex items-center gap-1 font-semibold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
+                title="Next Day"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Button>
+
+              <button
+                type="button"
+                onClick={handleToday}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1 ${
+                  isToday
+                    ? 'bg-[#00c060] text-white border-[#00c060] shadow-xs'
+                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50'
+                }`}
+                title="Today"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Today</span>
+              </button>
+
+              <div className="w-40 sm:w-48">
+                <DatePicker
+                  value={selectedDate}
+                  onChange={(newDate) => {
+                    if (newDate) {
+                      setSelectedDate(newDate);
+                      setCurrentPage(1);
+                    }
+                  }}
+                />
+              </div>
+            </div>
           </div>
 
           {/* Search & Filters */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto">
             {/* Search Input */}
-            <div className="w-full sm:w-56">
+            <div className="w-full sm:w-48">
               <InteractiveSearchBar
                 value={searchTerm}
                 onChange={(q) => {
@@ -412,7 +408,7 @@ export const AppointmentsView: React.FC = () => {
             </div>
 
             {/* Doctor Filter */}
-            <div className="w-full sm:w-44">
+            <div className="w-full sm:w-40">
               <Select
                 value={selectedDoctorId}
                 onChange={(e) => {
@@ -427,7 +423,7 @@ export const AppointmentsView: React.FC = () => {
             </div>
 
             {/* Status Filter */}
-            <div className="w-full sm:w-36">
+            <div className="w-full sm:w-32">
               <Select
                 value={selectedStatus}
                 onChange={(e) => {
