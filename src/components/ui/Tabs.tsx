@@ -105,9 +105,10 @@ export const Tabs: React.FC<TabsProps> = ({
               aria-current={isSelected ? 'page' : undefined}
               tabIndex={isSelected ? 0 : -1}
               disabled={tab.disabled}
-              onClick={() => {
+              onClick={(e) => {
                 if (!tab.disabled) {
                   onChange(tab.id);
+                  e.currentTarget.blur();
                 }
               }}
               style={isFirst ? { paddingInlineStart: 0 } : undefined}

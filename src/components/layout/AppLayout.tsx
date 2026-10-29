@@ -21,7 +21,6 @@ import { Modal } from '@/components/ui/Modal';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { isAdmin, hasCapability, canViewBilling } from '@/lib/permissions';
 import { UserRole } from '@/types';
-import { focusIfKeyboard } from '@/lib/inputMode';
 import {
   hasExistingValidSession,
   clearRememberedLastPage,
@@ -179,24 +178,7 @@ export const AppLayout: React.FC = () => {
     document.title = `${title} | Clinic Management System (CMS)`;
   }, [activeTab, currentRole, isAuthenticated]);
 
-  // Heading focus following normal navigation rules (focusIfKeyboard)
-  useEffect(() => {
-    if (!isAuthenticated) return;
-    const timer = setTimeout(() => {
-      const mainEl = document.getElementById('main-content');
-      const heading =
-        document.getElementById(`${activeTab}-heading`) ||
-        document.getElementById('portal-heading') ||
-        document.getElementById('dashboard-heading') ||
-        document.getElementById('profile-heading') ||
-        document.querySelector('main h1, main h2, main [role="heading"]') ||
-        mainEl;
-      if (heading) {
-        focusIfKeyboard(heading as HTMLElement);
-      }
-    }, 50);
-    return () => clearTimeout(timer);
-  }, [activeTab, isAuthenticated]);
+
 
   // If a user was viewing access_control and their admin capability was revoked, return immediately to dashboard
   useEffect(() => {
@@ -261,18 +243,6 @@ export const AppLayout: React.FC = () => {
     if (mainEl && typeof mainEl.scrollTo === 'function') {
       mainEl.scrollTo({ top: 0, behavior: 'instant' });
     }
-    setTimeout(() => {
-      const heading =
-        document.getElementById(`${tab}-heading`) ||
-        document.getElementById('portal-heading') ||
-        document.getElementById('dashboard-heading') ||
-        document.getElementById('profile-heading') ||
-        document.querySelector('main h1, main h2, main [role="heading"]') ||
-        mainEl;
-      if (heading) {
-        focusIfKeyboard(heading as HTMLElement);
-      }
-    }, 50);
   };
 
   const handleNavigate = (tab: string, subTab?: string) => {

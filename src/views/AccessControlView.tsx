@@ -2290,7 +2290,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                                 <button
                                   type="button"
                                   onClick={(e) => togglePersonSelection(person.id, e.currentTarget)}
-                                  className="inline-flex items-center justify-center font-medium bg-transparent border-none shadow-none p-0 min-h-[44px] text-xs cursor-pointer select-none whitespace-nowrap text-[#00c060] dark:text-emerald-400 hover:text-teal-700 dark:hover:text-teal-300 focus-visible:outline-2 focus-visible:outline-[#00c060] focus-visible:outline-offset-[-2px]"
+                                  className="inline-flex items-center justify-center font-medium bg-transparent border-none shadow-none p-0 min-h-[44px] text-xs cursor-pointer select-none whitespace-nowrap text-[#00c060] dark:text-emerald-400 hover:text-teal-700 dark:hover:text-teal-300 focus:outline-none focus:ring-0 focus-visible:outline-none"
                                   aria-label={`Manage access for ${person.staffName}`}
                                 >
                                   Manage Access

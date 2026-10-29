@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useSidebar } from '@/context/SidebarContext';
-import { focusIfKeyboard } from '@/lib/inputMode';
 import {
   Menu,
   X,
@@ -85,12 +84,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
   const handleOpenProfile = () => {
     setIsDropdownOpen(false);
     onNavigate?.('profile');
-    setTimeout(() => {
-      const heading = document.getElementById('profile-heading');
-      if (heading) {
-        focusIfKeyboard(heading);
-      }
-    }, 50);
   };
 
   const handleOpenSettings = () => {
@@ -204,8 +197,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={tab.onClick}
-                  className={`h-11 my-auto px-2.5 xl:px-3.5 flex flex-col items-center justify-center text-center transition-all relative rounded-lg cursor-pointer whitespace-nowrap outline-none select-none ${
+                  onClick={(e) => {
+                    tab.onClick();
+                    e.currentTarget.blur();
+                  }}
+                  className={`h-11 my-auto px-2.5 xl:px-3.5 flex flex-col items-center justify-center text-center transition-all relative rounded-lg cursor-pointer whitespace-nowrap outline-none focus:outline-none focus:ring-0 select-none ${
                     tab.isActive
                       ? 'text-white font-bold bg-white/15'
                       : 'text-slate-200 hover:text-white hover:bg-white/5'
@@ -224,8 +220,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
             <div className="relative" ref={moreRef}>
               <button
                 type="button"
-                onClick={() => setIsMoreOpen(!isMoreOpen)}
-                className={`h-11 my-auto px-2.5 xl:px-3.5 flex flex-col items-center justify-center transition-colors rounded-lg cursor-pointer outline-none select-none ${
+                onClick={(e) => {
+                  setIsMoreOpen(!isMoreOpen);
+                  e.currentTarget.blur();
+                }}
+                className={`h-11 my-auto px-2.5 xl:px-3.5 flex flex-col items-center justify-center transition-colors rounded-lg cursor-pointer outline-none focus:outline-none focus:ring-0 select-none ${
                   isMoreOpen ? 'text-white bg-white/15' : 'text-slate-200 hover:text-white hover:bg-white/5'
                 }`}
                 title="More"

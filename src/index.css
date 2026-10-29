@@ -3,6 +3,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Universal global suppression of focus bars, outlines, borders, and rings on click */
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+*:focus,
+*:focus-visible,
+*:focus-within,
+*:active {
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  box-shadow: none !important;
+  -webkit-focus-ring-color: transparent !important;
+}
+
+button:focus,
+button:focus-visible,
+button:active,
+a:focus,
+a:focus-visible,
+a:active,
+input:focus,
+input:focus-visible,
+input:active,
+textarea:focus,
+textarea:focus-visible,
+textarea:active,
+select:focus,
+select:focus-visible,
+select:active,
+[role="tab"]:focus,
+[role="tab"]:focus-visible,
+[role="tab"]:active,
+[role="button"]:focus,
+[role="button"]:focus-visible,
+[role="button"]:active {
+  outline: none !important;
+  outline-width: 0 !important;
+  outline-style: none !important;
+  outline-color: transparent !important;
+  box-shadow: none !important;
+  -webkit-focus-ring-color: transparent !important;
+}
+
 /* Light-Mode Elevation Tokens (Milestone M10 Section 1) */
 :root {
   --radius: 0.5rem;
@@ -771,4 +819,14 @@ tr.block .table-cell-truncate {
   [role="tab"] {
     min-height: 2.75rem !important;
   }
+}
+
+/* Absolute end-of-file overrides for zero focus bars or outlines */
+*:focus,
+*:focus-visible,
+*:focus-within,
+*:active {
+  outline: none !important;
+  outline-width: 0 !important;
+  box-shadow: none !important;
 }

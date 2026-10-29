@@ -207,7 +207,7 @@ export const Modal: React.FC<ModalProps> = ({
                 disabled={isCloseDisabled}
                 onClick={() => onCloseRef.current()}
                 aria-label={closeAriaLabel || 'Close dialog'}
-                className="w-11 h-11 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-600 dark:focus-visible:outline-teal-400 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer no-print shrink-0"
+                className="w-11 h-11 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors focus:outline-none focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer no-print shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>

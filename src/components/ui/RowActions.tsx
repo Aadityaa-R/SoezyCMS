@@ -55,11 +55,14 @@ export const RowActions: React.FC<RowActionsProps> = ({
           <button
             key={action.id || `${action.label}-${idx}`}
             type="button"
-            onClick={action.onClick}
+            onClick={(e) => {
+              action.onClick?.(e);
+              e.currentTarget.blur();
+            }}
             aria-label={accessibleName}
             aria-describedby={statusId}
             title={action.title}
-            className={`inline-flex items-center justify-center font-medium bg-transparent border-none shadow-none p-0 min-h-[44px] text-xs cursor-pointer select-none whitespace-nowrap outline-none focus-visible:outline-2 focus-visible:outline-teal-600 focus-visible:outline-offset-[-2px] ${
+            className={`inline-flex items-center justify-center font-medium bg-transparent border-none shadow-none p-0 min-h-[44px] text-xs cursor-pointer select-none whitespace-nowrap outline-none focus:outline-none focus:ring-0 focus-visible:outline-none ${
               isDanger
                 ? 'text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300'
                 : 'text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300'
