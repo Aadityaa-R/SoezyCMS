@@ -154,9 +154,9 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-700 flex flex-col justify-between font-sans select-none">
+    <div className="min-h-screen bg-slate-50 text-slate-700 flex flex-col justify-between font-sans select-none relative overflow-hidden">
       {/* 1. TOP HEADER LIKE PREVIOUS PART */}
-      <header className="bg-[#1e3a5f] h-14 flex items-center justify-between px-4 sm:px-12 lg:px-24 relative shadow-sm shrink-0 w-full">
+      <header className="bg-[#1e3a5f] h-14 flex items-center justify-between px-4 sm:px-12 lg:px-24 relative shadow-sm shrink-0 w-full z-10">
         {/* Slanted White SOEZY Logo Tab */}
         <div className="bg-white h-14 px-7 sm:px-10 flex items-center justify-center -skew-x-[26deg] shadow-md ml-0 sm:ml-4">
           <div className="skew-x-[26deg] flex items-center justify-center py-1">
@@ -180,10 +180,22 @@ export const LoginView: React.FC = () => {
         </div>
       </header>
 
+      {/* Translucent SOEZY Watermark Design in Background */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden"
+      >
+        <img
+          src="/soezy-logo.png"
+          alt=""
+          className="w-[780px] max-w-[88vw] opacity-[0.08] select-none transform scale-105"
+        />
+      </div>
+
       {/* Main Centered Card Container */}
-      <main className="flex-1 flex items-center justify-center py-10 px-4 w-full">
+      <main className="flex-1 flex items-center justify-center py-10 px-4 w-full relative z-10">
         {/* Minimal Auth Card */}
-        <div className="w-full max-w-[390px] bg-white border border-slate-200/90 rounded-2xl p-7 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <div className="w-full max-w-[390px] bg-white/95 backdrop-blur-sm border border-slate-200/90 rounded-2xl p-7 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.05)]">
           <h1 className="text-xl font-bold text-slate-800 text-center tracking-tight mb-6">
             Sign In
           </h1>
@@ -366,7 +378,7 @@ export const LoginView: React.FC = () => {
         </main>
 
         {/* Minimal Footer */}
-        <footer className="py-4 text-center text-xs text-slate-400 select-none">
+        <footer className="py-4 text-center text-xs text-slate-400 select-none relative z-10">
           © SOEZY
         </footer>
 
