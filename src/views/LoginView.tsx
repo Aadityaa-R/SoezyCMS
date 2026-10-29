@@ -10,9 +10,6 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Users,
-  Smartphone,
-  Building2,
 } from 'lucide-react';
 
 function getLastUsedAudience(): AuthAudience | null {
@@ -157,109 +154,25 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-700 flex flex-col justify-between overflow-x-hidden font-sans">
-      {/* 1. TOP HEADER */}
-      <header className="bg-[#1e3a5f] h-14 flex items-center justify-between px-4 sm:px-12 lg:px-24 relative shadow-sm shrink-0">
-        {/* Slanted White SOEZY Logo Tab */}
-        <div className="bg-white h-14 px-7 sm:px-10 flex items-center justify-center -skew-x-[26deg] shadow-md ml-0 sm:ml-4">
-          <div className="skew-x-[26deg] flex items-center justify-center py-1">
-            <img
-              src="/soezy-logo.png"
-              alt="SOEZY - It's All Easy"
-              className="h-8 sm:h-9 w-auto object-contain select-none"
-            />
-          </div>
+    <div className="min-h-screen bg-slate-50 text-slate-700 flex flex-col justify-between items-center py-10 px-4 font-sans select-none">
+      <div />
+
+      {/* Main Centered Card Container */}
+      <main className="w-full max-w-[390px] my-auto">
+        {/* Brand Logo Centered */}
+        <div className="flex justify-center mb-6">
+          <img
+            src="/soezy-logo.png"
+            alt="SOEZY"
+            className="h-10 sm:h-11 w-auto object-contain select-none"
+          />
         </div>
 
-        {/* Support Phone on Right */}
-        <div className="flex flex-col items-end text-white">
-          <span className="text-[11px] text-slate-300 leading-tight">For Support</span>
-          <a
-            href="tel:+919543279999"
-            className="text-sm sm:text-base font-bold tracking-wide flex items-center gap-1.5 text-white hover:text-slate-200 transition-colors"
-          >
-            <Smartphone className="w-4 h-4 text-white" />
-            <span>+ 91 9543279999</span>
-          </a>
-        </div>
-      </header>
-
-      {/* 2. MAIN CONTENT AREA */}
-      <main className="flex-1 flex items-center justify-center py-10 px-4 sm:px-12 lg:px-24 max-w-[1320px] mx-auto w-full gap-10 lg:gap-20 flex-col lg:flex-row">
-        {/* Left Column: Platform Title & 3 Feature Highlights */}
-        <section className="flex-1 flex flex-col gap-8 w-full max-w-xl">
-          <h1 className="text-teal-600 dark:text-teal-500 text-2xl sm:text-[27px] font-semibold tracking-tight">
-            India's 1st Integrated Digital Healthcare Platform
+        {/* Minimal Auth Card */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-7 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+          <h1 className="text-xl font-bold text-slate-800 text-center tracking-tight mb-6">
+            Sign In
           </h1>
-
-          <div className="flex flex-col gap-7">
-            {/* Feature 1: Easy Access */}
-            <div className="flex items-start gap-5">
-              <div className="w-11 h-11 shrink-0 text-orange-500 flex items-center justify-center">
-                <Users className="w-10 h-10 stroke-[1.8]" />
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <h2 className="text-base sm:text-lg font-semibold text-slate-800">
-                  Easy Access
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                  Access your Patient's record anywhere and anytime.
-                </p>
-              </div>
-            </div>
-
-            {/* Feature 2: Digitized communication */}
-            <div className="flex items-start gap-5">
-              <div className="w-11 h-11 shrink-0 text-orange-500 flex items-center justify-center">
-                <svg
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
-                  <path d="M12 18h.01" />
-                  <path d="M19 7l-7 5-7-5" />
-                  <rect width="14" height="10" x="5" y="7" rx="1" />
-                </svg>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <h2 className="text-base sm:text-lg font-semibold text-slate-800">
-                  Digitized communication
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                  Unlimited SMS, Emails and Reminders.
-                </p>
-              </div>
-            </div>
-
-            {/* Feature 3: Grow together */}
-            <div className="flex items-start gap-5">
-              <div className="w-11 h-11 shrink-0 text-orange-500 flex items-center justify-center">
-                <Building2 className="w-10 h-10 stroke-[1.8]" />
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <h2 className="text-base sm:text-lg font-semibold text-slate-800">
-                  Grow together
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                  Connect with your preferred Labs, Hospitals and Pharmacies.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Right Column: Sign in to continue Card */}
-        <section className="w-full max-w-[420px]">
-          <div className="bg-white border border-slate-200 rounded shadow-[0_4px_20px_-2px_rgba(0,0,0,0.06)] p-7 sm:p-9">
-            <h2 className="text-teal-600 dark:text-teal-500 text-lg sm:text-xl font-medium text-center mb-6">
-              Sign in to continue
-            </h2>
 
             {viewMode === 'signup' ? (
               <SignUpView
@@ -351,77 +264,75 @@ export const LoginView: React.FC = () => {
                   )}
                 </div>
 
-                {/* Green LOGIN Button */}
+                {/* Sign In Button */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-11 bg-[#00c060] hover:bg-[#00ab55] active:bg-[#00964b] text-white text-sm font-bold tracking-wider rounded uppercase transition-colors shadow-sm disabled:opacity-60 cursor-pointer"
+                  className="w-full h-11 bg-[#00c060] hover:bg-[#00ab55] active:bg-[#00964b] text-white text-sm font-semibold tracking-wide rounded-xl transition-colors shadow-sm disabled:opacity-60 cursor-pointer"
                 >
-                  {isSubmitting ? 'LOGGING IN...' : 'LOGIN'}
+                  {isSubmitting ? 'Signing in...' : 'Sign In'}
                 </button>
 
                 {/* Remember Me and Forgot Password */}
-                <div className="flex items-center justify-between text-xs pt-1">
+                <div className="flex items-center justify-between text-xs pt-0.5">
                   <label className="flex items-center gap-2 text-slate-600 cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
-                      className="w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer"
+                      className="w-4 h-4 rounded border-slate-300 text-[#00c060] focus:ring-[#00c060] cursor-pointer"
                     />
-                    <span>Remember Me</span>
+                    <span>Remember me</span>
                   </label>
 
                   <button
                     type="button"
                     onClick={() => setIsForgotPasswordModalOpen(true)}
-                    className="text-teal-600 hover:underline cursor-pointer"
+                    className="text-teal-600 hover:text-teal-700 hover:underline cursor-pointer font-medium"
                   >
-                    Forgot Password?
+                    Forgot password?
                   </button>
                 </div>
 
-                {/* Quick Demo Access Pills */}
-                <div className="mt-5 pt-4 border-t border-dashed border-slate-200 text-center">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block mb-2">
-                    Quick Demo Access
-                  </span>
-                  <div className="flex flex-wrap items-center justify-center gap-1.5">
+                {/* Minimal Demo Access Switcher */}
+                <div className="mt-6 pt-5 border-t border-slate-100 text-center">
+                  <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                    <span className="text-[11px] text-slate-400 mr-1">Demo:</span>
                     <button
                       type="button"
                       onClick={() => handleFillDemoRole('doctor', 'Doctor@123', 'staff')}
-                      className="px-2.5 py-1 text-[11px] rounded-full bg-slate-100 hover:bg-[#00c060] hover:text-white text-slate-600 font-medium transition-colors cursor-pointer border border-slate-200"
+                      className="px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors cursor-pointer"
                     >
                       Doctor
                     </button>
                     <button
                       type="button"
                       onClick={() => handleFillDemoRole('md', 'Doctor@123', 'staff')}
-                      className="px-2.5 py-1 text-[11px] rounded-full bg-slate-100 hover:bg-[#00c060] hover:text-white text-slate-600 font-medium transition-colors cursor-pointer border border-slate-200"
+                      className="px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors cursor-pointer"
                     >
-                      MD / Admin
+                      Admin
                     </button>
                     <button
                       type="button"
                       onClick={() => handleFillDemoRole('receptionist', 'Doctor@123', 'staff')}
-                      className="px-2.5 py-1 text-[11px] rounded-full bg-slate-100 hover:bg-[#00c060] hover:text-white text-slate-600 font-medium transition-colors cursor-pointer border border-slate-200"
+                      className="px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors cursor-pointer"
                     >
                       Reception
                     </button>
                     <button
                       type="button"
                       onClick={() => handleFillDemoRole('patient', 'Patient@123', 'patient')}
-                      className="px-2.5 py-1 text-[11px] rounded-full bg-slate-100 hover:bg-[#00c060] hover:text-white text-slate-600 font-medium transition-colors cursor-pointer border border-slate-200"
+                      className="px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors cursor-pointer"
                     >
                       Patient
                     </button>
                   </div>
 
-                  <div className="mt-3 flex items-center justify-center gap-3 text-[11px] text-slate-400">
+                  <div className="mt-4 flex items-center justify-center gap-3 text-xs text-slate-400">
                     <button
                       type="button"
                       onClick={() => setViewMode('signup')}
-                      className="text-teal-600 hover:underline cursor-pointer"
+                      className="text-teal-600 hover:underline cursor-pointer font-medium"
                     >
                       Create account
                     </button>
@@ -438,76 +349,40 @@ export const LoginView: React.FC = () => {
               </form>
             )}
           </div>
-        </section>
-      </main>
+        </main>
 
-      {/* 3. BOTTOM FOOTER */}
-      <footer className="h-12 border-t border-slate-100 flex items-center justify-between px-4 sm:px-12 lg:px-24 text-[11px] text-slate-400 bg-white shrink-0">
-        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-          <span>(c) ALL RIGHTS RESERVED SOEZY.IN</span>
-          <span className="text-slate-300">|</span>
-          <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-slate-600">
-            PRIVACY
-          </a>
-          <span className="text-slate-300">|</span>
-          <a href="#" onClick={(e) => e.preventDefault()} className="hover:text-slate-600">
-            TERMS AND CONDITIONS
-          </a>
-        </div>
+        {/* Minimal Footer */}
+        <footer className="py-4 text-center text-xs text-slate-400 select-none">
+          © SOEZY
+        </footer>
 
-        <div className="flex items-center gap-1.5">
-          <a
-            href="https://facebook.com"
-            target="_blank"
-            rel="noreferrer"
-            className="w-5 h-5 rounded bg-slate-300 hover:bg-teal-600 text-white flex items-center justify-center text-[11px] font-bold transition-colors"
-            title="Facebook"
-          >
-            f
-          </a>
-          <a
-            href="https://linkedin.com"
-            target="_blank"
-            rel="noreferrer"
-            className="w-5 h-5 rounded bg-slate-300 hover:bg-teal-600 text-white flex items-center justify-center text-[10px] font-bold transition-colors"
-            title="LinkedIn"
-          >
-            in
-          </a>
-        </div>
-      </footer>
-
-      {/* Forgot Password Modal */}
-      <Modal
-        isOpen={isForgotPasswordModalOpen}
-        onClose={() => setIsForgotPasswordModalOpen(false)}
-        title="Password Assistance"
-        maxWidth="sm"
-        footer={
-          <div className="flex justify-end">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => setIsForgotPasswordModalOpen(false)}
-            >
-              Close
-            </Button>
+        {/* Forgot Password Modal */}
+        <Modal
+          isOpen={isForgotPasswordModalOpen}
+          onClose={() => setIsForgotPasswordModalOpen(false)}
+          title="Password Assistance"
+          maxWidth="sm"
+          footer={
+            <div className="flex justify-end">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsForgotPasswordModalOpen(false)}
+              >
+                Close
+              </Button>
+            </div>
+          }
+        >
+          <div className="space-y-3 text-xs text-slate-600">
+            <p>
+              To reset your password, please contact your clinic administrator or support:
+            </p>
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-800">
+              Helpline: +91 9543279999
+            </div>
           </div>
-        }
-      >
-        <div className="space-y-3 text-xs text-slate-600">
-          <p>
-            To reset your password, please contact SOEZY clinic support or your system administrator:
-          </p>
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded font-medium text-slate-800 flex items-center gap-2">
-            <Smartphone className="w-4 h-4 text-teal-600" />
-            <span>Support Helpline: +91 9543279999</span>
-          </div>
-          <p className="text-[11px] text-slate-400">
-            You may also use the Quick Demo Access pills on the login card to sign in with demo credentials.
-          </p>
-        </div>
-      </Modal>
+        </Modal>
 
       {/* Reset Demo Data Modal */}
       <Modal

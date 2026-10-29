@@ -714,3 +714,4 @@ export const GetStartedView: React.FC<GetStartedViewProps> = ({ onNavigate }) =>
     </div>
   );
 };
+
