@@ -8,8 +8,6 @@ import {
   X,
   Bell,
   Settings,
-  Moon,
-  Sun,
   LayoutDashboard,
   Calendar,
   Users,
@@ -17,13 +15,17 @@ import {
   MessageSquare,
   BarChart3,
   ShieldCheck,
-  Rocket,
-  ChevronDown,
+  Play,
+  MoreHorizontal,
+  User,
   BookOpen,
   HelpCircle,
   Building2,
   Phone,
   CheckCircle2,
+  Rocket,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
@@ -36,7 +38,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, activeTab }) => {
-  const { currentUser, currentRole, logout } = useAuth();
+  const { currentUser, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { isOpen: isSidebarOpen, toggle: toggleSidebar } = useSidebar();
   const { userNotifications, unreadCount, markAllAsRead } = useNotifications();
@@ -108,63 +110,56 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
   const navTabs = [
     {
       id: 'getstarted',
-      label: 'Get Started',
-      icon: Rocket,
-      isActive: false,
-      onClick: () => setIsGetStartedOpen(true),
+      label: 'GET STARTED',
+      icon: Play,
+      isActive: activeTab === 'getstarted',
+      onClick: () => onNavigate?.('getstarted'),
     },
     {
       id: 'dashboard',
-      label: 'Dashboard',
+      label: 'DASHBOARD',
       icon: LayoutDashboard,
       isActive: activeTab === 'dashboard',
       onClick: () => onNavigate?.('dashboard'),
     },
     {
       id: 'appointment',
-      label: 'Appointments',
+      label: 'APPOINTMENTS',
       icon: Calendar,
       isActive: activeTab === 'doctor',
       onClick: () => onNavigate?.('doctor'),
     },
     {
       id: 'patients',
-      label: 'Patients',
+      label: 'PATIENTS',
       icon: Users,
       isActive: activeTab === 'receptionist',
       onClick: () => onNavigate?.('receptionist'),
     },
     {
       id: 'mycare',
-      label: 'Care Team',
+      label: 'CARE TEAM',
       icon: UserCheck,
       isActive: activeTab === 'attendance',
       onClick: () => onNavigate?.('attendance'),
     },
     {
       id: 'communication',
-      label: 'Communication',
+      label: 'COMMUNICATION',
       icon: MessageSquare,
       isActive: false,
       onClick: () => setIsCommunicationOpen(true),
     },
     {
-      id: 'reports',
-      label: 'Reports',
-      icon: BarChart3,
-      isActive: activeTab === 'billing',
-      onClick: () => onNavigate?.('billing'),
-    },
-    {
       id: 'admin',
-      label: 'Admin',
+      label: 'ADMIN',
       icon: ShieldCheck,
-      isActive: activeTab === 'access',
-      onClick: () => onNavigate?.('access'),
+      isActive: activeTab === 'access' || activeTab === 'access_control',
+      onClick: () => onNavigate?.('access_control'),
     },
     {
       id: 'settings',
-      label: 'Settings',
+      label: 'SETTINGS',
       icon: Settings,
       isActive: false,
       onClick: () => setIsSettingsModalOpen(true),
@@ -212,19 +207,41 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
           <nav className="hidden lg:flex items-center h-full space-x-0.5 xl:space-x-1 overflow-x-auto">
             {navTabs.map((tab) => {
               const Icon = tab.icon;
+              const isGetStartedActive = tab.id === 'getstarted' && tab.isActive;
+
+              if (isGetStartedActive) {
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={tab.onClick}
+                    className="h-14 px-3 sm:px-4 flex flex-col items-center justify-center bg-white cursor-pointer select-none transition-all outline-none"
+                    title={tab.label}
+                  >
+                    <Play className="w-4 h-4 fill-none stroke-[2.2] text-[#ea580c]" />
+                    <span className="text-[10px] font-bold tracking-wide mt-1 uppercase text-[#ea580c]">
+                      {tab.label}
+                    </span>
+                  </button>
+                );
+              }
+
               return (
                 <button
                   key={tab.id}
                   type="button"
                   onClick={tab.onClick}
-                  className={`h-14 px-2.5 xl:px-3 flex items-center gap-1.5 text-xs font-medium transition-all relative border-b-2 cursor-pointer whitespace-nowrap outline-none ${
+                  className={`h-14 px-2 xl:px-3 flex flex-col items-center justify-center text-center transition-all relative border-b-2 cursor-pointer whitespace-nowrap outline-none select-none ${
                     tab.isActive
                       ? 'border-[#00c853] text-white font-bold bg-white/10'
                       : 'border-transparent text-slate-200 hover:text-white hover:bg-white/5'
                   }`}
+                  title={tab.label}
                 >
-                  <Icon className={`w-3.5 h-3.5 ${tab.isActive ? 'text-[#00c853]' : 'text-slate-300'}`} />
-                  <span>{tab.label}</span>
+                  <Icon className={`w-4 h-4 ${tab.isActive ? 'text-[#00c853]' : 'text-slate-300'}`} />
+                  <span className="text-[10px] font-medium tracking-wide mt-1 uppercase">
+                    {tab.label}
+                  </span>
                 </button>
               );
             })}
@@ -234,16 +251,28 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
               <button
                 type="button"
                 onClick={() => setIsMoreOpen(!isMoreOpen)}
-                className={`h-14 px-2.5 xl:px-3 flex items-center gap-1 text-xs font-medium transition-colors border-b-2 border-transparent cursor-pointer outline-none ${
-                  isMoreOpen ? 'text-white border-[#00c853] bg-white/10' : 'text-slate-200 hover:text-white hover:bg-white/5'
+                className={`h-14 px-2 xl:px-3 flex flex-col items-center justify-center transition-colors border-b-2 cursor-pointer outline-none select-none ${
+                  isMoreOpen ? 'text-white border-[#00c853] bg-white/10' : 'text-slate-200 hover:text-white hover:bg-white/5 border-transparent'
                 }`}
+                title="More"
               >
-                <span>More</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-300" />
+                <MoreHorizontal className="w-4 h-4 text-slate-300" />
+                <span className="text-[10px] font-medium tracking-wide mt-1 uppercase">MORE</span>
               </button>
 
               {isMoreOpen && (
                 <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-slate-900 rounded-lg shadow-xl border border-slate-200 dark:border-slate-800 py-1.5 z-50 animate-fadeIn">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMoreOpen(false);
+                      onNavigate?.('billing');
+                    }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#00c853] text-left cursor-pointer"
+                  >
+                    <BarChart3 className="w-4 h-4 text-slate-400" />
+                    <span>Reports</span>
+                  </button>
                   <button
                     type="button"
                     onClick={() => {
@@ -343,14 +372,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
               >
                 <div className="profile-info text-right hidden sm:block">
                   <span className="name font-bold text-white text-xs block leading-tight">
-                    {currentUser?.name || 'Doctor'}
+                    {currentUser?.name || 'Udaya'}
                   </span>
-                  <span className="speciality text-[11px] text-slate-300 block leading-tight">
-                    {currentRole === 'doctor' ? 'General Medicine' : currentRole.replace('_', ' ')}
+                  <span className="speciality text-[10px] text-slate-300 block leading-tight tracking-tight uppercase truncate max-w-[170px]">
+                    SUBIKSHAM SPECIALITY HOSPITAL
                   </span>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-emerald-600 border border-emerald-400 flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-sm">
-                  {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'D'}
+                <div className="w-8 h-8 rounded-full border border-slate-300/60 bg-slate-400/20 flex items-center justify-center text-slate-200 shrink-0 shadow-sm">
+                  <User className="w-4 h-4 text-slate-200" />
                 </div>
               </div>
 

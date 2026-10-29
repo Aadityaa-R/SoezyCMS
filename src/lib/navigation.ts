@@ -116,6 +116,7 @@ export function isTabAllowed(
   const cleanTab = tab.toLowerCase();
 
   if (cleanTab === 'profile') return true;
+  if (cleanTab === 'getstarted') return true;
 
   if (role === 'patient') {
     return [
@@ -190,6 +191,7 @@ export function getPageTitle(tab: string, role: UserRole): string {
   }
 
   const titles: Record<string, string> = {
+    getstarted: 'Get Started',
     dashboard: 'Dashboard',
     doctor: 'Consultation Desk',
     role_doctor: 'Consultation Desk',

@@ -8,6 +8,7 @@ import { LoginView } from '@/views/LoginView';
 
 // Role views
 import { DashboardView } from '@/views/DashboardView';
+import { GetStartedView } from '@/views/GetStartedView';
 import { DoctorView } from '@/views/DoctorView';
 import { PatientView } from '@/views/PatientView';
 import { ReceptionistView } from '@/views/ReceptionistView';
@@ -294,6 +295,10 @@ export const AppLayout: React.FC = () => {
 
     if (currentRole === 'patient') {
       return <PatientView activeTab={activeSubTab || (activeTab === 'dashboard' ? 'overview' : activeTab)} />;
+    }
+
+    if (activeTab === 'getstarted') {
+      return <GetStartedView onNavigate={handleNavigate} />;
     }
 
     if (activeTab === 'dashboard') {
