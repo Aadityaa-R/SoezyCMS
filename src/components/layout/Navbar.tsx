@@ -117,8 +117,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
       id: 'appointment',
       label: 'APPOINTMENTS',
       icon: Calendar,
-      isActive: activeTab === 'doctor',
-      onClick: () => onNavigate?.('doctor'),
+      isActive: activeTab === 'appointments' || activeTab === 'appointment' || activeTab === 'doctor',
+      onClick: () => onNavigate?.('appointments'),
     },
     {
       id: 'patients',

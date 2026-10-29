@@ -78,6 +78,7 @@ export function getAllowedNavItems(
 
   if (hasDashboardAccess(role, user, modules)) {
     items.push({ id: 'dashboard', label: 'Dashboard' });
+  items.push({ id: 'appointments', label: 'Appointments' });
   }
 
   if (hasCapability(user, 'consultationWorkstation', modules) || isAdmin(user, modules)) {
@@ -117,6 +118,7 @@ export function isTabAllowed(
   const cleanTab = tab.toLowerCase();
 
   if (cleanTab === 'profile') return true;
+  if (cleanTab === 'appointments' || cleanTab === 'appointment') return true;
 
   if (role === 'patient') {
     return [
@@ -191,6 +193,8 @@ export function getPageTitle(tab: string, role: UserRole): string {
   }
 
   const titles: Record<string, string> = {
+    appointments: 'Appointments',
+    appointment: 'Appointments',
     dashboard: 'Dashboard',
     doctor: 'Consultation Desk',
     role_doctor: 'Consultation Desk',
