@@ -111,7 +111,7 @@ export const Tabs: React.FC<TabsProps> = ({
                 }
               }}
               style={isFirst ? { paddingInlineStart: 0 } : undefined}
-              className={`relative inline-flex items-center whitespace-nowrap cursor-pointer transition-colors shrink-0 focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#00c060] dark:focus-visible:outline-emerald-400 focus-visible:-outline-offset-2 ${
+              className={`relative inline-flex items-center whitespace-nowrap cursor-pointer transition-colors shrink-0 focus:outline-none focus-visible:outline-none outline-none ${
                 isFirst ? 'justify-start text-left pl-0 [padding-inline-start:0]' : 'justify-center'
               } pt-0 pb-[0.625rem] leading-[1.3] ${
                 isSmall

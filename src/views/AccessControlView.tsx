@@ -12,7 +12,7 @@ import { Pagination } from '@/components/ui/Pagination';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableTruncate } from '@/components/ui/Table';
 import { Tabs } from '@/components/ui/Tabs';
 import { RowActions } from '@/components/ui/RowActions';
-import { Filter, ArrowLeft, X, ShieldCheck } from 'lucide-react';
+import { Filter, ArrowLeft, X } from 'lucide-react';
 import { User, UserRole, StaffAccessRecord, StaffPermission, AccessModule, StandardCapability } from '@/types';
 import { PendingStaffApproval, INITIAL_PENDING_APPROVALS } from '@/data/mockData';
 import { getAccessItem } from '@/data/accessCatalog';
@@ -1304,30 +1304,6 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
           </button>
         </div>
       )}
-
-      {/* SOEZY Admin Header Banner */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-[#28465a] flex items-center justify-center text-white shrink-0 shadow-sm">
-            <ShieldCheck className="w-6 h-6 text-[#00c060]" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-                Clinic Administration & Access Control
-              </h1>
-              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#00c060]/10 text-[#00964b] border border-[#00c060]/20">
-                SOEZY Admin Engine
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Beacon Health Care Administrative Architecture • RBAC Modules, Staff Clearance, Approvals & Security Ledger
-            </p>
-          </div>
-        </div>
-
-
-      </div>
 
       {/* Sub-Workstation Navigation Tabs (scrollable on mobile) */}
       <Tabs

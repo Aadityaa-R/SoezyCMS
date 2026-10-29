@@ -1469,16 +1469,6 @@ export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview', 
         }}
       />
 
-            {/* Administrator Inspection Notice */}
-      {isReadOnlyView && (
-        <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-center justify-between gap-3 animate-fadeIn">
-          <div className="flex items-center gap-2.5">
-            <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-            <span className="font-semibold">Administrator View-Only Clearance:</span>
-            <span>You have view-only access to the Doctor Consultation Desk. Clinical modifications and prescribing actions are disabled.</span>
-          </div>
-        </div>
-      )}
 
       {/* Real-time Feedback Notification Banner */}
       {notification && (

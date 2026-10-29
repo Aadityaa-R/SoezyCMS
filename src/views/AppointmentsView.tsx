@@ -247,90 +247,63 @@ export const AppointmentsView: React.FC = () => {
 
   return (
     <div className="space-y-5 animate-fadeIn">
-      {/* 1. TOP HEADER & DATE CHANGER STRIP */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-[#28465a] flex items-center justify-center text-white shrink-0 shadow-sm">
-              <Calendar className="w-6 h-6 text-[#00c060]" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-                  Appointments Schedule
-                </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#28465a]/10 text-[#28465a] border border-[#28465a]/20">
-                  Day-to-Day Volume Tracker
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Inspect daily patient volume and schedule tracking without clinical patient file records
-              </p>
-            </div>
-          </div>
+      {/* Date Selector Navigation Toolbar */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handlePrevDay}
+            className="px-2.5 py-1.5 text-xs flex items-center gap-1 font-semibold"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span>Previous Day</span>
+          </Button>
 
-          {/* Quick "Today" shortcut */}
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <button
-              type="button"
-              onClick={handleToday}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
-                isToday
-                  ? 'bg-[#00c060] text-white border-[#00c060] shadow-xs'
-                  : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50'
-              }`}
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Today</span>
-            </button>
-          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleNextDay}
+            className="px-2.5 py-1.5 text-xs flex items-center gap-1 font-semibold"
+          >
+            <span>Next Day</span>
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+
+          <button
+            type="button"
+            onClick={handleToday}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
+              isToday
+                ? 'bg-[#00c060] text-white border-[#00c060] shadow-xs'
+                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50'
+            }`}
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Today</span>
+          </button>
         </div>
 
-        {/* Date Selector Navigation Toolbar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handlePrevDay}
-              className="px-2.5 py-1.5 text-xs flex items-center gap-1 font-semibold"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              <span>Previous Day</span>
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleNextDay}
-              className="px-2.5 py-1.5 text-xs flex items-center gap-1 font-semibold"
-            >
-              <span>Next Day</span>
-              <ChevronRight className="w-4 h-4" />
-            </Button>
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 hidden sm:inline">
+            Date:
+          </span>
+          <div className="w-44 sm:w-52">
+            <DatePicker
+              value={selectedDate}
+              onChange={(newDate) => {
+                if (newDate) {
+                  setSelectedDate(newDate);
+                  setCurrentPage(1);
+                }
+              }}
+            />
           </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 hidden md:inline">
-              Viewing Date:
-            </span>
-            <div className="w-48 sm:w-56">
-              <DatePicker
-                value={selectedDate}
-                onChange={(newDate) => {
-                  if (newDate) {
-                    setSelectedDate(newDate);
-                    setCurrentPage(1);
-                  }
-                }}
-              />
-            </div>
-            <span className="text-xs font-bold text-slate-800 dark:text-slate-200 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 whitespace-nowrap">
-              {formatDisplayDate(selectedDate)}
-            </span>
-          </div>
+          <span className="text-xs font-bold text-slate-800 dark:text-slate-200 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 whitespace-nowrap">
+            {formatDisplayDate(selectedDate)}
+          </span>
         </div>
       </div>
 

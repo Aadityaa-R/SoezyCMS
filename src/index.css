@@ -370,10 +370,9 @@ html.dark {
     @apply bg-slate-950 text-slate-100;
   }
 
-  /* Static keyboard-only focus outline with >= 3:1 contrast (Milestone M10 Section 2, M10.8) */
+  /* Suppression of harsh focus outline bars */
   :focus-visible {
-    outline: 1px solid var(--focus-outline);
-    outline-offset: 1px;
+    outline: none !important;
   }
 
   /* Universal suppression of outlines on plain pointer :focus (Milestone M10.8) */
@@ -423,8 +422,7 @@ html.dark {
   [role="button"]:focus-visible,
   a:focus-visible,
   [tabindex]:focus-visible {
-    outline: 1px solid var(--focus-outline) !important;
-    outline-offset: 1px !important;
+    outline: none !important;
   }
 
   /* Universal UI Base for Text Inputs - low specificity so utility classes (pl-11, etc.) override */

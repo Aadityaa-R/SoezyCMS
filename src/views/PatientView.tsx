@@ -281,16 +281,6 @@ export const PatientView: React.FC<PatientViewProps> = ({ activeTab: _activeTab 
         </div>
       )}
 
-            {/* Administrator Inspection Notice */}
-      {isReadOnly && (
-        <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-center justify-between gap-3 animate-fadeIn">
-          <div className="flex items-center gap-2.5">
-            <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-            <span className="font-semibold">Administrator View-Only Clearance:</span>
-            <span>You have view-only access to Outpatient Medical Profiles. Profile modifications and registration actions are disabled.</span>
-          </div>
-        </div>
-      )}
 
       {/* Patient Governance Bar: Side-by-Side Search & Filter */}
       <Card className="!overflow-visible px-4 py-2.5 sm:px-5 sm:py-3">
