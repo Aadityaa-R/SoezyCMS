@@ -163,7 +163,7 @@ export const LoginView: React.FC = () => {
             <img
               src="/soezy-logo.png"
               alt="SOEZY - It's All Easy"
-              className="h-8 sm:h-9 w-auto object-contain select-none"
+              className="h-9 sm:h-10 w-auto object-contain select-none"
             />
           </div>
         </div>
@@ -188,7 +188,7 @@ export const LoginView: React.FC = () => {
         <img
           src="/soezy-logo.png"
           alt=""
-          className="w-[780px] max-w-[88vw] opacity-[0.08] select-none transform scale-105"
+          className="w-[1150px] max-w-[95vw] opacity-[0.11] select-none transform scale-110"
         />
       </div>
 

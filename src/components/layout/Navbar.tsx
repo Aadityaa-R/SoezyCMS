@@ -197,7 +197,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
                 <img
                   src="/soezy-logo.png"
                   alt="Soezy"
-                  className="h-7 sm:h-8 w-auto object-contain select-none"
+                  className="h-8 sm:h-9 w-auto object-contain select-none"
                 />
               </div>
             </button>
