@@ -5,6 +5,7 @@ import { useSidebar } from '@/context/SidebarContext';
 import { shouldCloseSidebarOnClick } from '@/lib/sidebarOutsideClick';
 import { hasCapability, canViewBilling, isAdmin } from '@/lib/permissions';
 import { hasDashboardAccess } from '@/lib/navigation';
+import { BRAND_CONFIG } from '@/brand.config';
 import {
   LayoutDashboard,
   UserCheck,
@@ -99,8 +100,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       if (shouldClose) {
         close();
-        // Do NOT call preventDefault() or stopPropagation()!
-        // In bubbling phase, the clicked element's onClick has already fired.
       }
     };
 
@@ -214,47 +213,79 @@ export const Sidebar: React.FC<SidebarProps> = ({
         aria-hidden="true"
       />
 
-      {/* Two-Column Shell Sidebar container: static rail on desktop (3.5rem collapsed, 15rem expanded), drawer on mobile */}
+      {/* Two-Column Shell Sidebar container: full height on left */}
       <aside
         id="sidebar-navigation"
         ref={asideRef}
-        aria-label="Sidebar Navigation"
+        aria-label="Sidebar navigation"
         inert={!isOpen && isMobile ? '' : undefined}
         aria-hidden={!isOpen && isMobile ? 'true' : undefined}
-        className={`fixed lg:static top-14 lg:top-0 bottom-0 left-0 z-40 bg-[#1e3545] text-slate-300 flex flex-col overflow-hidden shrink-0 select-none h-full border-r border-[#152733] transition-all duration-300 ease-in-out motion-reduce:transition-none will-change-[width,transform] ${
-          isOpen
-            ? 'w-[15rem] lg:w-[15rem] translate-x-0 shadow-2xl lg:shadow-none'
-            : 'w-[15rem] -translate-x-full lg:translate-x-0 lg:w-[3.5rem]'
+        className={`fixed lg:static top-0 bottom-0 left-0 z-40 bg-white dark:bg-slate-900 border-r border-[#eef0f3] dark:border-slate-800 transition-all duration-300 ease-in-out motion-reduce:transition-none flex flex-col shrink-0 select-none ${
+          isOpen ? 'w-64' : 'w-0 lg:w-[calc(var(--nav-cell)+0.75rem)]'
+        } ${
+          isMobile
+            ? (isOpen ? 'translate-x-0' : '-translate-x-full')
+            : 'translate-x-0'
         }`}
       >
-        {/* Brand / Role header when expanded */}
-        {isOpen && (
-          <div className="px-3.5 py-3 flex items-center justify-between shrink-0 border-b border-[#152733]/70">
-            <div className="overflow-hidden whitespace-nowrap min-w-0 flex-1">
-              <div className="text-[10px] font-bold text-[#00c060] tracking-wider uppercase">
-                Clinic Operations
+        {/* Top Header: single toggle button level with navbar */}
+        <div className="h-[var(--nav-cell)] px-1.5 flex items-center justify-between shrink-0">
+          <div className="flex items-center min-w-0">
+            <button
+              ref={toggleButtonRef}
+              type="button"
+              data-sidebar-ignore-outside="true"
+              onClick={(e) => {
+                toggle();
+                e.currentTarget.blur();
+              }}
+              className={`w-[var(--nav-cell)] h-[var(--nav-cell)] flex items-center justify-center rounded-lg cursor-pointer shrink-0 outline-none focus:outline-none focus:ring-0 transition-colors duration-200 ${
+                isOpen
+                  ? 'text-[#00c060] dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+              }`}
+              title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+              aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+              aria-expanded={isOpen}
+              aria-controls="sidebar-navigation"
+            >
+              {isOpen ? (
+                <PanelLeftClose className="w-5 h-5 text-[#00c060] dark:text-emerald-400" />
+              ) : (
+                <PanelLeftOpen className="w-5 h-5 text-slate-400 dark:text-slate-500" />
+              )}
+            </button>
+
+            {/* Clinic Portal Brand Details */}
+            <div
+              className={`overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out motion-reduce:transition-none ${
+                isOpen ? 'max-w-[170px] opacity-100 ml-2.5' : 'lg:max-w-0 lg:opacity-0 lg:ml-0 max-w-[170px] opacity-100 ml-2.5'
+              }`}
+            >
+              <div className="text-[10px] font-bold text-[#00c060] dark:text-emerald-400 tracking-wider uppercase">
+                {BRAND_CONFIG.subTitle}
               </div>
-              <div className="text-xs font-semibold text-white capitalize truncate mt-0.5">
+              <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 capitalize truncate mt-0.5">
                 {roleTitle}
               </div>
             </div>
-
-            {/* Close button inside drawer on mobile */}
-            <button
-              type="button"
-              data-sidebar-ignore-outside="true"
-              onClick={close}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-300 hover:text-white hover:bg-white/10 lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 shrink-0 transition-colors"
-              title="Close drawer"
-              aria-label="Close drawer"
-            >
-              <X className="w-5 h-5" />
-            </button>
           </div>
-        )}
+
+          {/* Close button inside drawer on mobile */}
+          <button
+            type="button"
+            data-sidebar-ignore-outside="true"
+            onClick={close}
+            className="w-[var(--nav-cell)] h-[var(--nav-cell)] flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 shrink-0 transition-colors duration-200"
+            title="Close drawer"
+            aria-label="Close drawer"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
         {/* Navigation list */}
-        <nav aria-label="Main Navigation" className="flex-1 py-2 px-1.5 space-y-1 overflow-y-auto overflow-x-hidden">
+        <nav aria-label="Main Navigation" className="flex-1 pt-1 pb-2 px-1.5 space-y-1 overflow-y-auto overflow-x-hidden">
           {navItems.map((item) => {
             const isActive =
               activeTab === item.id ||
@@ -283,18 +314,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 aria-label={item.label}
                 aria-current={isActive ? 'page' : undefined}
                 className={`${
-                  isOpen ? 'w-full px-2.5' : 'w-10 mx-auto justify-center'
-                } h-10 flex items-center rounded-xl text-xs font-medium cursor-pointer outline-none focus:outline-none focus:ring-0 transition-all duration-150 ${
+                  isOpen ? 'w-full px-2' : 'w-[var(--nav-cell)] justify-center'
+                } h-[var(--nav-cell)] flex items-center rounded-lg text-xs font-medium cursor-pointer outline-none focus:outline-none focus:ring-0 transition-colors duration-200 ${
                   isActive
-                    ? 'bg-[#00c060] text-white font-semibold shadow-xs'
-                    : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    ? 'bg-transparent text-[#00c060] dark:text-emerald-400 font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800/50'
                 }`}
               >
                 <span
                   title={item.label}
                   aria-label={item.label}
-                  className={`w-6 h-6 flex items-center justify-center shrink-0 ${
-                    isActive ? 'text-white' : 'text-slate-300'
+                  className={`w-7 h-7 flex items-center justify-center shrink-0 ${
+                    isActive ? 'text-[#00c060] dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'
                   }`}
                 >
                   {item.icon}
@@ -312,42 +343,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             );
           })}
         </nav>
-
-        {/* Bottom Sidebar Collapse/Expand Toggle Area */}
-        <div className="p-1.5 border-t border-[#152733]/70 shrink-0 mt-auto">
-          <button
-            type="button"
-            data-sidebar-ignore-outside="true"
-            onClick={(e) => {
-              toggle();
-              e.currentTarget.blur();
-            }}
-            className={`${
-              isOpen ? 'w-full px-2.5 justify-start' : 'w-10 mx-auto justify-center'
-            } h-10 flex items-center rounded-xl text-slate-300 hover:text-white hover:bg-white/10 cursor-pointer outline-none focus:outline-none focus:ring-0 transition-all duration-150`}
-            title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-            aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-            aria-expanded={isOpen}
-            aria-controls="sidebar-navigation"
-          >
-            <span className="w-6 h-6 flex items-center justify-center shrink-0 text-slate-300">
-              {isOpen ? (
-                <PanelLeftClose className="w-4 h-4" />
-              ) : (
-                <PanelLeftOpen className="w-4 h-4" />
-              )}
-            </span>
-            <span
-              className={`overflow-hidden whitespace-nowrap truncate transition-all duration-300 ease-in-out motion-reduce:transition-none text-left ${
-                isOpen
-                  ? 'max-w-[170px] opacity-100 ml-2.5 text-xs font-medium'
-                  : 'lg:max-w-0 lg:opacity-0 lg:ml-0 max-w-[170px] opacity-100 ml-2.5 text-xs font-medium'
-              }`}
-            >
-              {isOpen ? 'Collapse' : ''}
-            </span>
-          </button>
-        </div>
       </aside>
     </>
   );

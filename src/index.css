@@ -54,7 +54,7 @@ select:active,
 /* Light-Mode Elevation Tokens (Milestone M10 Section 1) */
 :root {
   --radius: 0.5rem;
-  --nav-cell: 2.75rem;
+  --nav-cell: 3.5rem;
   --page-pad: 1rem;
   --page-max: 150rem;
   --card-pad: 1.5rem;
@@ -72,6 +72,7 @@ select:active,
   --text: #0f172a;
   --text-muted: #64748b;
   --text-grey-strong: #475569;
+  --brand-accent: #00c060;
 
   /* Spacing Tokens (Milestone M13) */
   --space-card: var(--card-pad);

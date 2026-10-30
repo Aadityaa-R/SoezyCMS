@@ -29,6 +29,7 @@ import {
   getPageTitle,
 } from '@/lib/navigation';
 import { useClinic } from '@/context/ClinicContext';
+import { BRAND_CONFIG } from '@/brand.config';
 
 import { PageContainer } from './PageContainer';
 
@@ -171,11 +172,11 @@ export const AppLayout: React.FC = () => {
   // Sync document page title
   useEffect(() => {
     if (!isAuthenticated) {
-      document.title = 'Clinic Management System (CMS)';
+      document.title = `${BRAND_CONFIG.hospitalName} - ${BRAND_CONFIG.subTitle}`;
       return;
     }
     const title = getPageTitle(activeTab, currentRole);
-    document.title = `${title} | Clinic Management System (CMS)`;
+    document.title = `${title} | ${BRAND_CONFIG.hospitalName}`;
   }, [activeTab, currentRole, isAuthenticated]);
 
 
@@ -347,38 +348,41 @@ export const AppLayout: React.FC = () => {
           className="sr-only"
         />
 
-        {/* Seamless Unified Top Header - pinned across the entire screen */}
-        <Navbar
-          activeTab={activeTab}
-          onNavigate={handleNavigate}
-        />
-
         <div className="flex-1 flex overflow-hidden h-full min-h-0">
-          {/* Beacon Health Care Collapsible Sidebar: rail below the top bar */}
+          {/* Dynamic Role-specific Sidebar: strictly provides only this role's modules */}
           <Sidebar
             activeTab={activeTab}
             onTabChange={(tab) => handleNavigate(tab)}
           />
 
-          {/* Main View Area - dedicated scrollable container extending full width flush against panels */}
-          <main
-            id="main-content"
-            tabIndex={-1}
-            className="flex-1 min-h-0 overflow-y-auto w-full outline-none [scrollbar-gutter:stable]"
-            style={{
-              paddingLeft: 'var(--page-pad)',
-              paddingRight: 'var(--page-pad)',
-              paddingBottom: 'var(--page-pad)',
-              paddingTop: 'var(--page-pad)',
-              scrollbarGutter: 'stable',
-            }}
-          >
-            <ErrorBoundary>
-              <PageContainer>
-                {renderActiveView()}
-              </PageContainer>
-            </ErrorBoundary>
-          </main>
+          {/* Content Shell */}
+          <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden">
+            {/* Header with profile & logout - pinned at top */}
+            <Navbar
+              activeTab={activeTab}
+              onNavigate={handleNavigate}
+            />
+
+            {/* Main View Area - dedicated scrollable container extending full width flush against panels */}
+            <main
+              id="main-content"
+              tabIndex={-1}
+              className="flex-1 min-h-0 overflow-y-auto w-full outline-none [scrollbar-gutter:stable]"
+              style={{
+                paddingLeft: 'var(--page-pad)',
+                paddingRight: 'var(--page-pad)',
+                paddingBottom: 'var(--page-pad)',
+                paddingTop: 'calc(var(--page-pad) - var(--tab-top-space, -1px))',
+                scrollbarGutter: 'stable',
+              }}
+            >
+              <ErrorBoundary>
+                <PageContainer>
+                  {renderActiveView()}
+                </PageContainer>
+              </ErrorBoundary>
+            </main>
+          </div>
         </div>
 
         {/* Discard changes dialog when attempting to navigate away from dirty profile */}

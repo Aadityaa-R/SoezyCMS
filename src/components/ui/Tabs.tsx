@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { BRAND_CONFIG } from '@/brand.config';
 
 export interface TabItem {
   id: string;
@@ -80,7 +81,7 @@ export const Tabs: React.FC<TabsProps> = ({
 
   return (
     <div
-      className={`tab-row flex items-end justify-between w-full shrink-0 ${className}`}
+      className={`tab-row flex items-end justify-between border-b border-slate-200 dark:border-slate-800 w-full shrink-0 ${className}`}
     >
       <div
         ref={tablistRef}
@@ -124,13 +125,19 @@ export const Tabs: React.FC<TabsProps> = ({
                   : 'text-[1.0625rem] px-[1.125rem]'
               } ${
                 isSelected
-                  ? 'font-bold text-[#00c060] dark:text-emerald-400'
+                  ? 'font-bold text-slate-900 dark:text-slate-100'
                   : 'font-medium text-[var(--text-muted)] hover:text-[var(--text)]'
               } ${tab.disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
             >
               {tab.label}
               {tab.count !== undefined ? ` (${tab.count})` : null}
               {tab.badge ? <span className="ml-1.5">{tab.badge}</span> : null}
+              {isSelected && (
+                <span
+                  className="absolute bottom-0 left-0 right-0 h-[0.1875rem] rounded-full pointer-events-none"
+                  style={{ backgroundColor: BRAND_CONFIG.accentColor }}
+                />
+              )}
             </button>
           );
         })}
