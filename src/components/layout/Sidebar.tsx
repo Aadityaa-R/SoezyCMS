@@ -221,35 +221,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
         aria-label="Sidebar Navigation"
         inert={!isOpen && isMobile ? '' : undefined}
         aria-hidden={!isOpen && isMobile ? 'true' : undefined}
-        className={`fixed lg:static top-0 bottom-0 left-0 z-40 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 flex flex-col overflow-hidden shrink-0 select-none h-full border-r border-[#eef0f3] dark:border-slate-800 transition-all duration-300 ease-in-out motion-reduce:transition-none will-change-[width,transform] ${
+        className={`fixed lg:static top-0 bottom-0 left-0 z-40 bg-[#1e3545] text-slate-300 flex flex-col overflow-hidden shrink-0 select-none h-full border-r border-[#152733] transition-all duration-300 ease-in-out motion-reduce:transition-none will-change-[width,transform] ${
           isOpen
             ? 'w-[15rem] lg:w-[15rem] translate-x-0 shadow-2xl lg:shadow-none'
             : 'w-[15rem] -translate-x-full lg:translate-x-0 lg:w-[3.5rem]'
         }`}
       >
         {/* Brand / Role header & Single Console Toggle Control */}
-        <div className="h-14 px-1.5 flex items-center justify-between shrink-0 border-b border-[#eef0f3] dark:border-slate-800">
+        <div className="h-14 px-1.5 flex items-center justify-between shrink-0 bg-[#28465a] border-b border-[#1e3545] border-r border-[#152733]">
           <div className="flex items-center min-w-0 flex-1">
-            {/* Sidebar Toggle Button with 44px minimum touch target */}
+            {/* Sidebar Toggle Button with 40px minimum touch target */}
             <button
               ref={toggleButtonRef}
               type="button"
               data-sidebar-ignore-outside="true"
               onClick={toggle}
-              className={`w-10 h-10 flex items-center justify-center rounded-xl cursor-pointer shrink-0 outline-none focus:outline-none focus:ring-0 transition-colors duration-200 ${
-                isOpen
-                  ? 'text-[#00c060] hover:bg-slate-50 dark:hover:bg-slate-800'
-                  : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
-              }`}
+              className="w-10 h-10 flex items-center justify-center rounded-xl cursor-pointer shrink-0 text-slate-300 hover:text-white hover:bg-white/10 transition-colors outline-none focus:outline-none focus:ring-0"
               title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
               aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
               aria-expanded={isOpen}
               aria-controls="sidebar-navigation"
             >
               {isOpen ? (
-                <PanelLeftClose className="w-4 h-4 text-[#00c060]" />
+                <PanelLeftClose className="w-4 h-4 text-slate-200" />
               ) : (
-                <PanelLeftOpen className="w-4 h-4 text-slate-400" />
+                <PanelLeftOpen className="w-4 h-4 text-slate-300" />
               )}
             </button>
 
@@ -259,10 +255,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 isOpen ? 'max-w-[170px] opacity-100 ml-2' : 'lg:max-w-0 lg:opacity-0 lg:ml-0 max-w-[170px] opacity-100 ml-2'
               }`}
             >
-              <div className="text-[10px] font-bold text-[#00c060] tracking-wide uppercase">
+              <div className="text-[10px] font-bold text-[#00c060] tracking-wider uppercase">
                 Clinic Operations
               </div>
-              <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 capitalize truncate mt-0.5">
+              <div className="text-xs font-semibold text-white capitalize truncate mt-0.5">
                 {roleTitle}
               </div>
             </div>
@@ -273,7 +269,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             type="button"
             data-sidebar-ignore-outside="true"
             onClick={close}
-            className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 shrink-0 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-300 hover:text-white hover:bg-white/10 lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 shrink-0 transition-colors"
             title="Close drawer"
             aria-label="Close drawer"
           >
@@ -314,15 +310,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   isOpen ? 'w-full px-2.5' : 'w-10 mx-auto justify-center'
                 } h-10 flex items-center rounded-xl text-xs font-medium cursor-pointer outline-none focus:outline-none focus:ring-0 transition-all duration-150 ${
                   isActive
-                    ? 'bg-[#00c060]/10 text-[#00964b] dark:text-emerald-400 font-semibold shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/70 dark:hover:bg-slate-800/60'
+                    ? 'bg-[#00c060] text-white font-semibold shadow-xs'
+                    : 'text-slate-300 hover:text-white hover:bg-white/10'
                 }`}
               >
                 <span
                   title={item.label}
                   aria-label={item.label}
                   className={`w-6 h-6 flex items-center justify-center shrink-0 ${
-                    isActive ? 'text-[#00c060]' : 'text-slate-400 dark:text-slate-500'
+                    isActive ? 'text-white' : 'text-slate-300'
                   }`}
                 >
                   {item.icon}
@@ -340,6 +336,42 @@ export const Sidebar: React.FC<SidebarProps> = ({
             );
           })}
         </nav>
+
+        {/* Bottom Sidebar Collapse/Expand Toggle Area */}
+        <div className="p-1.5 border-t border-[#152733]/70 shrink-0 mt-auto">
+          <button
+            type="button"
+            data-sidebar-ignore-outside="true"
+            onClick={(e) => {
+              toggle();
+              e.currentTarget.blur();
+            }}
+            className={`${
+              isOpen ? 'w-full px-2.5 justify-start' : 'w-10 mx-auto justify-center'
+            } h-10 flex items-center rounded-xl text-slate-300 hover:text-white hover:bg-white/10 cursor-pointer outline-none focus:outline-none focus:ring-0 transition-all duration-150`}
+            title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            aria-expanded={isOpen}
+            aria-controls="sidebar-navigation"
+          >
+            <span className="w-6 h-6 flex items-center justify-center shrink-0 text-slate-300">
+              {isOpen ? (
+                <PanelLeftClose className="w-4 h-4" />
+              ) : (
+                <PanelLeftOpen className="w-4 h-4" />
+              )}
+            </span>
+            <span
+              className={`overflow-hidden whitespace-nowrap truncate transition-all duration-300 ease-in-out motion-reduce:transition-none text-left ${
+                isOpen
+                  ? 'max-w-[170px] opacity-100 ml-2.5 text-xs font-medium'
+                  : 'lg:max-w-0 lg:opacity-0 lg:ml-0 max-w-[170px] opacity-100 ml-2.5 text-xs font-medium'
+              }`}
+            >
+              {isOpen ? 'Collapse' : ''}
+            </span>
+          </button>
+        </div>
       </aside>
     </>
   );

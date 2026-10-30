@@ -83,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
     <>
       <header
         id="headerdiv"
-        className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20 shrink-0 transition-colors shadow-xs"
+        className="w-full bg-[#28465a] border-b border-[#1e3545] sticky top-0 z-20 shrink-0 transition-colors shadow-sm"
       >
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
           {/* Brand / Logo & Clinic Title */}
@@ -95,8 +95,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
               onClick={onToggleSidebar || toggleSidebar}
               className={`w-9 h-9 flex items-center justify-center rounded-lg lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 ${
                 isSidebarOpen
-                  ? 'bg-slate-100 dark:bg-slate-800 text-[#00c060]'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-white/20 text-white'
+                  : 'text-slate-200 hover:bg-white/10 hover:text-white'
               }`}
               title={isSidebarOpen ? 'Close menu' : 'Open menu'}
               aria-label={isSidebarOpen ? 'Close menu' : 'Open menu'}
@@ -104,25 +104,29 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
               {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
-            {/* SOEZY Logo & Hospital Name */}
+            {/* Slanted White Tab for SOEZY Logo matching Login page */}
             <button
               type="button"
               onClick={() => onNavigate?.('dashboard')}
-              className="flex items-center gap-3 text-left cursor-pointer outline-none focus:outline-none focus:ring-0 group"
+              className="bg-white h-14 px-6 sm:px-8 flex items-center justify-center -skew-x-[26deg] shadow-md -ml-4 sm:-ml-6 cursor-pointer outline-none focus:outline-none shrink-0 group"
               title="SOEZY Web Dashboard"
             >
-              <img
-                src="/soezy-logo.png"
-                alt="SOEZY"
-                className="h-7 sm:h-8 w-auto object-contain select-none"
-              />
-              <div className="min-w-0 text-left hidden sm:block border-l border-slate-200 dark:border-slate-700 pl-3">
-                <h1 className="font-bold text-slate-900 dark:text-slate-100 text-sm leading-tight tracking-tight truncate max-w-[240px]">
-                  Subiksham Speciality Hospital
-                </h1>
-                <p className="text-[10px] text-slate-400 font-medium">Clinical Management System</p>
+              <div className="skew-x-[26deg] flex items-center justify-center py-1">
+                <img
+                  src="/soezy-logo.png"
+                  alt="SOEZY - It's All Easy"
+                  className="h-8 sm:h-9 w-auto object-contain select-none"
+                />
               </div>
             </button>
+
+            {/* Hospital Name & Subtitle */}
+            <div className="min-w-0 text-left hidden sm:block ml-2 pl-3 border-l border-white/20">
+              <h1 className="font-bold text-white text-sm sm:text-base leading-tight tracking-tight truncate max-w-[280px]">
+                Subiksham Speciality Hospital
+              </h1>
+              <p className="text-[10px] text-slate-300 font-medium">SOEZY Clinic Operations</p>
+            </div>
           </div>
 
           {/* Right Section: Notifications, Theme, Doctor Profile */}
@@ -132,12 +136,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
               <button
                 type="button"
                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer relative outline-none focus:outline-none focus:ring-0"
+                className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-200 hover:text-white hover:bg-white/10 transition-colors cursor-pointer relative outline-none focus:outline-none focus:ring-0"
                 aria-label={`Notifications (${unreadCount} unread)`}
               >
                 <Bell className="w-4 h-4" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-2 right-2 w-2 h-2 bg-[#00c060] rounded-full ring-2 ring-white dark:ring-slate-900" />
+                  <span className="absolute top-2 right-2 w-2 h-2 bg-[#00c060] rounded-full ring-2 ring-[#28465a]" />
                 )}
               </button>
 
@@ -179,19 +183,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
             {/* Doctor Profile Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <div
-                className="flex items-center gap-2 cursor-pointer py-1 px-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="flex items-center gap-2 cursor-pointer py-1 px-1.5 rounded-lg hover:bg-white/10 transition-colors"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 role="button"
                 tabIndex={0}
               >
-                <div className="w-8 h-8 rounded-full bg-[#00c060] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                <div className="w-8 h-8 rounded-full bg-[#00c060] text-white flex items-center justify-center font-bold text-xs shrink-0 ring-2 ring-white/20 shadow-xs">
                   <User className="w-4 h-4 text-white" />
                 </div>
                 <div className="profile-info text-left hidden md:block">
-                  <span className="name font-bold text-slate-900 dark:text-slate-100 text-xs block leading-tight">
+                  <span className="name font-bold text-white text-xs block leading-tight">
                     {currentUser?.name || 'Dr. Marcus Vance'}
                   </span>
-                  <span className="speciality text-[10px] text-slate-400 block leading-tight uppercase truncate max-w-[160px]">
+                  <span className="speciality text-[10px] text-slate-300 block leading-tight uppercase truncate max-w-[160px]">
                     Subiksham Speciality
                   </span>
                 </div>
