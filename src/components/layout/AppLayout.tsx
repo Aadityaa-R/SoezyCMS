@@ -86,14 +86,17 @@ export const AppLayout: React.FC = () => {
       prevAuthRef.current = true;
       hasValidatedInitialSessionRef.current = true;
       clearRememberedLastPage();
-      setActiveTab(defaultLandingTab);
+      const params = new URLSearchParams(window.location.search);
+      const urlTab = params.get('tab');
+      const targetTab = urlTab || defaultLandingTab;
+      setActiveTab(targetTab);
       setActiveSubTab(undefined);
       try {
         const pathname = window.location.pathname.startsWith('/profile') ? '/' : window.location.pathname;
         window.history.replaceState(
           {},
           '',
-          `${pathname}?as=${targetAudience}&tab=${defaultLandingTab}`
+          `${pathname}?as=${targetAudience}&tab=${targetTab}`
         );
       } catch {}
       return;

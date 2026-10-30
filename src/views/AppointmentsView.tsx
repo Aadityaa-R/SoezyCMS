@@ -2,8 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useClinic } from '@/context/ClinicContext';
 import { useAuth } from '@/context/AuthContext';
 import { getScopedAppointments } from '@/lib/selectors';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Table, ColumnDef } from '@/components/ui/Table';
 import { Pagination } from '@/components/ui/Pagination';
 import { DatePicker } from '@/components/ui/DatePicker';
@@ -334,48 +333,34 @@ export const AppointmentsView: React.FC = () => {
 
       {/* 3. APPOINTMENTS SCHEDULE TABLE */}
       <Card className="border border-slate-200 dark:border-slate-800 shadow-sm">
-        <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3.5 border-b border-slate-100 dark:border-slate-800">
-          {/* Day's Schedule Title & Date Navigation Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <div>
-              <CardTitle className="text-base font-bold text-slate-900 dark:text-slate-100">
-                Day's Schedule
-              </CardTitle>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Showing {filteredAppointments.length} appointments on {formatDisplayDate(selectedDate)}
-              </p>
-            </div>
-
-            {/* Embedded Date Selection Controls */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <Button
+        <CardHeader
+          className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3.5 border-b border-slate-100 dark:border-slate-800"
+          action={
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap shrink-0">
+              <button
                 type="button"
-                variant="outline"
-                size="compact"
                 onClick={handlePrevDay}
-                className="px-2 py-1 text-xs flex items-center gap-1 font-semibold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
+                className="px-2.5 py-1.5 text-xs font-semibold flex items-center gap-1 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer shrink-0 whitespace-nowrap bg-white dark:bg-slate-800"
                 title="Previous Day"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Prev</span>
-              </Button>
+                <span>Prev</span>
+              </button>
 
-              <Button
+              <button
                 type="button"
-                variant="outline"
-                size="compact"
                 onClick={handleNextDay}
-                className="px-2 py-1 text-xs flex items-center gap-1 font-semibold border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
+                className="px-2.5 py-1.5 text-xs font-semibold flex items-center gap-1 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer shrink-0 whitespace-nowrap bg-white dark:bg-slate-800"
                 title="Next Day"
               >
-                <span className="hidden sm:inline">Next</span>
+                <span>Next</span>
                 <ChevronRight className="w-3.5 h-3.5" />
-              </Button>
+              </button>
 
               <button
                 type="button"
                 onClick={handleToday}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                   isToday
                     ? 'bg-[#00c060] text-white border-[#00c060] shadow-xs'
                     : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50'
@@ -386,7 +371,7 @@ export const AppointmentsView: React.FC = () => {
                 <span>Today</span>
               </button>
 
-              <div className="w-40 sm:w-48">
+              <div className="w-44 sm:w-48 shrink-0">
                 <DatePicker
                   value={selectedDate}
                   onChange={(newDate) => {
@@ -398,24 +383,34 @@ export const AppointmentsView: React.FC = () => {
                 />
               </div>
             </div>
+          }
+        >
+          <div>
+            <CardTitle>Day's Schedule</CardTitle>
+            <CardDescription className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Showing {filteredAppointments.length} appointments on {formatDisplayDate(selectedDate)}
+            </CardDescription>
+          </div>
+        </CardHeader>
+
+        {/* Dedicated Search & Filter Toolbar */}
+        <div className="px-5 py-3.5 bg-slate-50/50 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+          {/* Search Input */}
+          <div className="w-full md:w-80">
+            <InteractiveSearchBar
+              value={searchTerm}
+              onChange={(q) => {
+                setSearchTerm(q);
+                setCurrentPage(1);
+              }}
+              placeholder="Search patient or doctor..."
+            />
           </div>
 
-          {/* Search & Filters */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto">
-            {/* Search Input */}
-            <div className="w-full sm:w-48">
-              <InteractiveSearchBar
-                value={searchTerm}
-                onChange={(q) => {
-                  setSearchTerm(q);
-                  setCurrentPage(1);
-                }}
-                placeholder="Search patient or doctor..."
-              />
-            </div>
-
+          {/* Filter Dropdowns */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Doctor Filter */}
-            <div className="w-full sm:w-40">
+            <div className="w-full sm:w-48">
               <Select
                 value={selectedDoctorId}
                 onChange={(e) => {
@@ -430,7 +425,7 @@ export const AppointmentsView: React.FC = () => {
             </div>
 
             {/* Status Filter */}
-            <div className="w-full sm:w-32">
+            <div className="w-full sm:w-40">
               <Select
                 value={selectedStatus}
                 onChange={(e) => {
@@ -448,7 +443,7 @@ export const AppointmentsView: React.FC = () => {
               />
             </div>
           </div>
-        </CardHeader>
+        </div>
 
         <CardContent className="p-0">
           {filteredAppointments.length === 0 ? (
