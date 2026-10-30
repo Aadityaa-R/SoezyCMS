@@ -20,6 +20,7 @@ import {
   Calendar,
   X,
   Users,
+  Contact,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -154,7 +155,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       items.push({ id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> });
     }
 
-    // 2. Reception Calendar (Front desk or Administrative)
+    // 2. Clinic Staff (All staff & admin)
+    items.push({ id: 'clinic_staff', label: 'Clinic Staff', icon: <Contact className="w-4 h-4" /> });
+
+    // 3. Patients (All staff & admin)
+    items.push({ id: 'patient', label: 'Patients', icon: <Users className="w-4 h-4" /> });
+
+    // 4. Reception Calendar (Front desk or Administrative)
     const hasFrontDesk =
       hasCapability(currentUser, 'patientRegistration', modules) ||
       hasCapability(currentUser, 'patientCheckIn', modules);
@@ -164,17 +171,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       items.push({ id: 'appointments', label: 'Appointments', icon: <Calendar className="w-4 h-4" /> });
     }
 
-    // 3. Clinical Patients directory (Doctors / EMR Records Access)
-    if (hasCapability(currentUser, 'emrRecordsAccess', modules)) {
-      items.push({ id: 'patient', label: 'Patient Records', icon: <Users className="w-4 h-4" /> });
-    }
-
-    // 4. Consultation Desk (Clinical Station)
+    // 5. Consultation Desk (Clinical Station)
     if (hasCapability(currentUser, 'consultationWorkstation', modules) || currentRole === 'doctor') {
       items.push({ id: 'doctor', label: 'Consultation Desk', icon: <Stethoscope className="w-4 h-4" /> });
     }
 
-    // 5. Front Desk Reception intake
+    // 6. Front Desk Reception intake
     if (hasFrontDesk || currentRole === 'receptionist') {
       items.push({ id: 'role_receptionist', label: 'Reception', icon: <UserCheck className="w-4 h-4" /> });
     }

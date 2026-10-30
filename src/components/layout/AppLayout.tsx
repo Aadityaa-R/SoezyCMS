@@ -16,6 +16,7 @@ import { AccessControlView } from '@/views/AccessControlView';
 import { AttendanceView } from '@/views/AttendanceView';
 import { BillingView } from '@/views/BillingView';
 import { ProfileView } from '@/views/ProfileView';
+import { ClinicStaffView } from '@/views/ClinicStaffView';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
@@ -313,11 +314,17 @@ export const AppLayout: React.FC = () => {
       return <DashboardView onNavigate={handleNavigate} />;
     }
 
+    if (activeTab === 'clinic_staff' || activeTab === 'staff' || activeTab === 'staff_directory') {
+      return <ClinicStaffView onNavigate={handleNavigate} />;
+    }
+
     if (activeTab === 'role_patient' || activeTab === 'patient' || activeTab === 'patients') {
-      if (hasCapability(currentUser, 'emrRecordsAccess', modules)) {
-        return <PatientView activeTab={activeSubTab || 'overview'} isReadOnlyView={false} />;
-      }
-      return <DashboardView onNavigate={handleNavigate} />;
+      return (
+        <PatientView
+          activeTab={activeSubTab || 'overview'}
+          isReadOnlyView={!hasCapability(currentUser, 'emrRecordsAccess', modules)}
+        />
+      );
     }
 
     if (activeTab === 'admin_billing' || activeTab === 'billing') {

@@ -80,6 +80,10 @@ export function getAllowedNavItems(
     items.push({ id: 'dashboard', label: 'Dashboard' });
   }
 
+  // Clinic Staff module (All staff and administrators)
+  items.push({ id: 'clinic_staff', label: 'Clinic Staff' });
+  items.push({ id: 'patient', label: 'Patients' });
+
   const hasFrontDesk =
     hasCapability(user, 'patientRegistration', modules) ||
     hasCapability(user, 'patientCheckIn', modules);
@@ -167,8 +171,12 @@ export function isTabAllowed(
     );
   }
 
-  if (cleanTab === 'patient' || cleanTab === 'role_patient') {
-    return hasCapability(user, 'emrRecordsAccess', modules);
+  if (cleanTab === 'clinic_staff' || cleanTab === 'staff' || cleanTab === 'staff_directory') {
+    return true;
+  }
+
+  if (cleanTab === 'patient' || cleanTab === 'role_patient' || cleanTab === 'patients') {
+    return true;
   }
 
   if (cleanTab === 'billing' || cleanTab === 'admin_billing') {
@@ -206,8 +214,11 @@ export function getPageTitle(tab: string, role: UserRole): string {
     receptionist: 'Reception',
     role_receptionist: 'Reception',
     calendar: 'Reception',
-    patient: 'Patient Records',
-    role_patient: 'Patient Records',
+    patient: 'Patients',
+    patients: 'Patients',
+    role_patient: 'Patients',
+    clinic_staff: 'Clinic Staff',
+    staff: 'Clinic Staff',
     billing: 'Billing',
     admin_billing: 'Billing',
     access_control: 'Administrative',

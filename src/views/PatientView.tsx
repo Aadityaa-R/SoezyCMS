@@ -73,12 +73,13 @@ export const PatientView: React.FC<PatientViewProps> = ({ activeTab: _activeTab 
 
   const vitals = React.useMemo(() => {
     if (!currentUser) return [];
+    if (!hasCapability(currentUser, 'emrRecordsAccess', modules)) return [];
     if (currentUser.role === 'patient') {
       const myPatientIds = new Set(patients.map((p) => p.id));
       return rawVitals.filter((v) => myPatientIds.has(v.patientId));
     }
     return rawVitals;
-  }, [currentUser, patients, rawVitals]);
+  }, [currentUser, patients, rawVitals, modules]);
 
   // Search & Filter State
   const [searchTerm, setSearchTerm] = useState('');
