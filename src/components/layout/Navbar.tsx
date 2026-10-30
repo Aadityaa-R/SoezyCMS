@@ -46,7 +46,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isChangeClinicOpen, setIsChangeClinicOpen] = useState(false);
-    const [isCommunicationOpen, setIsCommunicationOpen] = useState(false);
   const [isBlogOpen, setIsBlogOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isPublicQuestionsOpen, setIsPublicQuestionsOpen] = useState(false);
@@ -126,13 +125,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
       icon: UserCheck,
       isActive: activeTab === 'attendance',
       onClick: () => onNavigate?.('attendance'),
-    },
-    {
-      id: 'communication',
-      label: 'COMMUNICATION',
-      icon: MessageSquare,
-      isActive: false,
-      onClick: () => setIsCommunicationOpen(true),
     },
     {
       id: 'admin',
@@ -476,48 +468,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
           </div>
         </div>
       )}
-
-            {/* 3. COMMUNICATION MODAL */}
-      <Modal
-        isOpen={isCommunicationOpen}
-        onClose={() => setIsCommunicationOpen(false)}
-        title="Digitized Communication Center"
-        description="Unlimited SMS, Emails and Reminders for Your Clinic"
-        maxWidth="md"
-        footer={
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={() => setIsCommunicationOpen(false)}
-            className="!bg-[#00c853] hover:!bg-[#00b048]"
-          >
-            Close
-          </Button>
-        }
-      >
-        <div className="space-y-4 text-xs">
-          <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
-              <div className="text-xl font-bold text-[#00c853]">Unlimited</div>
-              <div className="text-[11px] text-slate-600 font-medium mt-1">SMS Reminders</div>
-            </div>
-            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="text-xl font-bold text-blue-600">Active</div>
-              <div className="text-[11px] text-slate-600 font-medium mt-1">Email Gateway</div>
-            </div>
-            <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
-              <div className="text-xl font-bold text-purple-600">Enabled</div>
-              <div className="text-[11px] text-slate-600 font-medium mt-1">WhatsApp Alerts</div>
-            </div>
-          </div>
-          <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
-            <div className="font-semibold text-slate-800 text-xs">Automated Patient Reminders</div>
-            <p className="text-[11px] text-slate-600 leading-relaxed">
-              Appointments scheduled in the system automatically receive confirmation and 2-hour reminder notifications with doctor directions.
-            </p>
-          </div>
-        </div>
-      </Modal>
 
       {/* 4. BLOG MODAL */}
       <Modal
