@@ -62,13 +62,13 @@ select:active,
   --section-gap: 1.25rem;
   --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05);
   --shadow-modal: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
-  --chart-primary: #0d9488;
+  --chart-primary: #00c060;
   --chart-secondary: #475569;
   --chart-hatch-rect: #64748b;
   --chart-hatch-line: #334155;
   --chart-grid: #94a3b8;
   --chart-pattern: #64748b;
-  --focus-outline: #0d9488;
+  --focus-outline: #00c060;
   --text: #0f172a;
   --text-muted: #64748b;
   --text-grey-strong: #475569;
@@ -362,13 +362,13 @@ html.dark .shadow-modal {
 
 .dark,
 html.dark {
-  --chart-primary: #2dd4bf;
+  --chart-primary: #10b981;
   --chart-secondary: #cbd5e1;
   --chart-hatch-rect: #94a3b8;
   --chart-hatch-line: #f1f5f9;
   --chart-grid: #475569;
   --chart-pattern: #cbd5e1;
-  --focus-outline: #14b8a6;
+  --focus-outline: #10b981;
   --text: #f8fafc;
   --text-muted: #94a3b8;
   --text-grey-strong: #cbd5e1;
@@ -564,14 +564,14 @@ html.dark {
 
   /* Universal UI Base for Checkboxes */
   input[type="checkbox"] {
-    @apply w-4 h-4 rounded border-slate-300 text-teal-600 focus:outline-none focus:ring-0 cursor-pointer;
-    accent-color: #0d9488;
+    @apply w-4 h-4 rounded border-slate-300 text-[#00c060] focus:outline-none focus:ring-0 cursor-pointer;
+    accent-color: #00c060;
   }
 
   /* Universal UI Base for Radio Buttons */
   input[type="radio"] {
-    @apply w-4 h-4 border-slate-300 text-teal-600 focus:outline-none focus:ring-0 cursor-pointer;
-    accent-color: #0d9488;
+    @apply w-4 h-4 border-slate-300 text-[#00c060] focus:outline-none focus:ring-0 cursor-pointer;
+    accent-color: #00c060;
   }
 
   /* Universal UI Base for Tables */

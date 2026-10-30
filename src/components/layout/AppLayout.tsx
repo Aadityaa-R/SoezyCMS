@@ -77,7 +77,7 @@ export const AppLayout: React.FC = () => {
     const hasDashboard = currentRole === 'patient' || allowed.some((item) => item.id === 'dashboard');
     const defaultLandingTab = currentRole === 'patient'
       ? 'dashboard'
-      : (currentRole === 'md' ? 'access_control' : (hasDashboard ? 'dashboard' : (allowed[0]?.id || 'dashboard')));
+      : (hasDashboard ? 'dashboard' : (allowed[0]?.id || 'dashboard'));
 
     // 1. Fresh sign-in: set active page to Dashboard, clear remembered last page, keep only ?as=<audience>&tab=dashboard
     if (!prevAuthRef.current) {

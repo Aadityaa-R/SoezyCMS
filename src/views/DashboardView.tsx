@@ -234,7 +234,7 @@ const PatientsAndVisitsChart: React.FC<PatientsAndVisitsChartProps> = ({
                     y={y1}
                     width={barWidth}
                     height={h1}
-                    className="fill-teal-600 dark:fill-teal-500"
+                    className="fill-[#00c060] dark:fill-emerald-500"
                   >
                     <title>{`${b.label}: ${b.newPatients} new patients`}</title>
                   </rect>
@@ -301,7 +301,7 @@ const PatientsAndVisitsChart: React.FC<PatientsAndVisitsChartProps> = ({
       {/* Static Legend */}
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-fs-axis text-slate-600 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800" style={{ fontSize: 'var(--fs-axis)' }}>
         <div className="flex items-center gap-1.5">
-          <span className="w-3 h-3 bg-teal-600 dark:bg-teal-500 inline-block" />
+          <span className="w-3 h-3 bg-[#00c060] dark:bg-emerald-500 inline-block" />
           <span>New Patients</span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -533,7 +533,7 @@ const FeesAndPaymentsChart: React.FC<FeesAndPaymentsChartProps> = ({
       {/* Static Legend */}
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-fs-axis text-slate-600 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800" style={{ fontSize: 'var(--fs-axis)' }}>
         <div className="flex items-center gap-1.5">
-          <span className="w-4 h-0.5 bg-teal-600 dark:bg-teal-500 inline-block" />
+          <span className="w-4 h-0.5 bg-[#00c060] dark:bg-emerald-500 inline-block" />
           <span>Billed</span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -1106,7 +1106,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                             <button
                               type="button"
                               onClick={() => onNavigate?.(item.navigateTab, item.navigateSubTab)}
-                              className="text-xs font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300 cursor-pointer"
+                              className="text-xs font-semibold text-[#00964b] hover:text-[#00c060] dark:text-emerald-400 dark:hover:text-emerald-300 cursor-pointer"
                             >
                               Review
                             </button>
@@ -1396,7 +1396,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                               <button
                                 type="button"
                                 onClick={() => handleOpenWaitingDetails(apt)}
-                                className="font-semibold text-slate-900 dark:text-slate-100 hover:text-teal-600 dark:hover:text-teal-400 underline underline-offset-2 cursor-pointer"
+                                className="font-semibold text-slate-900 dark:text-slate-100 hover:text-[#00c060] dark:hover:text-emerald-400 underline underline-offset-2 cursor-pointer"
                               >
                                 {apt.patientName}
                               </button>
@@ -1411,7 +1411,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                         <button
                           type="button"
                           onClick={() => onNavigate?.('role_receptionist', 'checkin')}
-                          className="text-xs text-teal-600 dark:text-teal-400 hover:underline cursor-pointer"
+                          className="text-xs text-[#00c060] dark:text-emerald-400 hover:underline cursor-pointer"
                         >
                           View all
                         </button>
@@ -1438,7 +1438,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                           <button
                             type="button"
                             onClick={item.onReview}
-                            className="text-xs text-teal-600 dark:text-teal-400 hover:underline font-medium cursor-pointer"
+                            className="text-xs text-[#00c060] dark:text-emerald-400 hover:underline font-medium cursor-pointer"
                           >
                             Review
                           </button>
@@ -1903,7 +1903,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
                       </div>
                       <div>
                         <span className="text-slate-500 block">Net Collected</span>
-                        <span className="text-base font-bold text-teal-700 dark:text-teal-400">
+                        <span className="text-base font-bold text-[#00964b] dark:text-emerald-400">
                           {dailySummaryData.collections.formattedNetTotal}
                         </span>
                       </div>

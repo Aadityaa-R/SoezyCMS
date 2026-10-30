@@ -153,11 +153,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
         { id: 'appointments', label: 'Appointments', icon: <Calendar className="w-4 h-4" /> },
         { id: 'patient', label: 'Patient Records', icon: <Users className="w-4 h-4" /> },
-        { id: 'doctor', label: 'Doctor Desk', icon: <Stethoscope className="w-4 h-4" /> },
+        { id: 'doctor', label: 'Consultation Desk', icon: <Stethoscope className="w-4 h-4" /> },
         { id: 'role_receptionist', label: 'Reception', icon: <UserCheck className="w-4 h-4" /> },
-        { id: 'attendance', label: 'Care Team', icon: <Clock className="w-4 h-4" /> },
-        { id: 'billing', label: 'Billing & Reports', icon: <CreditCard className="w-4 h-4" /> },
-        { id: 'access_control', label: 'Access Control', icon: <ShieldCheck className="w-4 h-4" /> },
+        { id: 'attendance', label: 'Attendance', icon: <Clock className="w-4 h-4" /> },
+        { id: 'billing', label: 'Billing', icon: <CreditCard className="w-4 h-4" /> },
+        { id: 'access_control', label: 'Administrative', icon: <ShieldCheck className="w-4 h-4" /> },
       ];
     }
 

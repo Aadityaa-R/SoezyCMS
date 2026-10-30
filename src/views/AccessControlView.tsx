@@ -56,7 +56,7 @@ const getRoleAvatarStyles = (role: UserRole) => {
     case 'admin':
       return 'bg-[#28465a]/10 dark:bg-[#28465a]/30 text-[#28465a] dark:text-slate-200 border border-[#28465a]/30';
     case 'doctor':
-      return 'bg-[#20b2aa]/15 dark:bg-[#20b2aa]/30 text-[#008080] dark:text-teal-300 border border-[#20b2aa]/30';
+      return 'bg-[#00c060]/10 dark:bg-[#00c060]/20 text-[#00964b] dark:text-emerald-300 border border-[#00c060]/30';
     case 'receptionist':
       return 'bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
     default:
@@ -2290,7 +2290,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                                 <button
                                   type="button"
                                   onClick={(e) => togglePersonSelection(person.id, e.currentTarget)}
-                                  className="inline-flex items-center justify-center font-medium bg-transparent border-none shadow-none p-0 min-h-[44px] text-xs cursor-pointer select-none whitespace-nowrap text-[#00c060] dark:text-emerald-400 hover:text-teal-700 dark:hover:text-teal-300 focus:outline-none focus:ring-0 focus-visible:outline-none"
+                                  className="inline-flex items-center justify-center font-medium bg-transparent border-none shadow-none p-0 min-h-[44px] text-xs cursor-pointer select-none whitespace-nowrap text-[#00c060] dark:text-emerald-400 hover:text-[#00964b] dark:hover:text-emerald-300 focus:outline-none focus:ring-0 focus-visible:outline-none"
                                   aria-label={`Manage access for ${person.staffName}`}
                                 >
                                   Manage Access
@@ -3345,7 +3345,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                         {item.description}
                       </p>
                       {isDocOnly && isSelected && (
-                        <p className="text-[0.625rem] text-[#00964b] dark:text-teal-400 mt-1 italic">
+                        <p className="text-[0.625rem] text-[#00964b] dark:text-emerald-400 mt-1 italic">
                           Includes required EMR Records Access dependency.
                         </p>
                       )}
