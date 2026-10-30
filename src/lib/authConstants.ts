@@ -23,7 +23,7 @@ export const PASSWORD_POLICY: PasswordPolicyConfig = {
 };
 
 export const STORAGE_KEY_PREFIX = 'cms_v1_';
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 export const STORAGE_SETTINGS_KEY = 'cms_v1_settings';
 export const STORAGE_BACKUP_UNDO_KEY = 'cms_v1_backup_undo';
 export const SESSION_STORAGE_KEY = 'cms_v1_session';

@@ -61,18 +61,14 @@ export function getScopedPatients(
     );
   }
 
-  // 2. Receptionist view: full patient directory records
-  if (currentUser.role === 'receptionist') {
-    return patients;
-  }
-
-  // 3. Staff without EMR Records Access: demographics only, stripped of all clinical data
+  // 2. Staff without EMR Records Access (including Administrators and Front Desk):
+  // Demographics, appointments, and billing only, stripped of all clinical data
   if (!hasCapability(currentUser, 'emrRecordsAccess', modules)) {
     return patients.map((p) => scopePatientForReceptionist(p));
   }
 
-  // 3. Admin view (clinic-wide)
-  if (isAdmin(currentUser, modules)) {
+  // 3. Clinical supervision: read-only oversight across all physicians
+  if (hasCapability(currentUser, 'clinicalSupervision', modules)) {
     if (activeDoctorId && activeDoctorId !== 'all') {
       return patients.filter(
         (p) => getAssignedDoctorId(p.id, assignments) === activeDoctorId
@@ -81,7 +77,7 @@ export function getScopedPatients(
     return patients;
   }
 
-  // 4. Non-admin with EMR Records Access (e.g. Staff Doctor): requires care assignment
+  // 4. Doctor with EMR Records Access without supervision: requires care assignment
   return patients.filter((p) => canViewPatient(currentUser, p.id, assignments, modules));
 }
 
@@ -100,8 +96,8 @@ export function getDoctorPatients(
  * Selects appointments based on currentUser permissions and an optional activeDoctorId filter.
  * - Patient: returns only their own appointments.
  * - Anyone without emrRecordsAccess: returns appointments with clinical notes stripped.
- * - Admin: returns all appointments (or filtered by activeDoctorId).
- * - Non-admin with emrRecordsAccess: returns appointments for assigned patients or authored visits.
+ * - Clinical supervision: returns all appointments with notes.
+ * - Doctor with emrRecordsAccess: returns appointments for assigned patients or authored visits.
  */
 export function getScopedAppointments(
   currentUser: User | null | undefined,
@@ -123,25 +119,20 @@ export function getScopedAppointments(
     );
   }
 
-  // 2. Receptionist view: full appointment records including clinical notes
-  if (currentUser.role === 'receptionist') {
-    return appointments;
-  }
-
-  // 3. Staff without EMR Records Access: metadata only, stripped of clinical consultation notes
+  // 2. Staff without EMR Records Access (including Administrators): metadata only, stripped of clinical notes
   if (!hasCapability(currentUser, 'emrRecordsAccess', modules)) {
     return appointments.map((a) => scopeAppointmentForReceptionist(a));
   }
 
-  // 3. Admin view
-  if (isAdmin(currentUser, modules)) {
+  // 3. Clinical supervision: read-only view of all appointments
+  if (hasCapability(currentUser, 'clinicalSupervision', modules)) {
     if (activeDoctorId && activeDoctorId !== 'all') {
       return appointments.filter((a) => a.doctorId === activeDoctorId);
     }
     return appointments;
   }
 
-  // 4. Non-admin with EMR Records Access: assigned patients or authored visits
+  // 4. Doctor with EMR Records Access: assigned patients or authored visits
   let scoped = appointments.filter((a) => canViewVisit(currentUser, a, assignments, modules));
   if (activeDoctorId && activeDoctorId !== 'all') {
     scoped = scoped.filter((a) => a.doctorId === activeDoctorId);
@@ -153,8 +144,8 @@ export function getScopedAppointments(
  * Selects prescriptions based on currentUser permissions and an optional activeDoctorId filter.
  * - Anyone without emrRecordsAccess: returns empty array (never sees prescriptions).
  * - Patient: returns only their own prescriptions.
- * - Admin: returns all prescriptions (or filtered by activeDoctorId).
- * - Non-admin with emrRecordsAccess: returns prescriptions for assigned patients or authored.
+ * - Clinical supervision: returns all prescriptions.
+ * - Doctor with emrRecordsAccess: returns prescriptions for assigned patients or authored.
  */
 export function getScopedPrescriptions(
   currentUser: User | null | undefined,
@@ -180,14 +171,13 @@ export function getScopedPrescriptions(
     );
   }
 
-
-  // 3. Staff without EMR Records Access: strictly forbidden
+  // 2. Staff without EMR Records Access: strictly forbidden
   if (!hasCapability(currentUser, 'emrRecordsAccess', modules)) {
     return [];
   }
 
-  // 3. Admin view
-  if (isAdmin(currentUser, modules)) {
+  // 3. Clinical supervision: read-only oversight across all prescriptions
+  if (hasCapability(currentUser, 'clinicalSupervision', modules)) {
     if (activeDoctorId && activeDoctorId !== 'all') {
       return prescriptions.filter((rx) => {
         const assignedDocId = getAssignedDoctorId(rx.patientId, assignments);
@@ -200,7 +190,7 @@ export function getScopedPrescriptions(
     return prescriptions;
   }
 
-  // 4. Non-admin with EMR Records Access: assigned patients or authored prescriptions
+  // 4. Doctor with EMR Records Access: assigned patients or authored prescriptions
   let scoped = prescriptions.filter((rx) => canViewPrescription(currentUser, rx, assignments, modules));
   if (activeDoctorId && activeDoctorId !== 'all') {
     scoped = scoped.filter((rx) => {

@@ -283,6 +283,7 @@ export type StandardCapability =
   | 'patientCheckIn'
   | 'paymentRecording'
   | 'attendanceManagement'
+  | 'clinicalSupervision'
   | (string & {});
 
 export interface AccessModule {

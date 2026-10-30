@@ -23,7 +23,7 @@ import { generateDemoScenario } from './demoScenario';
 export { generateDemoScenario };
 import { ROLE_CREDENTIALS } from './mockData';
 import { INITIAL_FORMULARY } from './formularySeed';
-import { InAppNotification } from '../types';
+import { InAppNotification, AccessModule, StaffAccessRecord, AccessAuditLogEntry } from '../types';
 
 export const INITIAL_NOTIFICATIONS: InAppNotification[] = [
   {
@@ -379,7 +379,7 @@ export async function runStorageMigrations(fromVersion: number, toVersion: numbe
     }
 
     // Update settings schema version
-    setStorageSettings({ schemaVersion: toVersion });
+    setStorageSettings({ schemaVersion: Math.min(toVersion, 2) });
 
     // Record audit in ledger
     const repoLedger = getRepository<any>('ledger');
@@ -389,9 +389,141 @@ export async function runStorageMigrations(fromVersion: number, toVersion: numbe
       action: 'schema_migration',
       subject: 'Storage Schema Migration',
       role: 'system',
-      details: `Storage schema upgraded from version ${fromVersion} to version ${toVersion}.`,
+      details: `Storage schema upgraded from version ${fromVersion} to version 2.`,
       authorizedBy: 'System Migration',
     });
+  }
+
+  if (fromVersion < 3) {
+    const repoRoles = getRepository<AccessModule>('roles');
+    const repoStaff = getRepository<StaffAccessRecord>('staff');
+    const repoAccounts = getRepository<Account>('accounts');
+    const repoLedger = getRepository<AccessAuditLogEntry>('ledger');
+
+    const roles = await repoRoles.list();
+    const staff = await repoStaff.list();
+    const accounts = await repoAccounts.list();
+
+    const adminRole = roles.find((r) => r.id === 'mod-admin');
+    const hasNonDoctorAdmin = adminRole?.memberIds?.some((mid) => {
+      const s = staff.find((st) => st.id === mid);
+      return s && s.role !== 'md' && s.role !== 'doctor';
+    });
+
+    if (!hasNonDoctorAdmin) {
+      // 1. Ensure mod-lead-physician exists
+      let leadPhysicianRole = roles.find((r) => r.id === 'mod-lead-physician');
+      if (!leadPhysicianRole) {
+        leadPhysicianRole = {
+          id: 'mod-lead-physician',
+          name: 'Lead Physician',
+          description: 'Supervisory clinical oversight, queue inspection across all doctors, and patient care transfers',
+          accessIds: ['clinicalSupervision'],
+          memberIds: ['acc-doc-1'],
+          isSystem: true,
+          createdBy: 'System Migration',
+          createdAt: new Date().toISOString(),
+        };
+        roles.push(leadPhysicianRole);
+      } else if (!leadPhysicianRole.memberIds.includes('acc-doc-1')) {
+        leadPhysicianRole.memberIds.push('acc-doc-1');
+      }
+
+      // 2. Remove Dr. Vance from Administration role
+      if (adminRole) {
+        adminRole.memberIds = adminRole.memberIds.filter((id) => id !== 'acc-doc-1');
+        if (!adminRole.memberIds.includes('acc-adm-1')) {
+          adminRole.memberIds.push('acc-adm-1');
+        }
+      }
+
+      // 3. Update Dr. Vance staff record
+      const vanceStaff = staff.find((s) => s.id === 'acc-doc-1');
+      if (vanceStaff) {
+        vanceStaff.isOriginalAdmin = false;
+        vanceStaff.moduleIds = (vanceStaff.moduleIds || ['mod-clinical']).filter((m) => m !== 'mod-admin');
+        if (!vanceStaff.moduleIds.includes('mod-lead-physician')) {
+          vanceStaff.moduleIds.push('mod-lead-physician');
+        }
+        if (vanceStaff.permissions) {
+          vanceStaff.permissions = vanceStaff.permissions.filter(
+            (p) => p.id !== 'perm-admin' && p.id !== 'perm-attendance'
+          );
+          if (!vanceStaff.permissions.some((p) => p.id === 'perm-supervision')) {
+            vanceStaff.permissions.push({
+              id: 'perm-supervision',
+              name: 'Clinical Supervision',
+              description: 'Read-only view of every doctor\'s worklist, patients, visits and prescriptions, plus transferring patients',
+              enabled: true,
+            });
+          }
+        }
+      }
+
+      // 4. Add demo administrator account if not present
+      let adminAccount = accounts.find((a) => a.id === 'acc-adm-1' || a.username === 'admin');
+      if (!adminAccount) {
+        adminAccount = {
+          id: 'acc-adm-1',
+          username: 'admin',
+          email: 'admin@beaconclinic.com',
+          fullName: 'Meera Krishnan',
+          phone: '+1 (555) 100-4001',
+          role: 'admin',
+          passwordHash: '937cb65361af5b57f891f304b37f4da4be2fe8e79e657a46ff8d8b5c74592347',
+          passwordSalt: '07906dd9617d8509c92aa3761d728546',
+          passwordIterations: 100000,
+          status: 'active',
+          failedLoginAttempts: 0,
+          lockedUntil: null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        accounts.push(adminAccount);
+      }
+
+      // 5. Add demo administrator staff record if not present
+      let adminStaff = staff.find((s) => s.id === 'acc-adm-1' || s.badgeNumber === 'ADM-001');
+      if (!adminStaff) {
+        adminStaff = {
+          id: 'acc-adm-1',
+          role: 'admin',
+          staffName: 'Meera Krishnan',
+          staffTitle: 'Clinic Administrator',
+          department: 'Administration',
+          badgeNumber: 'ADM-001',
+          status: 'granted',
+          isOriginalAdmin: true,
+          moduleIds: ['mod-admin'],
+          lastUpdated: new Date().toISOString(),
+          updatedBy: 'System Migration',
+          reason: 'Original Clinic Administrator and Governance Lead',
+          permissions: [
+            { id: 'perm-admin', name: 'Administrative Access', description: 'Clinic administrator governance, staff management and security ledger authority', enabled: true },
+            { id: 'perm-attendance', name: 'Attendance Management', description: 'View staff attendance, manage shifts, approve leave, and correct records', enabled: true },
+          ],
+        };
+        staff.push(adminStaff);
+      } else {
+        adminStaff.isOriginalAdmin = true;
+      }
+
+      await repoRoles.replaceAll(roles);
+      await repoStaff.replaceAll(staff);
+      await repoAccounts.replaceAll(accounts);
+
+      await repoLedger.create({
+        id: `audit-migration-admin-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        action: 'schema_migration',
+        subject: 'Administrator Role Separation',
+        role: 'system',
+        details: 'Separated administrator access model. Provisioned Lead Physician role and Clinic Administrator account.',
+        authorizedBy: 'System Migration',
+      });
+    }
+
+    setStorageSettings({ schemaVersion: toVersion });
   }
 }
 

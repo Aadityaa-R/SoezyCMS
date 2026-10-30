@@ -546,9 +546,11 @@ export function calculateDashboardMetrics(
       { label: 'New Patients', value: scopedNewPatientsCount },
       { label: 'Visits', value: rangeVisitsCompleted.length },
       { label: 'Appointments', value: rangeAppointmentsActive.length },
-      { label: 'Missed Appointments', value: rangeMissedAppointments.length },
-      { label: 'Staff present', value: staffPresentNowCount }
+      { label: 'Missed Appointments', value: rangeMissedAppointments.length }
     );
+    if (hasAttendance || userIsAdmin) {
+      summaryFigures.push({ label: 'Staff present', value: staffPresentNowCount });
+    }
   } else if (hasRegistration || hasCheckIn) {
     // Front desk: appointment figures only.
     summaryFigures.push(

@@ -57,6 +57,11 @@ export const ACCESS_CATALOG: AccessItem[] = [
     label: 'Attendance Management',
     description: 'View clinic-wide staff attendance, approve or reject leave, set staff shifts, and correct attendance records.',
   },
+  {
+    id: 'clinicalSupervision',
+    label: 'Clinical Supervision',
+    description: 'Read-only view of every doctor\'s worklist, patients, visits and prescriptions, plus transferring patients.',
+  },
 ];
 
 export function registerCustomAccess(item: AccessItem): void {
@@ -72,4 +77,3 @@ export function getAccessItem(id: StandardCapability | string): AccessItem | und
 export function isValidAccessId(id: string): id is StandardCapability {
   return ACCESS_CATALOG.some((item) => item.id === id);
 }
-

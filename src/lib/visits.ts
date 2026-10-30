@@ -1,5 +1,5 @@
 import { Visit, Patient, Appointment, User, AccessModule, PatientAssignment } from '@/types';
-import { getAssignedDoctorId, isAdmin } from './permissions';
+import { getAssignedDoctorId, hasCapability } from './permissions';
 import { isSameStaff } from './staffIds';
 
 /**
@@ -93,7 +93,13 @@ export function getScopedVisits(
       .map((v) => ({ ...v, notes: undefined })); // Notes stay doctor-only
   }
 
-  if (isAdmin(currentUser, modules) || currentUser.role === 'receptionist') {
+  // Non-EMR staff (administrators / receptionists) see visits with notes redacted
+  if (!hasCapability(currentUser, 'emrRecordsAccess', modules)) {
+    return visits.map((v) => ({ ...v, notes: undefined }));
+  }
+
+  // Clinical supervision: full oversight across all visits
+  if (hasCapability(currentUser, 'clinicalSupervision', modules)) {
     return visits;
   }
 

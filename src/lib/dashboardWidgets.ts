@@ -63,7 +63,6 @@ export const DASHBOARD_WIDGET_REGISTRY: DashboardWidgetDef[] = [
     id: 'today_appointments',
     title: "Today's Appointments",
     requiredAccesses: [
-      'administrativeAccess',
       'consultationWorkstation',
       'patientCheckIn',
       'patientRegistration',
@@ -119,11 +118,6 @@ export function canViewWidget(
 
   if (widget.requiredAccesses.length === 0) {
     // Available to all staff accounts
-    return true;
-  }
-
-  // Administrator qualifies for all widgets
-  if (isAdmin(user, modules)) {
     return true;
   }
 

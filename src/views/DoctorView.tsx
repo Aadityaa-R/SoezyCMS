@@ -42,7 +42,6 @@ import {
   canTransferPatient,
   getAssignedDoctorId,
   hasCapability,
-  isAdmin,
   canPrescribe,
   canCancelPrescription,
   isDoctorStaff,
@@ -52,7 +51,7 @@ import {
   getScopedAppointments,
   getScopedPrescriptions,
 } from '@/lib/selectors';
-import { resolveDoctorId } from '@/lib/staffIds';
+import { resolveDoctorId, isSameStaff } from '@/lib/staffIds';
 import { isDoctorAvailable } from '@/lib/availability';
 import { focusIfKeyboard } from '@/lib/inputMode';
 import {
@@ -107,7 +106,7 @@ export const deduplicateList = (items?: (string | null | undefined)[]): string[]
 };
 
 export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview', isReadOnlyView: isReadOnlyProp }) => {
-  const { currentUser, currentRole, addAuditLogEntry } = useAuth();
+  const { currentUser, addAuditLogEntry } = useAuth();
   const [selectedTab, setSelectedTab] = useState<string>(activeTab || 'overview');
 
   useEffect(() => {
@@ -136,23 +135,20 @@ export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview', 
     addVisit,
   } = useClinic();
 
-  const isMD = isAdmin(currentUser) || currentRole === 'md' || currentRole === 'admin';
+  const hasSupervision = hasCapability(currentUser, 'clinicalSupervision', modules);
 
-  // Active doctor queue selection (defaults to doc-1 Marcus Vance for MD, doc-2 Nathan Hayes for staff doctor)
+  // Active doctor queue selection (defaults to current staff doctor, or doc-1 if supervisor)
+  const defaultDocId = resolveDoctorId(currentUser) || 'doc-1';
   const [activeDoctorId, setActiveDoctorId] = useState<string>(() => {
-    if (currentRole === 'doctor') return 'doc-2';
-    return 'doc-1';
+    return defaultDocId;
   });
 
-  const isReadOnlyView = Boolean(isReadOnlyProp || currentRole === 'md' || currentRole === 'admin' || isAdmin(currentUser));
-
   useEffect(() => {
-    if (currentRole === 'doctor') {
-      setActiveDoctorId('doc-2');
-    } else if (currentRole === 'md' || currentRole === 'admin') {
-      setActiveDoctorId('doc-1');
+    const docId = resolveDoctorId(currentUser);
+    if (docId) {
+      setActiveDoctorId(docId);
     }
-  }, [currentRole]);
+  }, [currentUser]);
 
   const activeDoctor = doctors.find((d) => d.id === activeDoctorId) || doctors[0];
   const doctorAppointments = useMemo(() => {
@@ -204,6 +200,13 @@ export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview', 
     null;
   const activePatient = activeAppointment ? patients.find((p) => p.id === activeAppointment.patientId) : null;
   const activeVitals = activePatient ? vitals.find((v) => v.patientId === activePatient.id) : null;
+
+  const isDocStaff = isDoctorStaff(currentUser);
+  const assignedDocId = activePatient ? getAssignedDoctorId(activePatient.id, patientAssignments) : null;
+  const isAssignedDoctor = Boolean(assignedDocId && currentUser && isSameStaff(assignedDocId, currentUser));
+  const isAttendingDoctor = Boolean(activeAppointment?.doctorId && currentUser && isSameStaff(activeAppointment.doctorId, currentUser));
+  const canEditConsultation = isDocStaff && (isAssignedDoctor || isAttendingDoctor) && hasCapability(currentUser, 'consultationWorkstation', modules);
+  const isReadOnlyView = Boolean(isReadOnlyProp || !canEditConsultation);
 
   const isVitalsReadOnly = isReadOnlyView || !isDoctorStaff(currentUser);
 
@@ -1700,7 +1703,7 @@ export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview', 
                           <Button
                             size="sm"
                             variant="secondary"
-                            disabled={!canPrescribe(currentUser, activePatient.id, patientAssignments, modules, activeAppointment?.doctorId) && !isMD}
+                            disabled={!canPrescribe(currentUser, activePatient.id, patientAssignments, modules, activeAppointment?.doctorId)}
                             onClick={async () => {
                               flushSave().catch(() => {});
                               handleOpenPrescriptionModal(activePatient.id);
@@ -1761,7 +1764,7 @@ export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview', 
                   <div className="min-w-0">
                     <div className="flex items-center gap-2.5 flex-wrap">
                       <span className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 uppercase tracking-tight">
-                        {isMD ? 'MD Clinical Queue Inspector' : 'Doctor Clinical Queue Inspector'}
+                        {hasSupervision ? 'Clinical Queue Inspector' : 'Doctor Clinical Queue Inspector'}
                       </span>
                       <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-0.5 rounded-full">
                         {filteredAppointments.length} on {activeDoctor.name}&apos;s Worklist
@@ -1784,7 +1787,7 @@ export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview', 
                     </div>
 
                     {/* Attending Physician Worklist Selector or Filter Scope */}
-                    {isMD ? (
+                    {hasSupervision ? (
                       <div className="w-full sm:w-68">
                         <Select
                           icon={<Filter className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" />}
@@ -2002,9 +2005,7 @@ export const DoctorView: React.FC<DoctorViewProps> = ({ activeTab = 'overview', 
                         : null;
 
                       const isUnassigned = !assignedDocId;
-                      const canTransfer = isUnassigned
-                        ? isAdmin(currentUser)
-                        : canTransferPatient(currentUser, pat.id, patientAssignments);
+                      const canTransfer = canTransferPatient(currentUser, pat.id, patientAssignments, modules);
 
                       const patientActions: RowActionItem[] = [];
 

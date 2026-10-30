@@ -39,6 +39,8 @@ export const CAPABILITY_ALIAS_MAP: Record<string, StandardCapability> = {
   'paymentRecording': 'paymentRecording',
   'perm-attendance': 'attendanceManagement',
   'attendanceManagement': 'attendanceManagement',
+  'perm-supervision': 'clinicalSupervision',
+  'clinicalSupervision': 'clinicalSupervision',
   'booking': 'patientCheckIn',
   'perm-pat-booking': 'patientCheckIn',
   'patientBooking': 'patientCheckIn',
@@ -186,11 +188,9 @@ export function getEffectiveAccesses(
     }
   }
 
-  // The original MD always retains administrativeAccess while account is active
-  const isOriginalMD =
-    ('isOriginalAdmin' in user && Boolean(user.isOriginalAdmin)) ||
-    resolveStaffId(user) === CANONICAL_STAFF_IDS.VANCE;
-  if (isOriginalMD) {
+  // The original administrator always retains administrativeAccess while account is active
+  const isOriginal = Boolean(user && 'isOriginalAdmin' in user && user.isOriginalAdmin);
+  if (isOriginal) {
     accessSet.add('administrativeAccess');
   }
 
@@ -462,12 +462,12 @@ export function canViewPatient(
     return true;
   }
 
-  // Admins see all patients clinic-wide
-  if (isAdmin(user, modules)) {
+  // Clinical supervision grants read-only oversight across all patients
+  if (hasCapability(user, 'clinicalSupervision', modules)) {
     return true;
   }
 
-  // Non-admins with EMR Records Access require active assignment to this patient
+  // Doctors with EMR Records Access require active assignment to this patient
   const assignedDocId = getAssignedDoctorId(patientId, assignments);
   if (!assignedDocId) return false;
 
@@ -494,10 +494,13 @@ export function canViewVisit(
     );
   }
 
-  if (isAdmin(user, modules)) return true;
-
-  // Front desk staff without EMR Records Access view appointment scheduling metadata
+  // Front desk and administrative staff without EMR Records Access view appointment scheduling metadata
   if (!hasCapability(user, 'emrRecordsAccess', modules)) {
+    return true;
+  }
+
+  // Clinical supervision grants oversight across all visits
+  if (hasCapability(user, 'clinicalSupervision', modules)) {
     return true;
   }
 
@@ -514,7 +517,7 @@ export function canViewVisit(
 /**
  * Determines if a user can view a specific prescription.
  * - Receptionists and staff without EMR Records Access never see prescriptions.
- * - Admins see all prescriptions.
+ * - Clinical supervision grants read-only oversight across all prescriptions.
  * - Doctors see prescriptions for assigned patients or authored prescriptions.
  * - Patients see only their own prescriptions.
  */
@@ -535,14 +538,17 @@ export function canViewPrescription(
     );
   }
 
-  if (isAdmin(user, modules)) return true;
-
   // Staff without EMR access never view prescriptions
   if (!hasCapability(user, 'emrRecordsAccess', modules)) {
     return false;
   }
 
-  // Non-admin with EMR: current doctor or author
+  // Clinical supervision grants oversight of all prescriptions
+  if (hasCapability(user, 'clinicalSupervision', modules)) {
+    return true;
+  }
+
+  // Doctor with EMR: current doctor or author
   const assignedDocId = getAssignedDoctorId(rx.patientId, assignments);
   if (assignedDocId && isSameStaff(assignedDocId, user)) return true;
 
@@ -555,11 +561,12 @@ export function canViewPrescription(
 /**
  * Determines whether a user can prescribe medications for a given patient.
  *
- * Rules (Milestone M8):
+ * Rules (Milestone M8 & M15):
  * - Must be a staff doctor (isDoctorStaff).
  * - Must possess Prescription Authoring (prescriptionAuthoring).
  * - Must possess EMR Records Access (emrRecordsAccess).
  * - Must be the physician assigned to the patient.
+ * - Administrators and clinical supervision are strictly read-only and cannot prescribe without assignment.
  */
 export function canPrescribe(
   user: User | null | undefined,
@@ -572,9 +579,6 @@ export function canPrescribe(
   if (!isDoctorStaff(user)) return false;
   if (!hasCapability(user, 'prescriptionAuthoring', modules)) return false;
   if (!hasCapability(user, 'emrRecordsAccess', modules)) return false;
-
-  // Managing Directors and clinic administrators can prescribe for any patient
-  if (isAdmin(user, modules) || user.role === 'md') return true;
 
   // Attending physician conducting the visit can prescribe
   if (attendingDoctorId && isSameStaff(attendingDoctorId, user)) return true;
@@ -611,8 +615,8 @@ export function canCancelPrescription(
 
 /**
  * Determines if a user can transfer a patient to another physician.
- * - Admins can transfer any patient.
- * - Doctor can transfer only patients currently assigned to them.
+ * - Allowed for the current doctor, anyone with administrativeAccess, and clinicalSupervision.
+ * - Reception cannot.
  */
 export function canTransferPatient(
   user: User | null | undefined,
@@ -621,7 +625,15 @@ export function canTransferPatient(
   modules: AccessModule[] = INITIAL_MODULES
 ): boolean {
   if (!user) return false;
-  if (isAdmin(user, modules)) return true;
+  if (user.role === 'receptionist') return false;
+
+  if (hasCapability(user, 'administrativeAccess', modules) || isAdmin(user, modules)) {
+    return true;
+  }
+
+  if (hasCapability(user, 'clinicalSupervision', modules)) {
+    return true;
+  }
 
   const assignedDocId = getAssignedDoctorId(patientId, assignments);
   if (!assignedDocId) return false;
@@ -816,14 +828,16 @@ export function canRemoveMember(
   }
 
   if (isAdministration) {
-    const isOriginal =
-      ('isOriginalAdmin' in staffMember && Boolean(staffMember.isOriginalAdmin)) ||
-      resolveStaffId(staffMember) === CANONICAL_STAFF_IDS.VANCE;
+    const isOriginal = Boolean(
+      staffMember &&
+      'isOriginalAdmin' in staffMember &&
+      staffMember.isOriginalAdmin
+    );
 
     if (isOriginal) {
       return {
         allowed: false,
-        reason: 'Original Managing Director cannot be removed from the Administration module.',
+        reason: 'Original administrator cannot be removed from the Administration module.',
       };
     }
 
@@ -836,7 +850,7 @@ export function canRemoveMember(
         s.status !== 'revoked' &&
         ((adminModule && adminModule.memberIds.some((mid) => resolveStaffIds(s).includes(mid))) ||
           s.moduleIds?.includes('mod-admin') ||
-          resolveStaffId(s) === CANONICAL_STAFF_IDS.VANCE)
+          Boolean(s.isOriginalAdmin))
     );
 
     const activeAdminMemberCount = Math.max(
@@ -874,14 +888,11 @@ export function canDeleteStaff(
     return { allowed: false, reason: 'Only administrators can delete staff accounts.' };
   }
 
-  // Original MD protection
-  if (
-    target.isOriginalAdmin ||
-    resolveStaffId(target) === CANONICAL_STAFF_IDS.VANCE
-  ) {
+  // Original administrator protection
+  if (target.isOriginalAdmin) {
     return {
       allowed: false,
-      reason: 'Original Managing Director account cannot be deleted.',
+      reason: 'Original administrator account cannot be deleted.',
     };
   }
 

@@ -15,6 +15,7 @@ export const CANONICAL_STAFF_IDS = {
   REED: 'acc-doc-3',
   SHARMA: 'acc-rec-1',
   KIM: 'acc-rec-2',
+  KRISHNAN: 'acc-adm-1',
 } as const;
 
 export type CanonicalStaffId = typeof CANONICAL_STAFF_IDS[keyof typeof CANONICAL_STAFF_IDS] | string;
@@ -114,6 +115,18 @@ export function resolveStaffId(
     raw === 'receptionist2'
   ) {
     return CANONICAL_STAFF_IDS.KIM;
+  }
+
+  // 6. Meera Krishnan (Clinic Administrator)
+  if (
+    raw === 'acc-adm-1' ||
+    raw === 'usr-adm-1' ||
+    raw === 'ADM-001' ||
+    raw.toLowerCase() === 'admin@beaconclinic.com' ||
+    raw.toLowerCase() === 'm.krishnan@beaconclinic.com' ||
+    raw === 'admin'
+  ) {
+    return CANONICAL_STAFF_IDS.KRISHNAN;
   }
 
   // Explicitly reject patient IDs
