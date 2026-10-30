@@ -470,7 +470,7 @@ export async function runStorageMigrations(fromVersion: number, toVersion: numbe
           fullName: 'Meera Krishnan',
           phone: '+1 (555) 100-4001',
           role: 'admin',
-          passwordHash: '937cb65361af5b57f891f304b37f4da4be2fe8e79e657a46ff8d8b5c74592347',
+          passwordHash: 'a74c278958ce4a094a823c748e07ccf41d49dcfae96df97b68921c812bf7c1eb',
           passwordSalt: '07906dd9617d8509c92aa3761d728546',
           passwordIterations: 100000,
           status: 'active',
@@ -480,6 +480,10 @@ export async function runStorageMigrations(fromVersion: number, toVersion: numbe
           updatedAt: new Date().toISOString(),
         };
         accounts.push(adminAccount);
+      } else if (adminAccount.passwordHash === '937cb65361af5b57f891f304b37f4da4be2fe8e79e657a46ff8d8b5c74592347') {
+        adminAccount.passwordHash = 'a74c278958ce4a094a823c748e07ccf41d49dcfae96df97b68921c812bf7c1eb';
+        adminAccount.failedLoginAttempts = 0;
+        adminAccount.lockedUntil = null;
       }
 
       // 5. Add demo administrator staff record if not present
@@ -533,6 +537,24 @@ export async function seedInitialData(force = false): Promise<void> {
     const currentVersion = settings.schemaVersion || 1;
     if (currentVersion < SCHEMA_VERSION) {
       await runStorageMigrations(currentVersion, SCHEMA_VERSION);
+    }
+    // Self-heal demo admin account credentials if seeded with legacy hash
+    try {
+      const repoAccounts = getRepository<Account>('accounts');
+      const accounts = await repoAccounts.list();
+      const adminAcc = accounts.find((a) => a.username === 'admin');
+      if (adminAcc && adminAcc.passwordHash === '937cb65361af5b57f891f304b37f4da4be2fe8e79e657a46ff8d8b5c74592347') {
+        adminAcc.passwordHash = 'a74c278958ce4a094a823c748e07ccf41d49dcfae96df97b68921c812bf7c1eb';
+        adminAcc.failedLoginAttempts = 0;
+        adminAcc.lockedUntil = null;
+        await repoAccounts.update(adminAcc.id, {
+          passwordHash: adminAcc.passwordHash,
+          failedLoginAttempts: 0,
+          lockedUntil: null,
+        });
+      }
+    } catch {
+      // Ignore
     }
     return;
   }

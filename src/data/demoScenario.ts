@@ -43,7 +43,7 @@ export interface DemoScenarioData {
 // Precomputed PBKDF2 hashes for seed accounts (iterations: 100000)
 const SEED_ACCOUNT_HASHES: Record<string, { hash: string; salt: string; iterations: number }> = {
   admin: {
-    hash: '937cb65361af5b57f891f304b37f4da4be2fe8e79e657a46ff8d8b5c74592347',
+    hash: 'a74c278958ce4a094a823c748e07ccf41d49dcfae96df97b68921c812bf7c1eb',
     salt: '07906dd9617d8509c92aa3761d728546',
     iterations: 100000,
   },
