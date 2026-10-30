@@ -182,14 +182,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
               alt={BRAND_CONFIG.hospitalName}
               className="h-8 w-auto object-contain select-none shrink-0"
             />
-            <div className="hidden sm:flex flex-col justify-center min-w-0">
-              <span className="font-bold text-xs tracking-tight text-white truncate leading-tight">
-                {BRAND_CONFIG.hospitalName}
-              </span>
-              <span className="text-[10px] text-slate-300 font-medium tracking-tight truncate leading-tight">
-                {BRAND_CONFIG.subTitle}
-              </span>
-            </div>
+            {BRAND_CONFIG.showHeaderHospitalTitle && (
+              <div className="hidden sm:flex flex-col justify-center min-w-0">
+                <span className="font-bold text-xs tracking-tight text-white truncate leading-tight">
+                  {BRAND_CONFIG.hospitalName}
+                </span>
+                <span className="text-[10px] text-slate-300 font-medium tracking-tight truncate leading-tight">
+                  {BRAND_CONFIG.subTitle}
+                </span>
+              </div>
+            )}
           </button>
         </div>
 

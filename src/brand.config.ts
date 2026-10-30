@@ -10,6 +10,7 @@ export interface BrandConfig {
   topBarBg: string;
   topBarBorder: string;
   showHeaderUserBlock: boolean;
+  showHeaderHospitalTitle: boolean;
 }
 
 export const BRAND_CONFIG: BrandConfig = {
@@ -24,4 +25,5 @@ export const BRAND_CONFIG: BrandConfig = {
   topBarBg: '#28465a',
   topBarBorder: '#1e3545',
   showHeaderUserBlock: true,
+  showHeaderHospitalTitle: false,
 };
