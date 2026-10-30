@@ -3,8 +3,6 @@ import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useSidebar } from '@/context/SidebarContext';
 import {
-  Menu,
-  X,
   Bell,
   User,
   Building2,
@@ -12,6 +10,8 @@ import {
   CheckCircle2,
   Sun,
   Moon,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
@@ -87,24 +87,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
       >
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
           {/* Brand / Logo & Clinic Title */}
-          <div className="flex items-center gap-3">
-            {/* Mobile menu toggle (drawer on mobile only) */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Sidebar Collapse Toggle Button */}
             <button
               type="button"
               data-sidebar-ignore-outside="true"
               onClick={onToggleSidebar || toggleSidebar}
-              className={`w-9 h-9 flex items-center justify-center rounded-lg lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 ${
-                isSidebarOpen
-                  ? 'bg-white/20 text-white'
-                  : 'text-slate-200 hover:bg-white/10 hover:text-white'
-              }`}
-              title={isSidebarOpen ? 'Close menu' : 'Open menu'}
-              aria-label={isSidebarOpen ? 'Close menu' : 'Open menu'}
+              className="w-10 h-10 flex items-center justify-center rounded-xl cursor-pointer shrink-0 text-slate-300 hover:text-white hover:bg-white/10 transition-colors outline-none focus:outline-none focus:ring-0"
+              title={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+              aria-label={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+              aria-expanded={isSidebarOpen}
+              aria-controls="sidebar-navigation"
             >
-              {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isSidebarOpen ? (
+                <PanelLeftClose className="w-5 h-5 text-slate-200" />
+              ) : (
+                <PanelLeftOpen className="w-5 h-5 text-slate-300" />
+              )}
             </button>
 
-            {/* SOEZY Logo & Hospital Name */}
+            {/* SOEZY Logo */}
             <button
               type="button"
               onClick={() => onNavigate?.('dashboard')}
