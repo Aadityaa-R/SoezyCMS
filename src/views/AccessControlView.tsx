@@ -417,7 +417,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
 
   // Directly Add Staff Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [addFormRole, setAddFormRole] = useState<'doctor' | 'receptionist'>('doctor');
+  const [addFormRole, setAddFormRole] = useState<'doctor' | 'receptionist' | 'admin'>('doctor');
   const [addFormName, setAddFormName] = useState('');
   const [addFormTitle, setAddFormTitle] = useState('');
   const [addFormDepartment, setAddFormDepartment] = useState('');
@@ -440,7 +440,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
   };
 
   // Unified Add User Modal & Steps
-  const [addUserStep, setAddUserStep] = useState<'select_type' | 'doctor' | 'receptionist' | 'patient'>('select_type');
+  const [addUserStep, setAddUserStep] = useState<'select_type' | 'doctor' | 'receptionist' | 'admin' | 'patient'>('select_type');
 
   // Patient Registration Form State
   const [regFirstName, setRegFirstName] = useState('');
@@ -536,7 +536,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
   // Personnel clearance handlers
 
   const handleGrant = (id: string, name: string) => {
-    grantStaffAccess(id, 'Access clearance authorized by Managing Director');
+    grantStaffAccess(id, 'Access clearance authorized by Clinic Administrator');
     showNotification(`Access granted for ${name}. Workstation credentials restored.`);
   };
 
@@ -552,7 +552,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
         return;
       }
     }
-    revokeStaffAccess(id, 'Station credentials suspended by Managing Director executive order');
+    revokeStaffAccess(id, 'Station credentials suspended by Clinic Administrator order');
     showNotification(`Access revoked for ${name}. Workstation credentials suspended.`);
   };
 
@@ -582,7 +582,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
     const targetName = deleteTarget.staffName;
     const targetId = deleteTarget.id;
 
-    deleteStaffAccount(targetId, `Account permanently deleted and purged from clinic directory by Managing Director`);
+    deleteStaffAccount(targetId, `Account permanently deleted and purged from clinic directory by Clinic Administrator`);
 
     if (selectedStaffId === targetId) {
       performCloseConsole();
@@ -769,8 +769,8 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
       badgeNumber: req.badgeNumber,
       status: 'granted',
       lastUpdated: timestamp,
-      updatedBy: currentUser?.name || 'Dr. Marcus Vance (Managing Director)',
-      reason: 'Onboarding application authorized by Managing Director',
+      updatedBy: currentUser?.name || 'Meera Krishnan (Clinic Administrator)',
+      reason: 'Onboarding application authorized by Clinic Administrator',
       moduleIds: [defaultModuleId],
       permissions:
         req.role === 'doctor'
@@ -835,7 +835,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
       targetUserId: req.badgeNumber,
       action: 'clearance_approved',
       description: `Onboarding clearance approved for ${req.staffName}. Added to default module: ${defaultModuleName}.`,
-      authorizedBy: currentUser?.name || 'Dr. Marcus Vance (Managing Director)',
+      authorizedBy: currentUser?.name || 'Meera Krishnan (Clinic Administrator)',
     });
 
     showNotification({
@@ -868,9 +868,9 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
       action: 'clearance_rejected',
       description:
         reason && reason.trim()
-          ? `Onboarding clearance rejected by Managing Director: ${reason.trim()}`
-          : 'Onboarding clearance rejected by Managing Director',
-      authorizedBy: 'Dr. Marcus Vance (Managing Director)',
+          ? `Onboarding clearance rejected by Clinic Administrator: ${reason.trim()}`
+          : 'Onboarding clearance rejected by Clinic Administrator',
+      authorizedBy: currentUser?.name || 'Meera Krishnan (Clinic Administrator)',
     });
     setPendingApprovals((prev) => prev.filter((p) => p.id !== req.id));
 
@@ -918,20 +918,28 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
 
     const assignedBadge =
       addFormBadge.trim() ||
-      (addFormRole === 'doctor'
+      (addFormRole === 'admin'
+        ? `ADM-${100 + staffAccessList.filter((s) => s.role === 'admin').length + 1}`
+        : addFormRole === 'doctor'
         ? `DOC-${100 + staffAccessList.filter((s) => s.role === 'doctor').length + 1}`
         : `REC-${300 + staffAccessList.filter((s) => s.role === 'receptionist').length + 1}`);
 
     const assignedTitle =
       addFormTitle.trim() ||
-      (addFormRole === 'doctor' ? 'Staff Consulting Physician' : 'Front Desk Workstation Coordinator');
+      (addFormRole === 'admin'
+        ? 'Clinic Administrator'
+        : addFormRole === 'doctor'
+        ? 'Staff Consulting Physician'
+        : 'Front Desk Workstation Coordinator');
 
     const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
     const savedName = addFormName.trim();
     const savedRole = addFormRole;
 
-    const defaultModuleId = addFormRole === 'doctor' ? 'mod-clinical' : 'mod-frontdesk';
-    const defaultModuleName = addFormRole === 'doctor' ? 'Clinical' : 'Front Desk';
+    const defaultModuleId =
+      addFormRole === 'admin' ? 'mod-admin' : addFormRole === 'doctor' ? 'mod-clinical' : 'mod-frontdesk';
+    const defaultModuleName =
+      addFormRole === 'admin' ? 'Administration' : addFormRole === 'doctor' ? 'Clinical' : 'Front Desk';
 
     const newRecord: StaffAccessRecord = {
       id: `acc-${addFormRole}-${Date.now()}`,
@@ -942,18 +950,23 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
       badgeNumber: assignedBadge,
       status: 'granted',
       lastUpdated: timestamp,
-      updatedBy: currentUser?.name || 'Dr. Marcus Vance (Managing Director)',
-      reason: 'Directly provisioned and authorized by Managing Director',
+      updatedBy: currentUser?.name || 'Meera Krishnan (Clinic Administrator)',
+      reason: 'Directly provisioned and authorized by Clinic Administrator',
       moduleIds: [defaultModuleId],
       permissions:
-        addFormRole === 'doctor'
+        addFormRole === 'admin'
+          ? [
+              { id: 'perm-admin', name: 'Administrative Access', description: 'Clinic administrator governance, staff management and security ledger authority', enabled: true },
+              { id: 'perm-attendance', name: 'Attendance Management', description: 'View staff attendance, manage shifts, approve leave, and correct records', enabled: true },
+            ]
+          : addFormRole === 'doctor'
           ? DEFAULT_DOCTOR_PERMISSIONS
           : DEFAULT_RECEPTIONIST_PERMISSIONS,
     };
 
     addStaffAccount(
       newRecord,
-      `Directly provisioned new ${addFormRole === 'doctor' ? 'Doctor' : 'Receptionist'} account for ${savedName}. Added to default module: ${defaultModuleName}.`
+      `Directly provisioned new ${addFormRole === 'admin' ? 'Administrator' : addFormRole === 'doctor' ? 'Doctor' : 'Receptionist'} account for ${savedName}. Added to default module: ${defaultModuleName}.`
     );
 
     addMember(
@@ -1291,7 +1304,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                 ? 'System Alert:'
                 : feedbackNotification.type === 'success'
                 ? 'Update Confirmed:'
-                : 'Managing Director Directive:'}
+                : 'Clinic Administrator Directive:'}
             </span>
             <span>{feedbackNotification.message}</span>
           </div>
@@ -1597,7 +1610,9 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                                 const staffName = staff?.staffName || mid;
                                 const staffTitle = staff?.staffTitle || 'Staff Member';
                                 const staffType =
-                                  staff?.role === 'doctor'
+                                  staff?.role === 'admin'
+                                    ? 'Administrator'
+                                    : staff?.role === 'doctor'
                                     ? 'Doctor'
                                     : staff?.role === 'receptionist'
                                     ? 'Receptionist'
@@ -1943,7 +1958,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                             Clearance Status:
                           </span>
                           <span className="text-slate-700 dark:text-slate-300 font-medium">
-                            {isRevoked ? 'Suspended by Managing Director' : 'Active & Authorized'}
+                            {isRevoked ? 'Suspended by Clinic Administrator' : 'Active & Authorized'}
                           </span>
                         </div>
 
@@ -2346,8 +2361,9 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                     searchable={true}
                     searchPlaceholder="Search target role..."
                     value={addFormRole}
-                    onChange={(e) => setAddFormRole(e.target.value as 'doctor' | 'receptionist')}
+                    onChange={(e) => setAddFormRole(e.target.value as 'doctor' | 'receptionist' | 'admin')}
                     options={[
+                      { value: 'admin', label: 'Administrator / Clinic Governance' },
                       { value: 'doctor', label: 'Doctor / Consulting Physician' },
                       { value: 'receptionist', label: 'Receptionist / Front Desk Workstation' },
                     ]}
@@ -2607,7 +2623,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                             </div>
                           </TableCell>
                           <TableCell label="Authorized By" kind="short" priority={6} className="text-slate-700 dark:text-slate-300">
-                            {log.authorizedBy || 'Dr. Marcus Vance (Managing Director)'}
+                            {log.authorizedBy || 'Meera Krishnan (Clinic Administrator)'}
                           </TableCell>
                         </TableRow>
                       ))
@@ -2706,7 +2722,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
             </div>
 
             <p className="text-xs text-slate-600 dark:text-slate-400">
-              Are you sure you want to permanently delete <strong>{deleteTarget.staffName}</strong>? This action will be logged in the Managing Director Security Audit Ledger.
+              Are you sure you want to permanently delete <strong>{deleteTarget.staffName}</strong>? This action will be logged in the Security Audit Ledger.
             </p>
           </div>
         )}
@@ -2753,6 +2769,8 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
         title={
           addUserStep === 'select_type'
             ? 'Add Person'
+            : addUserStep === 'admin'
+            ? 'Directly Add Administrator'
             : addUserStep === 'doctor'
             ? 'Directly Add Doctor'
             : addUserStep === 'receptionist'
@@ -2762,6 +2780,8 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
         description={
           addUserStep === 'select_type'
             ? 'Select the category of person to provision or register.'
+            : addUserStep === 'admin'
+            ? 'Directly register and authorize a new administrator into the clinic access directory.'
             : addUserStep === 'doctor'
             ? 'Directly register and authorize a new physician into the clinic access directory.'
             : addUserStep === 'receptionist'
@@ -2831,7 +2851,21 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                 You do not have permission to provision staff or register patients.
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                {canAddStaff && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      resetAddForm();
+                      setAddFormRole('admin');
+                      setAddUserStep('admin');
+                    }}
+                    className="flex flex-col items-center justify-center p-6 border-2 border-slate-200 dark:border-slate-700 hover:border-[#00c060] dark:hover:border-emerald-500 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 hover:bg-[#00c060]/10 dark:hover:bg-emerald-950/20 transition-all font-semibold text-base min-h-[120px]"
+                  >
+                    <span className="text-base font-bold">Administrator</span>
+                    <span className="text-xs font-normal text-slate-500 dark:text-slate-400 mt-1">Directly Add Admin</span>
+                  </button>
+                )}
                 {canAddStaff && (
                   <button
                     type="button"
@@ -2878,7 +2912,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
           </div>
         )}
 
-        {(addUserStep === 'doctor' || addUserStep === 'receptionist') && (
+        {(addUserStep === 'doctor' || addUserStep === 'receptionist' || addUserStep === 'admin') && (
           <form onSubmit={handleDirectAddSubmit} className="space-y-4" noValidate>
             {addFormError && (
               <div className="p-3 bg-rose-50 dark:bg-rose-950/60 rounded-lg border border-rose-200 dark:border-rose-800 flex items-center gap-2 text-xs text-rose-800 dark:text-rose-200">
@@ -2890,7 +2924,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Input
                 label="Full Name"
-                placeholder={addUserStep === 'doctor' ? 'e.g. Dr. Julian Bashir' : 'e.g. Sarah Jenkins'}
+                placeholder={addUserStep === 'admin' ? 'e.g. Meera Krishnan' : addUserStep === 'doctor' ? 'e.g. Dr. Julian Bashir' : 'e.g. Sarah Jenkins'}
                 value={addFormName}
                 onChange={(e) => {
                   setAddFormName(e.target.value);
@@ -2900,7 +2934,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
               />
               <Input
                 label="Professional Title"
-                placeholder={addUserStep === 'doctor' ? 'e.g. Staff Consulting Physician' : 'e.g. Front Desk Workstation Coordinator'}
+                placeholder={addUserStep === 'admin' ? 'e.g. Clinic Administrator' : addUserStep === 'doctor' ? 'e.g. Staff Consulting Physician' : 'e.g. Front Desk Workstation Coordinator'}
                 value={addFormTitle}
                 onChange={(e) => setAddFormTitle(e.target.value)}
               />
@@ -2909,7 +2943,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Input
                 label="Department"
-                placeholder={addUserStep === 'doctor' ? 'e.g. Cardiology & Triage' : 'e.g. Front Desk & Admissions'}
+                placeholder={addUserStep === 'admin' ? 'e.g. Administration' : addUserStep === 'doctor' ? 'e.g. Cardiology & Triage' : 'e.g. Front Desk & Admissions'}
                 value={addFormDepartment}
                 onChange={(e) => {
                   setAddFormDepartment(e.target.value);
@@ -2919,7 +2953,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
               />
               <Input
                 label="Badge / Staff ID Number"
-                placeholder={addUserStep === 'doctor' ? 'e.g. DOC-105' : 'e.g. REC-304'}
+                placeholder={addUserStep === 'admin' ? 'e.g. ADM-002' : addUserStep === 'doctor' ? 'e.g. DOC-105' : 'e.g. REC-304'}
                 value={addFormBadge}
                 onChange={(e) => setAddFormBadge(e.target.value)}
                 error={isBadgeDuplicate ? 'Badge ID already in use' : undefined}

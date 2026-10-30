@@ -88,9 +88,7 @@ export async function login(
     const matchRole = a.role.toLowerCase() === cleanId;
     const matchMdAlias =
       a.role === 'md' &&
-      (cleanId === 'admin' ||
-        cleanId === 'admin@beaconclinic.com' ||
-        cleanId === 'm.vance' ||
+      (cleanId === 'm.vance' ||
         cleanId === 'md');
     return matchUser || matchEmail || matchRole || matchMdAlias;
   });
@@ -103,9 +101,7 @@ export async function login(
       const matchRole = c.role.toLowerCase() === cleanId;
       const matchMdAlias =
         c.role === 'md' &&
-        (cleanId === 'admin' ||
-          cleanId === 'admin@beaconclinic.com' ||
-          cleanId === 'm.vance' ||
+        (cleanId === 'm.vance' ||
           cleanId === 'md');
       return matchUser || matchEmail || matchRole || matchMdAlias;
     });

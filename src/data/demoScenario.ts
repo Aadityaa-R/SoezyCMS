@@ -42,6 +42,11 @@ export interface DemoScenarioData {
 
 // Precomputed PBKDF2 hashes for seed accounts (iterations: 100000)
 const SEED_ACCOUNT_HASHES: Record<string, { hash: string; salt: string; iterations: number }> = {
+  admin: {
+    hash: '937cb65361af5b57f891f304b37f4da4be2fe8e79e657a46ff8d8b5c74592347',
+    salt: '07906dd9617d8509c92aa3761d728546',
+    iterations: 100000,
+  },
   md: {
     hash: 'd0bc09d4a015a6767fbf1d89f4422d920272cdb39b908f2188b9fc2d812f9762',
     salt: '0999a0ef8f7235d088c383097bacad09',
@@ -100,9 +105,23 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
   const thirtyFiveDaysAgoIso = offsetIso(-35, 11, 0);
 
   // 1. Staff Accounts & Credentials
-  // Exactly 5 staff: MD Vance, Dr. Hayes, Dr. Reed, Priya Sharma, David Kim
-  // Distinct names, no shared names with any patient
   const accounts: Account[] = [
+    {
+      id: 'acc-adm-1',
+      username: 'admin',
+      email: 'admin@beaconclinic.com',
+      fullName: 'Meera Krishnan',
+      phone: '+1 (555) 100-4001',
+      role: 'admin',
+      passwordHash: SEED_ACCOUNT_HASHES.admin.hash,
+      passwordSalt: SEED_ACCOUNT_HASHES.admin.salt,
+      passwordIterations: SEED_ACCOUNT_HASHES.admin.iterations,
+      status: 'active',
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+      createdAt: offsetIso(-180),
+      updatedAt: offsetIso(-180),
+    },
     {
       id: 'acc-md',
       username: 'md',
@@ -204,6 +223,20 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
   // 2. Staff Access Records (single source of truth for access)
   const staff: StaffAccessRecord[] = [
     {
+      id: 'acc-adm-1',
+      role: 'admin',
+      staffName: 'Meera Krishnan',
+      staffTitle: 'Clinic Administrator',
+      department: 'Administration',
+      badgeNumber: 'ADM-001',
+      status: 'granted',
+      isOriginalAdmin: true,
+      moduleIds: ['mod-admin'],
+      lastUpdated: offsetLocal(-180),
+      updatedBy: 'System Bootstrap',
+      reason: 'Original Clinic Administrator',
+    },
+    {
       id: 'acc-doc-1',
       role: 'md',
       staffName: 'Dr. Marcus Vance',
@@ -211,10 +244,11 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
       department: 'Internal Medicine & Management',
       badgeNumber: 'MD-001',
       status: 'granted',
-      isOriginalAdmin: true,
+      isOriginalAdmin: false,
+      moduleIds: ['mod-clinical', 'mod-lead-physician'],
       lastUpdated: offsetLocal(-180),
       updatedBy: 'System Bootstrap',
-      reason: 'Original Managing Director and Clinic Administrator',
+      reason: 'Managing Director and Lead Physician',
     },
     {
       id: 'acc-doc-2',
@@ -225,7 +259,7 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
       badgeNumber: 'DOC-102',
       status: 'granted',
       lastUpdated: offsetLocal(-150),
-      updatedBy: 'Dr. Marcus Vance',
+      updatedBy: 'Meera Krishnan (Clinic Administrator)',
       reason: 'Active consulting clinical staff',
     },
     {
@@ -237,7 +271,7 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
       badgeNumber: 'DOC-103',
       status: 'granted',
       lastUpdated: offsetLocal(-120),
-      updatedBy: 'Dr. Marcus Vance',
+      updatedBy: 'Meera Krishnan (Clinic Administrator)',
       reason: 'Active consulting clinical staff',
     },
     {
@@ -249,7 +283,7 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
       badgeNumber: 'REC-301',
       status: 'granted',
       lastUpdated: offsetLocal(-180),
-      updatedBy: 'Dr. Marcus Vance',
+      updatedBy: 'Meera Krishnan (Clinic Administrator)',
       reason: 'Lead reception desk coordinator',
     },
     {
@@ -261,7 +295,7 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
       badgeNumber: 'REC-302',
       status: 'granted',
       lastUpdated: offsetLocal(-90),
-      updatedBy: 'Dr. Marcus Vance',
+      updatedBy: 'Meera Krishnan (Clinic Administrator)',
       reason: 'Front desk admissions and intake specialist',
     },
   ];
@@ -856,6 +890,18 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
         'administrativeAccess',
         'attendanceManagement',
       ],
+      memberIds: ['acc-adm-1'],
+      createdBy: 'System Bootstrap',
+      createdAt: offsetIso(-180),
+    },
+    {
+      id: 'mod-lead-physician',
+      name: 'Lead Physician',
+      description: 'Supervisory clinical oversight, queue inspection across all doctors, and patient care transfers',
+      isSystem: true,
+      accessIds: [
+        'clinicalSupervision',
+      ],
       memberIds: ['acc-doc-1'],
       createdBy: 'System Bootstrap',
       createdAt: offsetIso(-180),
@@ -874,7 +920,7 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
       specialization: 'Pediatrics',
       consultationFee: 11000, // 11000 cents
       requestedAt: `${yesterdayStr} 09:30`,
-      notes: 'Board certification in Pediatrics verified; awaiting MD clearance authorization.',
+      notes: 'Board certification in Pediatrics verified; awaiting administrator clearance authorization.',
     },
   ];
 
@@ -896,7 +942,7 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
       reason: 'Acute respiratory infection with physician rest order',
       status: 'approved',
       requestedAt: offsetIso(reedLeaveStartOffset - 1, 8, 30),
-      decidedBy: 'Dr. Marcus Vance (Managing Director)',
+      decidedBy: 'Meera Krishnan (Clinic Administrator)',
       decidedAt: offsetIso(reedLeaveStartOffset - 1, 9, 15),
       decisionNote: 'Approved. Clinic cross-coverage arranged with Dr. Nathan Hayes.',
     },
@@ -924,7 +970,7 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
       reason: 'Medical symposium on respiratory clinical protocols',
       status: 'approved',
       requestedAt: offsetIso(-3, 10, 0),
-      decidedBy: 'Dr. Marcus Vance (Managing Director)',
+      decidedBy: 'Meera Krishnan (Clinic Administrator)',
       decidedAt: offsetIso(-3, 11, 0),
       decisionNote: 'Approved.',
     },
@@ -948,6 +994,15 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
 
   // 13. Staff Shifts & Roster
   const shifts: Shift[] = [
+    {
+      id: 'shift-adm-1',
+      staffId: 'acc-adm-1',
+      staffName: 'Meera Krishnan',
+      days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+      start: '09:00',
+      end: '17:00',
+      graceMinutes: 15,
+    },
     {
       id: 'shift-doc-1',
       staffId: 'acc-doc-1',
@@ -1019,9 +1074,27 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
       timestamp: offsetIso(-180),
       action: 'system_initialized',
       subject: 'Clinic Operating System',
-      role: 'system',
-      details: 'Demonstration scenario baseline initialized successfully.',
-      authorizedBy: 'Dr. Marcus Vance (Managing Director)',
+      role: 'admin',
+      details: 'Clinic governance baseline and initial module memberships initialized.',
+      authorizedBy: 'Meera Krishnan (Clinic Administrator)',
+    },
+    {
+      id: 'audit-prov-1',
+      timestamp: offsetIso(-150),
+      action: 'access_granted',
+      subject: 'Staff Provisioning',
+      role: 'admin',
+      details: 'Staff member Dr. Nathan Hayes provisioned to Clinical module.',
+      authorizedBy: 'Meera Krishnan (Clinic Administrator)',
+    },
+    {
+      id: 'audit-leave-1',
+      timestamp: offsetIso(reedLeaveStartOffset - 1, 9, 15),
+      action: 'permission_updated',
+      subject: 'Leave Authorization',
+      role: 'admin',
+      details: 'Sick leave approved for Dr. Sophia Reed. Clinic coverage verified.',
+      authorizedBy: 'Meera Krishnan (Clinic Administrator)',
     },
     {
       id: 'audit-init-2',

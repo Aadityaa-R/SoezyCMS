@@ -72,11 +72,12 @@ export const LoginView: React.FC = () => {
 
   // Form inputs defaults based on audience
   const [identifier, setIdentifier] = useState(() => {
-    if (initialRoute.audience === 'admin') return 'md';
+    if (initialRoute.audience === 'admin') return 'admin';
     if (initialRoute.audience === 'patient') return 'patient';
     return 'doctor';
   });
   const [password, setPassword] = useState(() => {
+    if (initialRoute.audience === 'admin') return 'Admin@12345';
     if (initialRoute.audience === 'patient') return 'Patient@123';
     return 'Doctor@123';
   });
@@ -110,8 +111,8 @@ export const LoginView: React.FC = () => {
       localStorage.setItem('cms_auth_audience', newAudience);
     } catch {}
     if (newAudience === 'admin') {
-      setIdentifier('md');
-      setPassword('Doctor@123');
+      setIdentifier('admin');
+      setPassword('Admin@12345');
     } else if (newAudience === 'patient') {
       setIdentifier('patient');
       setPassword('Patient@123');
@@ -408,13 +409,24 @@ export const LoginView: React.FC = () => {
                 <div className="flex items-center justify-center gap-1.5 flex-wrap">
                   <span className="text-[11px] text-slate-400 mr-1">Demo:</span>
                   {audience === 'admin' ? (
-                    <button
-                      type="button"
-                      onClick={() => handleFillDemoRole('md', 'Doctor@123', 'admin')}
-                      className="px-2.5 py-1 text-xs rounded-lg bg-[#28465a]/10 hover:bg-[#28465a]/20 text-[#28465a] font-semibold transition-colors cursor-pointer"
-                    >
-                      Admin (Dr. Marcus Vance)
-                    </button>
+                    <div className="flex flex-col gap-2 w-full text-left">
+                      <button
+                        type="button"
+                        onClick={() => handleFillDemoRole('admin', 'Admin@12345', 'admin')}
+                        className="px-3 py-1.5 text-xs rounded-lg bg-[#00c060]/10 hover:bg-[#00c060]/20 text-[#28465a] font-semibold transition-colors cursor-pointer flex items-center justify-between"
+                      >
+                        <span className="font-bold">Administrator (Meera Krishnan)</span>
+                        <span className="text-[11px] text-slate-500 font-normal">approve staff, manage roles, billing corrections, ledger</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleFillDemoRole('md', 'Doctor@123', 'admin')}
+                        className="px-3 py-1.5 text-xs rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors cursor-pointer flex items-center justify-between"
+                      >
+                        <span className="font-semibold">Lead physician (Dr. Marcus Vance)</span>
+                        <span className="text-[11px] text-slate-500 font-normal">clinical supervision, worklist, care transfers</span>
+                      </button>
+                    </div>
                   ) : audience === 'patient' ? (
                     <button
                       type="button"
@@ -425,6 +437,21 @@ export const LoginView: React.FC = () => {
                     </button>
                   ) : (
                     <>
+                      <button
+                        type="button"
+                        onClick={() => handleFillDemoRole('admin', 'Admin@12345', 'staff')}
+                        className="px-2.5 py-1 text-xs rounded-lg bg-[#00c060]/10 hover:bg-[#00c060]/20 text-[#28465a] font-semibold transition-colors cursor-pointer"
+                        title="approve staff, manage roles, billing corrections, ledger"
+                      >
+                        Administrator
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleFillDemoRole('md', 'Doctor@123', 'staff')}
+                        className="px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors cursor-pointer"
+                      >
+                        Lead physician
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleFillDemoRole('doctor', 'Doctor@123', 'staff')}
@@ -438,13 +465,6 @@ export const LoginView: React.FC = () => {
                         className="px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors cursor-pointer"
                       >
                         Reception
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleFillDemoRole('md', 'Doctor@123', 'admin')}
-                        className="px-2.5 py-1 text-xs rounded-lg bg-[#28465a]/10 hover:bg-[#28465a]/20 text-[#28465a] font-semibold transition-colors cursor-pointer"
-                      >
-                        Admin Portal
                       </button>
                     </>
                   )}

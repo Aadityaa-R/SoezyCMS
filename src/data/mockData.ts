@@ -16,14 +16,24 @@ import {
 
 export const ROLE_CREDENTIALS: RoleCredential[] = [
   {
+    role: 'admin',
+    username: 'admin',
+    email: 'admin@beaconclinic.com',
+    password: 'Admin@12345',
+    label: 'Administrator',
+    department: 'Administration',
+    fullName: 'Meera Krishnan',
+    description: 'Clinic Administrator • approve staff, manage roles, billing corrections, ledger',
+  },
+  {
     role: 'md',
     username: 'md',
     email: 'm.vance@beaconclinic.com',
     password: 'Doctor@123',
-    label: 'MD',
-    department: 'Executive Clinic Governance',
+    label: 'Lead physician',
+    department: 'Internal Medicine & Management',
     fullName: 'Dr. Marcus Vance',
-    description: 'Managing Director & Chief Physician • Supreme clinic governance, operations & consultations',
+    description: 'Lead Physician & Managing Director • Clinical supervision, patient transfers, queue inspection & consultations',
   },
   {
     role: 'doctor',
