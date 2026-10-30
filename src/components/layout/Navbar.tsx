@@ -104,24 +104,22 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
               {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
-            {/* Slanted White Tab for SOEZY Logo matching Login page */}
+            {/* SOEZY Logo & Hospital Name */}
             <button
               type="button"
               onClick={() => onNavigate?.('dashboard')}
-              className="bg-white h-14 px-6 sm:px-8 flex items-center justify-center -skew-x-[26deg] shadow-md -ml-4 sm:-ml-6 cursor-pointer outline-none focus:outline-none shrink-0 group"
+              className="flex items-center gap-3 text-left cursor-pointer outline-none focus:outline-none focus:ring-0 group py-1"
               title="SOEZY Web Dashboard"
             >
-              <div className="skew-x-[26deg] flex items-center justify-center py-1">
-                <img
-                  src="/soezy-logo.png"
-                  alt="SOEZY - It's All Easy"
-                  className="h-8 sm:h-9 w-auto object-contain select-none"
-                />
-              </div>
+              <img
+                src="/soezy-logo.png"
+                alt="SOEZY - It's All Easy"
+                className="h-8 sm:h-9 w-auto object-contain select-none"
+              />
             </button>
 
             {/* Hospital Name & Subtitle */}
-            <div className="min-w-0 text-left hidden sm:block ml-2 pl-3 border-l border-white/20">
+            <div className="min-w-0 text-left hidden sm:block pl-3 border-l border-white/20">
               <h1 className="font-bold text-white text-sm sm:text-base leading-tight tracking-tight truncate max-w-[280px]">
                 Subiksham Speciality Hospital
               </h1>
