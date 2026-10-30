@@ -224,37 +224,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         className={`fixed lg:static top-0 bottom-0 left-0 z-40 bg-[#1e3545] text-slate-300 flex flex-col overflow-hidden shrink-0 select-none h-full border-r border-[#152733] transition-all duration-300 ease-in-out motion-reduce:transition-none will-change-[width,transform] ${
           isOpen
             ? 'w-[15rem] lg:w-[15rem] translate-x-0 shadow-2xl lg:shadow-none'
-            : 'w-[15rem] -translate-x-full lg:translate-x-0 lg:w-[3.5rem]'
+            : 'w-[3.5rem] lg:w-[3.5rem] translate-x-0'
         }`}
       >
-        {/* Brand / Role header & Single Console Toggle Control */}
-        <div className="h-14 px-2 flex items-center justify-between shrink-0 border-b border-[#152733]/70">
-          <div className="flex items-center min-w-0 flex-1">
-            {/* Sidebar Toggle Button with 44px minimum touch target */}
-            <button
-              ref={toggleButtonRef}
-              type="button"
-              data-sidebar-ignore-outside="true"
-              onClick={toggle}
-              className="w-10 h-10 flex items-center justify-center rounded-xl cursor-pointer shrink-0 text-slate-300 hover:text-white hover:bg-white/10 transition-colors outline-none focus:outline-none focus:ring-0"
-              title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-              aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-              aria-expanded={isOpen}
-              aria-controls="sidebar-navigation"
-            >
-              {isOpen ? (
-                <PanelLeftClose className="w-4 h-4 text-slate-200" />
-              ) : (
-                <PanelLeftOpen className="w-4 h-4 text-slate-300" />
-              )}
-            </button>
-
-            {/* Clinic Portal Brand Details */}
-            <div
-              className={`overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out motion-reduce:transition-none ${
-                isOpen ? 'max-w-[170px] opacity-100 ml-2.5' : 'lg:max-w-0 lg:opacity-0 lg:ml-0 max-w-[170px] opacity-100 ml-2.5'
-              }`}
-            >
+        {/* Brand / Role header */}
+        <div
+          className={`px-3 flex items-center justify-between shrink-0 transition-all duration-200 ${
+            isOpen ? 'h-12 border-b border-[#152733]/70' : 'h-2'
+          }`}
+        >
+          {isOpen && (
+            <div className="overflow-hidden whitespace-nowrap min-w-0 flex-1">
               <div className="text-[10px] font-bold text-[#00c060] tracking-wider uppercase">
                 Clinic Operations
               </div>
@@ -262,19 +242,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {roleTitle}
               </div>
             </div>
-          </div>
+          )}
 
           {/* Close button inside drawer on mobile */}
-          <button
-            type="button"
-            data-sidebar-ignore-outside="true"
-            onClick={close}
-            className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-300 hover:text-white hover:bg-white/10 lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 shrink-0 transition-colors"
-            title="Close drawer"
-            aria-label="Close drawer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {isOpen && (
+            <button
+              type="button"
+              data-sidebar-ignore-outside="true"
+              onClick={close}
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-300 hover:text-white hover:bg-white/10 lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 shrink-0 transition-colors"
+              title="Close drawer"
+              aria-label="Close drawer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {/* Navigation list */}
@@ -336,6 +318,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
             );
           })}
         </nav>
+
+        {/* Bottom Sidebar Collapse/Expand Toggle Area */}
+        <div className="p-1.5 border-t border-[#152733]/70 shrink-0 mt-auto">
+          <button
+            ref={toggleButtonRef}
+            type="button"
+            data-sidebar-ignore-outside="true"
+            onClick={(e) => {
+              toggle();
+              e.currentTarget.blur();
+            }}
+            className={`${
+              isOpen ? 'w-full px-2.5 justify-start' : 'w-10 mx-auto justify-center'
+            } h-10 flex items-center rounded-xl text-slate-300 hover:text-white hover:bg-white/10 cursor-pointer outline-none focus:outline-none focus:ring-0 transition-all duration-150`}
+            title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+            aria-expanded={isOpen}
+            aria-controls="sidebar-navigation"
+          >
+            <span className="w-6 h-6 flex items-center justify-center shrink-0 text-slate-300">
+              {isOpen ? (
+                <PanelLeftClose className="w-4 h-4" />
+              ) : (
+                <PanelLeftOpen className="w-4 h-4" />
+              )}
+            </span>
+            <span
+              className={`overflow-hidden whitespace-nowrap truncate transition-all duration-300 ease-in-out motion-reduce:transition-none text-left ${
+                isOpen
+                  ? 'max-w-[170px] opacity-100 ml-2.5 text-xs font-medium'
+                  : 'lg:max-w-0 lg:opacity-0 lg:ml-0 max-w-[170px] opacity-100 ml-2.5 text-xs font-medium'
+              }`}
+            >
+              {isOpen ? 'Collapse' : ''}
+            </span>
+          </button>
+        </div>
       </aside>
     </>
   );

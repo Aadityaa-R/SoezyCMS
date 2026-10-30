@@ -1,10 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
-import { useSidebar } from '@/context/SidebarContext';
 import {
-  Menu,
-  X,
   Bell,
   User,
   Building2,
@@ -23,10 +20,9 @@ interface NavbarProps {
   activeTab?: string;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, activeTab: _activeTab }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeTab: _activeTab }) => {
   const { currentUser, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { isOpen: isSidebarOpen, toggle: toggleSidebar } = useSidebar();
   const { userNotifications, unreadCount, markAllAsRead } = useNotifications();
 
   // Dropdown and modal states
@@ -85,36 +81,22 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
         id="headerdiv"
         className="w-full bg-[#28465a] border-b border-[#1e3545] sticky top-0 z-20 shrink-0 transition-colors shadow-sm"
       >
-        <div className="max-w-[1920px] mx-auto px-3 sm:px-6 flex items-center justify-between h-14">
-          {/* Left Section: Logo & Toggle */}
-          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <button
-              type="button"
-              data-sidebar-ignore-outside="true"
-              onClick={onToggleSidebar || toggleSidebar}
-              className="w-9 h-9 flex items-center justify-center p-2 rounded-lg cursor-pointer text-white hover:bg-white/10 transition-colors outline-none focus:outline-none focus:ring-0"
-              title={isSidebarOpen ? 'Collapse menu' : 'Open menu'}
-              aria-label={isSidebarOpen ? 'Collapse menu' : 'Open menu'}
-            >
-              {isSidebarOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5 text-white" />}
-            </button>
-
-            {/* Slanted White Tab for SOEZY Logo matching Login page */}
-            <button
-              type="button"
-              onClick={() => onNavigate?.('dashboard')}
-              className="bg-white h-14 px-6 sm:px-8 flex items-center justify-center -skew-x-[26deg] shadow-md -ml-3 sm:-ml-6 cursor-pointer outline-none focus:outline-none"
-              title="SOEZY Web Dashboard"
-            >
-              <div className="skew-x-[26deg] flex items-center justify-center py-1">
-                <img
-                  src="/soezy-logo.png"
-                  alt="Soezy"
-                  className="h-8 sm:h-9 w-auto object-contain select-none"
-                />
-              </div>
-            </button>
-          </div>
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-8 flex items-center justify-between h-14">
+          {/* Slanted White Tab for SOEZY Logo matching Login page */}
+          <button
+            type="button"
+            onClick={() => onNavigate?.('dashboard')}
+            className="bg-white h-14 px-7 sm:px-10 flex items-center justify-center -skew-x-[26deg] shadow-md ml-0 sm:ml-2 cursor-pointer outline-none focus:outline-none shrink-0"
+            title="SOEZY Web Dashboard"
+          >
+            <div className="skew-x-[26deg] flex items-center justify-center py-1">
+              <img
+                src="/soezy-logo.png"
+                alt="SOEZY - It's All Easy"
+                className="h-8 sm:h-9 w-auto object-contain select-none"
+              />
+            </div>
+          </button>
 
           {/* Right Section: Notifications, Theme, Doctor Profile */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
