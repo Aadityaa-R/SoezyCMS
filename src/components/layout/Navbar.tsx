@@ -144,9 +144,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
     <>
       <header
         id="headerdiv"
-        className="h-[var(--nav-cell)] w-full bg-[#28465a] border-b border-[#1e3545] text-white flex items-center justify-between sticky top-0 z-20 shrink-0 transition-colors"
+        className="h-[var(--nav-cell)] w-full bg-[#28465a] border-b border-[#1e3545] text-white flex items-center justify-between sticky top-0 z-20 shrink-0 transition-colors pl-2 sm:pl-3"
         style={{
-          paddingLeft: 'var(--page-pad)',
           paddingRight: 'var(--page-pad)',
         }}
       >

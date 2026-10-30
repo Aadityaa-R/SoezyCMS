@@ -227,7 +227,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         aria-label="Sidebar navigation"
         inert={!isOpen && isMobile ? '' : undefined}
         aria-hidden={!isOpen && isMobile ? 'true' : undefined}
-        className={`fixed lg:static top-0 bottom-0 left-0 z-40 bg-white dark:bg-slate-900 border-r border-[#eef0f3] dark:border-slate-800 transition-all duration-300 ease-in-out motion-reduce:transition-none flex flex-col shrink-0 select-none ${
+        className={`fixed lg:static top-0 bottom-0 left-0 z-40 bg-white dark:bg-slate-900 transition-all duration-300 ease-in-out motion-reduce:transition-none flex flex-col shrink-0 select-none ${
           isOpen ? 'w-64' : 'w-0 lg:w-[calc(var(--nav-cell)+0.75rem)]'
         } ${
           isMobile
@@ -288,7 +288,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Navigation list */}
-        <nav aria-label="Main Navigation" className="flex-1 pt-1 pb-2 px-1.5 space-y-1 overflow-y-auto overflow-x-hidden">
+        <nav aria-label="Main Navigation" className="flex-1 pt-1 pb-2 px-1.5 space-y-1 overflow-y-auto overflow-x-hidden border-r border-[#eef0f3] dark:border-slate-800">
           {navItems.map((item) => {
             const isActive =
               activeTab === item.id ||
