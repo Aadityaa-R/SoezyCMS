@@ -7,6 +7,10 @@ import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/Ca
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Tabs, TabItem } from '@/components/ui/Tabs';
+import { Select } from '@/components/ui/Select';
+import { InteractiveSearchBar } from '@/components/ui/InteractiveSearchBar';
+import { Pagination } from '@/components/ui/Pagination';
+import { DetailList } from '@/components/ui/DetailList';
 import {
   Table,
   TableHeader,
@@ -20,12 +24,9 @@ import {
   Clock,
   UserCheck,
   MapPin,
-  Phone,
-  Mail,
   Activity,
   CheckCircle2,
   Building2,
-  Search,
 } from 'lucide-react';
 import { CANONICAL_STAFF_IDS } from '@/lib/staffIds';
 
@@ -41,7 +42,10 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
   const [activeTab, setActiveTab] = useState<'overview' | 'doctors' | 'all_staff'>('overview');
   const [searchTerm, setSearchTerm] = useState('');
   const [deptFilter, setDeptFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'on_duty' | 'off_duty'>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 8;
+
   const [selectedStaffMember, setSelectedStaffMember] = useState<{
     id: string;
     name: string;
@@ -74,15 +78,13 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
 
   // Compile full staff roster with attendance and live presence
   const staffRoster = useMemo(() => {
-    // Start with all granted staff records from auth
-    const list = staffAccessList
+    return staffAccessList
       .filter((s) => s.role !== 'patient')
       .map((staff) => {
         const staffShift = getStaffShift(staff.id);
         const todayRec = getTodayRecord(staff.id);
         const isOnDuty = Boolean(todayRec?.clockIn && !todayRec?.clockOut);
 
-        // Find linked doctor record if physician
         const linkedDoctor = doctors.find((doc) => {
           const expectedStaffId = doctorStaffIdMap[doc.id];
           return (
@@ -115,9 +117,17 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
           isOnDuty,
         };
       });
-
-    return list;
   }, [staffAccessList, doctors, shifts, records, getStaffShift, getTodayRecord]);
+
+  // Search suggestions for project InteractiveSearchBar
+  const searchSuggestions = useMemo(() => {
+    return staffRoster.map((s) => ({
+      label: s.name,
+      sublabel: `${s.title} • ${s.badgeNumber}`,
+      category: s.department,
+      value: s.name,
+    }));
+  }, [staffRoster]);
 
   // Doctors list with live appointment queues
   const doctorRoster = useMemo(() => {
@@ -127,7 +137,6 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
       const todayRec = getTodayRecord(canonicalStaffId);
       const isOnDuty = Boolean(todayRec?.clockIn && !todayRec?.clockOut);
 
-      // Appointments for this doctor today
       const docAppointments = appointments.filter((a) => a.doctorId === doc.id);
       const inConsultationCount = docAppointments.filter((a) => a.status === 'in_consultation').length;
       const checkedInWaitingCount = docAppointments.filter((a) => a.status === 'checked_in').length;
@@ -176,6 +185,11 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
     });
   }, [staffRoster, searchTerm, deptFilter, statusFilter]);
 
+  const paginatedStaff = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredStaff.slice(start, start + pageSize);
+  }, [filteredStaff, currentPage]);
+
   const tabs: TabItem[] = [
     { id: 'overview', label: 'Overview & Rosters' },
     { id: 'doctors', label: `Physicians (${doctorRoster.length})` },
@@ -198,7 +212,10 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
         <Tabs
           tabs={tabs}
           activeTab={activeTab}
-          onChange={(tab) => setActiveTab(tab as any)}
+          onChange={(tab) => {
+            setActiveTab(tab as any);
+            setCurrentPage(1);
+          }}
           ariaLabel="Clinic Staff Navigation"
         />
       </div>
@@ -427,48 +444,63 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
               </CardDescription>
             </div>
 
-            {/* Filters & Search Controls */}
-            <div className="flex flex-wrap items-center gap-2.5">
-              {/* Search Bar */}
-              <div className="relative w-48 sm:w-64">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search staff, role, badge..."
+            {/* Filters & Search Controls using project design-system components */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
+              {/* Interactive Search Bar from project UI */}
+              <div className="w-full sm:w-56">
+                <InteractiveSearchBar
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  onChange={(q) => {
+                    setSearchTerm(q);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="Search staff, role, badge..."
+                  suggestions={searchSuggestions}
                 />
               </div>
 
-              {/* Department Filter */}
-              <select
-                value={deptFilter}
-                onChange={(e) => setDeptFilter(e.target.value)}
-                className="px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none"
-              >
-                <option value="all">All Departments</option>
-                <option value="internal">Internal Medicine</option>
-                <option value="general">General Medicine</option>
-                <option value="outpatient">Outpatient / Family</option>
-                <option value="reception">Reception & Front Desk</option>
-                <option value="admin">Administration</option>
-              </select>
+              {/* Department Select Component from project UI */}
+              <div className="w-full sm:w-44">
+                <Select
+                  value={deptFilter}
+                  onChange={(e) => {
+                    setDeptFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  options={[
+                    { value: 'all', label: 'All Departments' },
+                    { value: 'internal', label: 'Internal Medicine' },
+                    { value: 'general', label: 'General Medicine' },
+                    { value: 'outpatient', label: 'Outpatient / Family' },
+                    { value: 'reception', label: 'Reception & Triage' },
+                    { value: 'admin', label: 'Administration' },
+                  ]}
+                  placeholder="Department"
+                  size="compact"
+                />
+              </div>
 
-              {/* Status Filter */}
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as any)}
-                className="px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-white focus:outline-none"
-              >
-                <option value="all">All Statuses</option>
-                <option value="on_duty">On Duty Now</option>
-                <option value="off_duty">Off Duty</option>
-              </select>
+              {/* Status Select Component from project UI */}
+              <div className="w-full sm:w-36">
+                <Select
+                  value={statusFilter}
+                  onChange={(e) => {
+                    setStatusFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  options={[
+                    { value: 'all', label: 'All Statuses' },
+                    { value: 'on_duty', label: 'On Duty Now' },
+                    { value: 'off_duty', label: 'Off Duty' },
+                  ]}
+                  placeholder="Duty Status"
+                  size="compact"
+                />
+              </div>
             </div>
           </CardHeader>
 
-          {/* Staff Table */}
+          {/* Staff Table using design-system Table */}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -482,14 +514,14 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredStaff.length === 0 ? (
+                {paginatedStaff.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8 text-xs text-slate-400">
                       No staff members match the selected filters.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredStaff.map((staff) => (
+                  paginatedStaff.map((staff) => (
                     <TableRow key={staff.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                       {/* Staff Member */}
                       <TableCell kind="text">
@@ -582,16 +614,39 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
               </TableBody>
             </Table>
           </div>
+
+          {/* Pagination from project UI components */}
+          {filteredStaff.length > pageSize && (
+            <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+              <Pagination
+                currentPage={currentPage}
+                totalItems={filteredStaff.length}
+                pageSize={pageSize}
+                onPageChange={setCurrentPage}
+                showItemRange={true}
+              />
+            </div>
+          )}
         </Card>
       )}
 
-      {/* Staff Details Modal */}
+      {/* Staff Details Modal using project Modal and DetailList */}
       {selectedStaffMember && (
         <Modal
           isOpen={true}
           onClose={() => setSelectedStaffMember(null)}
           title={`${selectedStaffMember.name} - Personnel Profile`}
+          description="Clinic personnel station credentials, working shifts, and consultation presence"
           maxWidth="lg"
+          footer={
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedStaffMember(null)}
+            >
+              Close Profile
+            </Button>
+          }
         >
           <div className="space-y-5 p-1">
             {/* Header profile banner */}
@@ -642,43 +697,24 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
               </div>
             </div>
 
-            {/* Information Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg space-y-1">
-                <span className="text-slate-400 flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5" /> Direct Email
-                </span>
-                <p className="font-semibold text-slate-800 dark:text-slate-200">
-                  {selectedStaffMember.email}
-                </p>
-              </div>
-
-              <div className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg space-y-1">
-                <span className="text-slate-400 flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5" /> Direct Contact Phone
-                </span>
-                <p className="font-semibold text-slate-800 dark:text-slate-200">
-                  {selectedStaffMember.phone}
-                </p>
-              </div>
-
-              <div className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg space-y-1">
-                <span className="text-slate-400 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5" /> Working Shift
-                </span>
-                <p className="font-semibold text-slate-800 dark:text-slate-200">
-                  {selectedStaffMember.shiftStart} - {selectedStaffMember.shiftEnd} ({selectedStaffMember.shiftDays?.join(', ')})
-                </p>
-              </div>
-
-              <div className="p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg space-y-1">
-                <span className="text-slate-400 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Today's Clock In
-                </span>
-                <p className="font-semibold text-slate-800 dark:text-slate-200">
-                  {selectedStaffMember.clockInTime ? `${selectedStaffMember.clockInTime} (Logged In)` : 'Not clocked in today'}
-                </p>
-              </div>
+            {/* Information Grid using project DetailList */}
+            <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
+              <DetailList
+                items={[
+                  { label: 'Direct Email', value: selectedStaffMember.email },
+                  { label: 'Direct Phone', value: selectedStaffMember.phone },
+                  {
+                    label: 'Working Shift',
+                    value: `${selectedStaffMember.shiftStart} - ${selectedStaffMember.shiftEnd} (${selectedStaffMember.shiftDays?.join(', ')})`,
+                  },
+                  {
+                    label: "Today's Clock In",
+                    value: selectedStaffMember.clockInTime ? `${selectedStaffMember.clockInTime} (Logged In)` : 'Not clocked in today',
+                  },
+                ]}
+                columns={2}
+                dense
+              />
             </div>
 
             {/* If Physician: Workload and Specialization details */}
@@ -689,20 +725,20 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
                   Clinical Credentials & Workload
                 </h4>
 
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="text-slate-400">Specialization:</span>
-                    <p className="font-semibold text-slate-800 dark:text-slate-200">
-                      {selectedStaffMember.specialization || 'General Clinical Practice'}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-slate-400">Qualifications:</span>
-                    <p className="font-semibold text-slate-800 dark:text-slate-200">
-                      {selectedStaffMember.qualification || 'MBBS'}
-                    </p>
-                  </div>
-                </div>
+                <DetailList
+                  items={[
+                    {
+                      label: 'Specialization',
+                      value: selectedStaffMember.specialization || 'General Clinical Practice',
+                    },
+                    {
+                      label: 'Qualifications',
+                      value: selectedStaffMember.qualification || 'MBBS',
+                    },
+                  ]}
+                  columns={2}
+                  dense
+                />
 
                 {/* Today's Queue Preview if doctor */}
                 {selectedStaffMember.doctorId && (
@@ -738,16 +774,6 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
                 )}
               </div>
             )}
-
-            <div className="pt-2 flex justify-end">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setSelectedStaffMember(null)}
-              >
-                Close Profile
-              </Button>
-            </div>
           </div>
         </Modal>
       )}
