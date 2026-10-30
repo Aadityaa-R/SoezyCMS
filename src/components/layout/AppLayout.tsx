@@ -354,13 +354,11 @@ export const AppLayout: React.FC = () => {
         />
 
         <div className="flex-1 flex overflow-hidden h-full min-h-0">
-          {/* Dynamic Role-specific Sidebar: provides mobile off-canvas drawer */}
-          <div className="lg:hidden">
-            <Sidebar
-              activeTab={activeTab}
-              onTabChange={(tab) => handleNavigate(tab)}
-            />
-          </div>
+          {/* Beacon Health Care Collapsible Sidebar: static rail on desktop, drawer on mobile */}
+          <Sidebar
+            activeTab={activeTab}
+            onTabChange={(tab) => handleNavigate(tab)}
+          />
 
           {/* Content Shell */}
           <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden">

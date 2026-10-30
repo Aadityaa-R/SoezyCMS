@@ -3,7 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useClinic } from '@/context/ClinicContext';
 import { useSidebar } from '@/context/SidebarContext';
 import { shouldCloseSidebarOnClick } from '@/lib/sidebarOutsideClick';
-import { hasCapability, canViewBilling } from '@/lib/permissions';
+import { hasCapability, canViewBilling, isAdmin } from '@/lib/permissions';
 import { hasDashboardAccess } from '@/lib/navigation';
 import {
   LayoutDashboard,
@@ -18,6 +18,7 @@ import {
   FileText,
   Calendar,
   X,
+  Users,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -135,6 +136,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const { currentRole, currentUser } = useAuth();
   const { modules } = useClinic();
+  const isUserAdmin = currentRole === 'md' || currentRole === 'admin' || isAdmin(currentUser, modules);
 
   const getNavItems = (): NavItem[] => {
     if (currentRole === 'patient') {
@@ -146,31 +148,42 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ];
     }
 
+    if (isUserAdmin) {
+      return [
+        { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
+        { id: 'appointments', label: 'Appointments', icon: <Calendar className="w-4 h-4" /> },
+        { id: 'patient', label: 'Patient Records', icon: <Users className="w-4 h-4" /> },
+        { id: 'doctor', label: 'Doctor Desk', icon: <Stethoscope className="w-4 h-4" /> },
+        { id: 'role_receptionist', label: 'Reception', icon: <UserCheck className="w-4 h-4" /> },
+        { id: 'attendance', label: 'Care Team', icon: <Clock className="w-4 h-4" /> },
+        { id: 'billing', label: 'Billing & Reports', icon: <CreditCard className="w-4 h-4" /> },
+        { id: 'access_control', label: 'Access Control', icon: <ShieldCheck className="w-4 h-4" /> },
+      ];
+    }
+
     const items: NavItem[] = [];
 
     if (hasDashboardAccess(currentRole, currentUser, modules)) {
       items.push({ id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> });
     }
 
-    if (hasCapability(currentUser, 'consultationWorkstation', modules)) {
+    if (hasCapability(currentUser, 'consultationWorkstation', modules) || currentRole === 'doctor') {
       items.push({ id: 'doctor', label: 'Consultation Desk', icon: <Stethoscope className="w-4 h-4" /> });
     }
 
     if (
       hasCapability(currentUser, 'patientRegistration', modules) ||
       hasCapability(currentUser, 'patientCheckIn', modules) ||
-      hasCapability(currentUser, 'paymentRecording', modules)
+      hasCapability(currentUser, 'paymentRecording', modules) ||
+      currentRole === 'receptionist'
     ) {
       items.push({ id: 'role_receptionist', label: 'Reception', icon: <UserCheck className="w-4 h-4" /> });
-      items.push({ id: 'patient', label: 'Patient Records', icon: <FileText className="w-4 h-4" /> });
+      items.push({ id: 'appointments', label: 'Appointments', icon: <Calendar className="w-4 h-4" /> });
+      items.push({ id: 'patient', label: 'Patient Records', icon: <Users className="w-4 h-4" /> });
     }
 
     if (canViewBilling(currentUser, modules)) {
       items.push({ id: 'billing', label: 'Billing', icon: <CreditCard className="w-4 h-4" /> });
-    }
-
-    if (hasCapability(currentUser, 'administrativeAccess', modules)) {
-      items.push({ id: 'access_control', label: 'Administrative', icon: <ShieldCheck className="w-4 h-4" /> });
     }
 
     items.push({ id: 'attendance', label: 'Attendance', icon: <Clock className="w-4 h-4" /> });
@@ -180,32 +193,42 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const navItems = getNavItems();
 
+  const roleTitle = isUserAdmin
+    ? 'Administrator'
+    : currentRole === 'doctor'
+    ? 'Doctor'
+    : currentRole === 'receptionist'
+    ? 'Reception'
+    : currentRole === 'patient'
+    ? 'Patient'
+    : String(currentRole || 'Staff').replace('_', ' ');
+
   return (
     <>
       {/* Phone/tablet dimmed overlay (captures touches outside drawer and prevents under-press) */}
       <div
-        className={`fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 lg:hidden cursor-pointer transition-opacity duration-300 ease-in-out motion-reduce:transition-none ${
+        className={`fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-30 lg:hidden cursor-pointer transition-opacity duration-300 ease-in-out motion-reduce:transition-none ${
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={close}
         aria-hidden="true"
       />
 
-      {/* Two-Column Shell Sidebar container: static on desktop (3.5rem collapsed, 15rem expanded), drawer on mobile */}
+      {/* Two-Column Shell Sidebar container: static rail on desktop (3.5rem collapsed, 15rem expanded), drawer on mobile */}
       <aside
         id="sidebar-navigation"
         ref={asideRef}
         aria-label="Sidebar Navigation"
         inert={!isOpen && isMobile ? '' : undefined}
         aria-hidden={!isOpen && isMobile ? 'true' : undefined}
-        className={`fixed lg:static top-0 bottom-0 left-0 z-40 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 flex flex-col overflow-hidden shrink-0 select-none h-full border-r border-[#eef0f3] dark:border-slate-800 transition-all duration-300 ease-in-out motion-reduce:transition-none will-change-[width,transform] ${
+        className={`fixed lg:static top-0 bottom-0 left-0 z-40 bg-[#1e3545] text-slate-300 flex flex-col overflow-hidden shrink-0 select-none h-full border-r border-[#152733] transition-all duration-300 ease-in-out motion-reduce:transition-none will-change-[width,transform] ${
           isOpen
             ? 'w-[15rem] lg:w-[15rem] translate-x-0 shadow-2xl lg:shadow-none'
             : 'w-[15rem] -translate-x-full lg:translate-x-0 lg:w-[3.5rem]'
         }`}
       >
         {/* Brand / Role header & Single Console Toggle Control */}
-        <div className="h-[var(--nav-cell)] px-1.5 flex items-center justify-between shrink-0">
+        <div className="h-14 px-2 flex items-center justify-between shrink-0 border-b border-[#152733]/70">
           <div className="flex items-center min-w-0 flex-1">
             {/* Sidebar Toggle Button with 44px minimum touch target */}
             <button
@@ -213,20 +236,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
               type="button"
               data-sidebar-ignore-outside="true"
               onClick={toggle}
-              className={`w-[var(--nav-cell)] h-[var(--nav-cell)] flex items-center justify-center rounded-lg cursor-pointer shrink-0 outline-none focus:outline-none focus:ring-0 transition-colors duration-200 ${
-                isOpen
-                  ? 'text-teal-600 dark:text-teal-400 hover:bg-slate-50 dark:hover:bg-slate-800'
-                  : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-              }`}
+              className="w-10 h-10 flex items-center justify-center rounded-xl cursor-pointer shrink-0 text-slate-300 hover:text-white hover:bg-white/10 transition-colors outline-none focus:outline-none focus:ring-0"
               title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
               aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
               aria-expanded={isOpen}
               aria-controls="sidebar-navigation"
             >
               {isOpen ? (
-                <PanelLeftClose className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+                <PanelLeftClose className="w-4 h-4 text-slate-200" />
               ) : (
-                <PanelLeftOpen className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                <PanelLeftOpen className="w-4 h-4 text-slate-300" />
               )}
             </button>
 
@@ -236,25 +255,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 isOpen ? 'max-w-[170px] opacity-100 ml-2.5' : 'lg:max-w-0 lg:opacity-0 lg:ml-0 max-w-[170px] opacity-100 ml-2.5'
               }`}
             >
-              <div className="text-xs font-bold text-teal-600 dark:text-teal-400 tracking-wide uppercase">
+              <div className="text-[10px] font-bold text-[#00c060] tracking-wider uppercase">
                 Clinic Operations
               </div>
-              <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 capitalize truncate mt-0.5">
-                {currentRole === 'md' || currentRole === 'admin'
-                  ? 'MD'
-                  : currentRole === 'doctor'
-                  ? 'Doctor'
-                  : currentRole.replace('_', ' ')}
+              <div className="text-xs font-semibold text-white capitalize truncate mt-0.5">
+                {roleTitle}
               </div>
             </div>
           </div>
 
-          {/* Close button inside drawer on mobile (M10.8b) */}
+          {/* Close button inside drawer on mobile */}
           <button
             type="button"
             data-sidebar-ignore-outside="true"
             onClick={close}
-            className="w-[var(--nav-cell)] h-[var(--nav-cell)] flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 shrink-0 transition-colors duration-200"
+            className="w-10 h-10 flex items-center justify-center rounded-xl text-slate-300 hover:text-white hover:bg-white/10 lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 shrink-0 transition-colors"
             title="Close drawer"
             aria-label="Close drawer"
           >
@@ -263,40 +278,56 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Navigation list */}
-        <nav aria-label="Main Navigation" className="flex-1 pt-1 pb-2 px-1.5 space-y-1 overflow-y-auto overflow-x-hidden">
+        <nav aria-label="Main Navigation" className="flex-1 py-2 px-1.5 space-y-1 overflow-y-auto overflow-x-hidden">
           {navItems.map((item) => {
             const isActive =
               activeTab === item.id ||
-              (item.id === 'overview' && (activeTab === 'appointments' || activeTab === 'dashboard')) ||
-              (item.id === 'billing' && activeTab === 'invoices') ||
+              (item.id === 'doctor' && (activeTab === 'doctor' || activeTab === 'role_doctor' || activeTab === 'consulting_calendar')) ||
+              (item.id === 'role_receptionist' && (activeTab === 'role_receptionist' || activeTab === 'receptionist' || activeTab === 'calendar')) ||
+              (item.id === 'patient' && (activeTab === 'patient' || activeTab === 'patients' || activeTab === 'role_patient')) ||
+              (item.id === 'appointments' && (activeTab === 'appointments' || activeTab === 'appointment')) ||
+              (item.id === 'billing' && (activeTab === 'billing' || activeTab === 'admin_billing' || activeTab === 'invoices')) ||
+              (item.id === 'access_control' && (activeTab === 'access_control' || activeTab === 'admin' || activeTab === 'access')) ||
+              (item.id === 'attendance' && (activeTab === 'attendance' || activeTab === 'mycare')) ||
+              (item.id === 'overview' && (activeTab === 'overview' || activeTab === 'appointments')) ||
               (item.id === 'dashboard' && (activeTab === 'dashboard' || !activeTab));
+
             return (
               <button
                 key={item.id}
                 type="button"
-                onClick={() => {
+                onClick={(e) => {
                   onTabChange(item.id);
-                  close();
+                  e.currentTarget.blur();
+                  if (isMobile) {
+                    close();
+                  }
                 }}
                 title={item.label}
                 aria-label={item.label}
                 aria-current={isActive ? 'page' : undefined}
-                className={`${isOpen ? 'w-full px-2' : 'w-[var(--nav-cell)] justify-center'} h-[var(--nav-cell)] flex items-center rounded-lg text-xs font-medium cursor-pointer outline-none focus:outline-none focus:ring-0 transition-colors duration-200 ${
+                className={`${
+                  isOpen ? 'w-full px-2.5' : 'w-10 mx-auto justify-center'
+                } h-10 flex items-center rounded-xl text-xs font-medium cursor-pointer outline-none focus:outline-none focus:ring-0 transition-all duration-150 ${
                   isActive
-                    ? 'bg-transparent text-teal-600 dark:text-teal-400 font-semibold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                    ? 'bg-[#00c060] text-white font-semibold shadow-xs'
+                    : 'text-slate-300 hover:text-white hover:bg-white/10'
                 }`}
               >
                 <span
                   title={item.label}
                   aria-label={item.label}
-                  className={`w-7 h-7 flex items-center justify-center shrink-0 ${isActive ? 'text-teal-600 dark:text-teal-400' : 'text-slate-400 dark:text-slate-500'}`}
+                  className={`w-6 h-6 flex items-center justify-center shrink-0 ${
+                    isActive ? 'text-white' : 'text-slate-300'
+                  }`}
                 >
                   {item.icon}
                 </span>
                 <span
-                  className={`overflow-hidden whitespace-nowrap truncate transition-all duration-300 ease-in-out motion-reduce:transition-none ${
-                    isOpen ? 'max-w-[170px] opacity-100 ml-2.5' : 'lg:max-w-0 lg:opacity-0 lg:ml-0 max-w-[170px] opacity-100 ml-2.5'
+                  className={`overflow-hidden whitespace-nowrap truncate transition-all duration-300 ease-in-out motion-reduce:transition-none text-left ${
+                    isOpen
+                      ? 'max-w-[170px] opacity-100 ml-2.5 font-medium'
+                      : 'lg:max-w-0 lg:opacity-0 lg:ml-0 max-w-[170px] opacity-100 ml-2.5 font-medium'
                   }`}
                 >
                   {item.label}

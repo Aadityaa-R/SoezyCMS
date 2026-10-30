@@ -6,18 +6,7 @@ import {
   Menu,
   X,
   Bell,
-  Settings,
-  LayoutDashboard,
-  Calendar,
-  Users,
-  UserCheck,
-  MessageSquare,
-  BarChart3,
-  ShieldCheck,
-  MoreHorizontal,
   User,
-  BookOpen,
-  HelpCircle,
   Building2,
   Phone,
   CheckCircle2,
@@ -34,7 +23,7 @@ interface NavbarProps {
   activeTab?: string;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, activeTab }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, activeTab: _activeTab }) => {
   const { currentUser, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { isOpen: isSidebarOpen, toggle: toggleSidebar } = useSidebar();
@@ -42,7 +31,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
 
   // Dropdown and modal states
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isChangeClinicOpen, setIsChangeClinicOpen] = useState(false);
@@ -55,7 +43,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
   const [pendingBranch, setPendingBranch] = useState('SOEZY Clinic - Main Pune');
 
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const moreRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns when clicking outside
@@ -65,20 +52,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
       if (dropdownRef.current && !dropdownRef.current.contains(target)) {
         setIsDropdownOpen(false);
       }
-      if (moreRef.current && !moreRef.current.contains(target)) {
-        setIsMoreOpen(false);
-      }
       if (notificationsRef.current && !notificationsRef.current.contains(target)) {
         setIsNotificationsOpen(false);
       }
     };
-    if (isDropdownOpen || isMoreOpen || isNotificationsOpen) {
+    if (isDropdownOpen || isNotificationsOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isDropdownOpen, isMoreOpen, isNotificationsOpen]);
+  }, [isDropdownOpen, isNotificationsOpen]);
 
   const handleOpenProfile = () => {
     setIsDropdownOpen(false);
@@ -95,53 +79,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
     logout();
   };
 
-  // Main SOEZY navigation tabs
-  const navTabs = [
-
-    {
-      id: 'dashboard',
-      label: 'DASHBOARD',
-      icon: LayoutDashboard,
-      isActive: activeTab === 'dashboard',
-      onClick: () => onNavigate?.('dashboard'),
-    },
-    {
-      id: 'appointment',
-      label: 'APPOINTMENTS',
-      icon: Calendar,
-      isActive: activeTab === 'appointments' || activeTab === 'appointment' || activeTab === 'doctor',
-      onClick: () => onNavigate?.('appointments'),
-    },
-    {
-      id: 'patients',
-      label: 'PATIENTS',
-      icon: Users,
-      isActive: activeTab === 'receptionist' || activeTab === 'patient' || activeTab === 'patients',
-      onClick: () => onNavigate?.('receptionist'),
-    },
-    {
-      id: 'mycare',
-      label: 'CARE TEAM',
-      icon: UserCheck,
-      isActive: activeTab === 'attendance',
-      onClick: () => onNavigate?.('attendance'),
-    },
-    {
-      id: 'admin',
-      label: 'ADMIN',
-      icon: ShieldCheck,
-      isActive: activeTab === 'access' || activeTab === 'access_control',
-      onClick: () => onNavigate?.('access_control'),
-    },
-    {
-      id: 'settings',
-      label: 'SETTINGS',
-      icon: Settings,
-      isActive: false,
-      onClick: () => setIsSettingsModalOpen(true),
-    },
-  ];
-
   return (
     <>
       <header
@@ -149,15 +86,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
         className="w-full bg-[#28465a] border-b border-[#1e3545] sticky top-0 z-20 shrink-0 transition-colors shadow-sm"
       >
         <div className="max-w-[1920px] mx-auto px-3 sm:px-6 flex items-center justify-between h-14">
-          {/* Left Section: Logo & Mobile Toggle */}
+          {/* Left Section: Logo & Toggle */}
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <button
               type="button"
               data-sidebar-ignore-outside="true"
               onClick={onToggleSidebar || toggleSidebar}
-              className="w-9 h-9 flex items-center justify-center p-2 rounded-lg lg:hidden cursor-pointer text-white hover:bg-white/10 transition-colors"
-              title={isSidebarOpen ? 'Close menu' : 'Open menu'}
-              aria-label={isSidebarOpen ? 'Close menu' : 'Open menu'}
+              className="w-9 h-9 flex items-center justify-center p-2 rounded-lg cursor-pointer text-white hover:bg-white/10 transition-colors outline-none focus:outline-none focus:ring-0"
+              title={isSidebarOpen ? 'Collapse menu' : 'Open menu'}
+              aria-label={isSidebarOpen ? 'Collapse menu' : 'Open menu'}
             >
               {isSidebarOpen ? <X className="w-5 h-5 text-white" /> : <Menu className="w-5 h-5 text-white" />}
             </button>
@@ -178,103 +115,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate, act
               </div>
             </button>
           </div>
-
-          {/* Center Section: Main SOEZY Navigation Menu */}
-          <nav className="hidden lg:flex items-center h-full space-x-0.5 xl:space-x-1 overflow-x-auto">
-            {navTabs.map((tab) => {
-              const Icon = tab.icon;
-
-
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={(e) => {
-                    tab.onClick();
-                    e.currentTarget.blur();
-                  }}
-                  className={`h-11 my-auto px-2.5 xl:px-3.5 flex flex-col items-center justify-center text-center transition-all relative rounded-lg cursor-pointer whitespace-nowrap outline-none focus:outline-none focus:ring-0 select-none ${
-                    tab.isActive
-                      ? 'text-white font-bold bg-white/15'
-                      : 'text-slate-200 hover:text-white hover:bg-white/5'
-                  }`}
-                  title={tab.label}
-                >
-                  <Icon className={`w-4 h-4 ${tab.isActive ? 'text-[#00c853]' : 'text-slate-300'}`} />
-                  <span className="text-[10px] font-medium tracking-wide mt-1 uppercase">
-                    {tab.label}
-                  </span>
-                </button>
-              );
-            })}
-
-            {/* More Menu Dropdown */}
-            <div className="relative" ref={moreRef}>
-              <button
-                type="button"
-                onClick={(e) => {
-                  setIsMoreOpen(!isMoreOpen);
-                  e.currentTarget.blur();
-                }}
-                className={`h-11 my-auto px-2.5 xl:px-3.5 flex flex-col items-center justify-center transition-colors rounded-lg cursor-pointer outline-none focus:outline-none focus:ring-0 select-none ${
-                  isMoreOpen ? 'text-white bg-white/15' : 'text-slate-200 hover:text-white hover:bg-white/5'
-                }`}
-                title="More"
-              >
-                <MoreHorizontal className="w-4 h-4 text-slate-300" />
-                <span className="text-[10px] font-medium tracking-wide mt-1 uppercase">MORE</span>
-              </button>
-
-              {isMoreOpen && (
-                <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-slate-900 rounded-lg shadow-xl border border-slate-200 dark:border-slate-800 py-1.5 z-50 animate-fadeIn">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsMoreOpen(false);
-                      onNavigate?.('billing');
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#00c853] text-left cursor-pointer"
-                  >
-                    <BarChart3 className="w-4 h-4 text-slate-400" />
-                    <span>Reports</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsMoreOpen(false);
-                      setIsBlogOpen(true);
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#00c853] text-left cursor-pointer"
-                  >
-                    <BookOpen className="w-4 h-4 text-slate-400" />
-                    <span>Blog</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsMoreOpen(false);
-                      setIsGuideOpen(true);
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#00c853] text-left cursor-pointer"
-                  >
-                    <HelpCircle className="w-4 h-4 text-slate-400" />
-                    <span>Guide</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsMoreOpen(false);
-                      setIsPublicQuestionsOpen(true);
-                    }}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-[#00c853] text-left cursor-pointer"
-                  >
-                    <MessageSquare className="w-4 h-4 text-slate-400" />
-                    <span>Public Questions</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          </nav>
 
           {/* Right Section: Notifications, Theme, Doctor Profile */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
