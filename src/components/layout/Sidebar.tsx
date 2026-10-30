@@ -236,7 +236,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }`}
       >
         {/* Top Header: single toggle button level with navbar */}
-        <div className="h-[var(--nav-cell)] px-1.5 flex items-center justify-between shrink-0">
+        <div className="h-[var(--nav-cell)] px-1.5 flex items-center justify-between shrink-0 bg-[#28465a] border-b border-[#1e3545]">
           <div className="flex items-center min-w-0">
             <button
               ref={toggleButtonRef}
@@ -246,20 +246,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 toggle();
                 e.currentTarget.blur();
               }}
-              className={`w-[var(--nav-cell)] h-[var(--nav-cell)] flex items-center justify-center rounded-lg cursor-pointer shrink-0 outline-none focus:outline-none focus:ring-0 transition-colors duration-200 ${
-                isOpen
-                  ? 'text-[#00c060] dark:text-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800'
-                  : 'text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-              }`}
+              className="w-[var(--nav-cell)] h-[var(--nav-cell)] flex items-center justify-center rounded-lg cursor-pointer shrink-0 outline-none focus:outline-none focus:ring-0 transition-colors duration-200 text-slate-300 hover:text-white hover:bg-white/10"
               title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
               aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
               aria-expanded={isOpen}
               aria-controls="sidebar-navigation"
             >
               {isOpen ? (
-                <PanelLeftClose className="w-5 h-5 text-[#00c060] dark:text-emerald-400" />
+                <PanelLeftClose className="w-5 h-5 text-slate-200" />
               ) : (
-                <PanelLeftOpen className="w-5 h-5 text-slate-400 dark:text-slate-500" />
+                <PanelLeftOpen className="w-5 h-5 text-slate-300" />
               )}
             </button>
 
@@ -269,11 +265,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 isOpen ? 'max-w-[170px] opacity-100 ml-2.5' : 'lg:max-w-0 lg:opacity-0 lg:ml-0 max-w-[170px] opacity-100 ml-2.5'
               }`}
             >
-              <div className="text-[10px] font-bold text-[#00c060] dark:text-emerald-400 tracking-wider uppercase">
+              <div className="text-[10px] font-bold text-[#00c060] tracking-wider uppercase">
                 {BRAND_CONFIG.subTitle}
               </div>
-              <div className="text-xs font-semibold text-slate-800 dark:text-slate-200 capitalize truncate mt-0.5">
-                {roleTitle}
+              <div className="text-xs font-semibold text-white capitalize truncate mt-0.5">
+                {roleTitle} Portal
               </div>
             </div>
           </div>
@@ -283,7 +279,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             type="button"
             data-sidebar-ignore-outside="true"
             onClick={close}
-            className="w-[var(--nav-cell)] h-[var(--nav-cell)] flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 shrink-0 transition-colors duration-200"
+            className="w-[var(--nav-cell)] h-[var(--nav-cell)] flex items-center justify-center rounded-lg text-slate-300 hover:text-white hover:bg-white/10 lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 shrink-0 transition-colors duration-200"
             title="Close drawer"
             aria-label="Close drawer"
           >

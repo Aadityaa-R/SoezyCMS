@@ -7,6 +7,8 @@ export interface BrandConfig {
   accentColorActive: string;
   accentColorLight: string;
   accentColorDark: string;
+  topBarBg: string;
+  topBarBorder: string;
   showHeaderUserBlock: boolean;
 }
 
@@ -19,5 +21,7 @@ export const BRAND_CONFIG: BrandConfig = {
   accentColorActive: '#00964b',
   accentColorLight: '#e6f9f0',
   accentColorDark: '#008542',
+  topBarBg: '#28465a',
+  topBarBorder: '#1e3545',
   showHeaderUserBlock: true,
 };

@@ -143,7 +143,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
   return (
     <>
       <header
-        className="h-[var(--nav-cell)] w-full bg-[#fafafa] dark:bg-slate-950 text-slate-700 dark:text-slate-200 border-b border-[#eef0f3] dark:border-slate-800 flex items-center justify-between sticky top-0 z-20 shrink-0 transition-colors"
+        id="headerdiv"
+        className="h-[var(--nav-cell)] w-full bg-[#28465a] border-b border-[#1e3545] text-white flex items-center justify-between sticky top-0 z-20 shrink-0 transition-colors"
         style={{
           paddingLeft: 'var(--page-pad)',
           paddingRight: 'var(--page-pad)',
@@ -157,8 +158,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
             onClick={onToggleSidebar || toggleSidebar}
             className={`w-8 h-8 flex items-center justify-center p-1.5 rounded-lg lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 ${
               isSidebarOpen
-                ? 'bg-slate-100 dark:bg-slate-800 text-[#00c060] dark:text-emerald-400'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white/10 text-white'
+                : 'text-slate-300 hover:bg-white/10 hover:text-white'
             }`}
             title={isSidebarOpen ? 'Close menu' : 'Open menu'}
             aria-label={isSidebarOpen ? 'Close menu' : 'Open menu'}
@@ -166,9 +167,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
             aria-controls="sidebar-navigation"
           >
             {isSidebarOpen ? (
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4 text-white" />
             ) : (
-              <Menu className="w-4 h-4" />
+              <Menu className="w-4 h-4 text-white" />
             )}
           </button>
           <button
@@ -183,10 +184,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
               className="h-8 w-auto object-contain select-none shrink-0"
             />
             <div className="hidden sm:flex flex-col justify-center min-w-0">
-              <span className="font-semibold text-xs tracking-tight text-slate-900 dark:text-slate-100 truncate leading-tight">
+              <span className="font-bold text-xs tracking-tight text-white truncate leading-tight">
                 {BRAND_CONFIG.hospitalName}
               </span>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-tight truncate leading-tight">
+              <span className="text-[10px] text-slate-300 font-medium tracking-tight truncate leading-tight">
                 {BRAND_CONFIG.subTitle}
               </span>
             </div>
@@ -200,18 +201,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
             <button
               type="button"
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer relative outline-none focus:outline-none focus:ring-0"
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer relative outline-none focus:outline-none focus:ring-0"
               aria-label={`Notifications (${unreadCount} unread)`}
             >
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#00c060] rounded-full ring-2 ring-white dark:ring-slate-950" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#00c060] rounded-full ring-2 ring-[#28465a]" />
               )}
             </button>
 
             {/* Notification Popover */}
             {isNotificationsOpen && (
-              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 z-50 animate-fadeIn">
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 z-50 animate-fadeIn text-slate-800 dark:text-slate-200">
                 <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
                   <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
                     Notifications ({unreadCount})
@@ -245,7 +246,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
           </div>
 
           {/* User Profile Dropdown Container: Avatar, Name, Hospital Line */}
-          <div className="relative pl-2.5 border-l border-[#eef0f3] dark:border-slate-800" ref={dropdownRef}>
+          <div className="relative pl-2.5 border-l border-white/20" ref={dropdownRef}>
             <button
               ref={avatarButtonRef}
               id="user-menu-button"
@@ -267,15 +268,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
               aria-expanded={isDropdownOpen}
               aria-controls="user-menu"
             >
-              <div className="w-8 h-8 rounded-full bg-[#00c060] text-white flex items-center justify-center font-bold text-xs uppercase shrink-0">
+              <div className="w-8 h-8 rounded-full bg-[#00c060] text-white flex items-center justify-center font-bold text-xs uppercase shrink-0 ring-1 ring-white/30">
                 {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
               </div>
               {BRAND_CONFIG.showHeaderUserBlock && (
                 <div className="hidden md:flex flex-col justify-center min-w-0 pr-0 mr-0">
-                  <span className="font-semibold text-xs tracking-tight text-slate-900 dark:text-slate-100 truncate leading-tight">
+                  <span className="font-semibold text-xs tracking-tight text-white truncate leading-tight">
                     {currentUser?.name || 'Dr. Administrator'}
                   </span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-tight truncate leading-tight">
+                  <span className="text-[10px] text-slate-300 font-medium tracking-tight truncate leading-tight">
                     {BRAND_CONFIG.hospitalName}
                   </span>
                 </div>
