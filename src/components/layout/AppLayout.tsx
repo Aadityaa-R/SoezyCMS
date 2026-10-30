@@ -347,14 +347,8 @@ export const AppLayout: React.FC = () => {
           className="sr-only"
         />
 
-        {/* Header with full-width SOEZY menu & profile - pinned at top */}
-        <Navbar
-          activeTab={activeTab}
-          onNavigate={handleNavigate}
-        />
-
         <div className="flex-1 flex overflow-hidden h-full min-h-0">
-          {/* Beacon Health Care Collapsible Sidebar: static rail on desktop, drawer on mobile */}
+          {/* Beacon Health Care Collapsible Sidebar: full-height on left */}
           <Sidebar
             activeTab={activeTab}
             onTabChange={(tab) => handleNavigate(tab)}
@@ -362,6 +356,12 @@ export const AppLayout: React.FC = () => {
 
           {/* Content Shell */}
           <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden">
+            {/* Top Navbar */}
+            <Navbar
+              activeTab={activeTab}
+              onNavigate={handleNavigate}
+            />
+
             {/* Main View Area - dedicated scrollable container extending full width flush against panels */}
             <main
               id="main-content"
