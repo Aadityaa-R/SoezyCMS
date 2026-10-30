@@ -56,7 +56,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onNavigate, onDirtyCha
   const staffRolesText = useMemo(() => {
     const roleNames: string[] = [];
     if (currentUser.role === 'md') {
-      roleNames.push('Managing Director', 'Administrator');
+      roleNames.push('Lead Physician');
+    } else if (currentUser.role === 'admin') {
+      roleNames.push('Administrator');
     } else if (currentUser.role === 'doctor') {
       roleNames.push('Doctor');
     } else if (currentUser.role === 'receptionist') {

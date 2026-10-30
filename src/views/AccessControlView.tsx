@@ -29,6 +29,7 @@ import {
   getEffectiveAccesses,
   canRegisterPatient,
 } from '@/lib/permissions';
+import { getScopedPatients } from '@/lib/selectors';
 import { DatePicker } from '@/components/ui/DatePicker';
 import { getRepository } from '@/data/storage';
 import { Account } from '@/types/storage';
@@ -139,9 +140,13 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
     addDoctor,
     doctors = [],
     medicines = [],
-    patients = [],
+    patients: rawPatients = [],
     registerPatient,
   } = useClinic();
+
+  const patients = React.useMemo(() => {
+    return getScopedPatients(currentUser, rawPatients, [], null, modules);
+  }, [currentUser, rawPatients, modules]);
 
   // Module / Role management state
   const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
@@ -2287,7 +2292,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
                                 )}
                               </TableCell>
                               <TableCell label="Type" kind="short" priority={2} className="text-slate-700 dark:text-slate-300">
-                                {person.role === 'doctor' ? 'Doctor' : person.role === 'receptionist' ? 'Receptionist' : 'Patient'}
+                                {person.role === 'admin' ? 'Administrator' : person.role === 'md' ? 'Lead Physician' : person.role === 'doctor' ? 'Doctor' : person.role === 'receptionist' ? 'Receptionist' : 'Patient'}
                               </TableCell>
                               <TableCell label="Department" kind="short" priority={4} className="text-slate-700 dark:text-slate-300">
                                 {isPatient ? '—' : person.department || '—'}
@@ -2561,7 +2566,7 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
       {/* SUB-MODULE 3: SECURITY LEDGER */}
       {selectedSubTab === 'ledger' && (
         <div className="animate-fadeIn">
-          {/* Managing Director Security Audit Ledger */}
+          {/* Administrative Security Audit Ledger */}
           <Card>
             <CardContent className="p-5">
               <div className="mb-3.5 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">

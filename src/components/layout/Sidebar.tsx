@@ -147,45 +147,50 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ];
     }
 
-    if (isUserAdmin) {
-      return [
-        { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
-        { id: 'appointments', label: 'Appointments', icon: <Calendar className="w-4 h-4" /> },
-        { id: 'patient', label: 'Patient Records', icon: <Users className="w-4 h-4" /> },
-        { id: 'doctor', label: 'Consultation Desk', icon: <Stethoscope className="w-4 h-4" /> },
-        { id: 'role_receptionist', label: 'Reception', icon: <UserCheck className="w-4 h-4" /> },
-        { id: 'attendance', label: 'Attendance', icon: <Clock className="w-4 h-4" /> },
-        { id: 'billing', label: 'Billing', icon: <CreditCard className="w-4 h-4" /> },
-        { id: 'access_control', label: 'Administrative', icon: <ShieldCheck className="w-4 h-4" /> },
-      ];
-    }
-
     const items: NavItem[] = [];
 
+    // 1. Dashboard
     if (hasDashboardAccess(currentRole, currentUser, modules)) {
       items.push({ id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> });
     }
 
+    // 2. Reception Calendar (Front desk or Administrative)
+    const hasFrontDesk =
+      hasCapability(currentUser, 'patientRegistration', modules) ||
+      hasCapability(currentUser, 'patientCheckIn', modules);
+    const hasAdminAccess = hasCapability(currentUser, 'administrativeAccess', modules);
+
+    if (hasFrontDesk || hasAdminAccess || currentRole === 'receptionist') {
+      items.push({ id: 'appointments', label: 'Appointments', icon: <Calendar className="w-4 h-4" /> });
+    }
+
+    // 3. Clinical Patients directory (Doctors / EMR Records Access)
+    if (hasCapability(currentUser, 'emrRecordsAccess', modules)) {
+      items.push({ id: 'patient', label: 'Patient Records', icon: <Users className="w-4 h-4" /> });
+    }
+
+    // 4. Consultation Desk (Clinical Station)
     if (hasCapability(currentUser, 'consultationWorkstation', modules) || currentRole === 'doctor') {
       items.push({ id: 'doctor', label: 'Consultation Desk', icon: <Stethoscope className="w-4 h-4" /> });
     }
 
-    if (
-      hasCapability(currentUser, 'patientRegistration', modules) ||
-      hasCapability(currentUser, 'patientCheckIn', modules) ||
-      hasCapability(currentUser, 'paymentRecording', modules) ||
-      currentRole === 'receptionist'
-    ) {
+    // 5. Front Desk Reception intake
+    if (hasFrontDesk || currentRole === 'receptionist') {
       items.push({ id: 'role_receptionist', label: 'Reception', icon: <UserCheck className="w-4 h-4" /> });
-      items.push({ id: 'appointments', label: 'Appointments', icon: <Calendar className="w-4 h-4" /> });
-      items.push({ id: 'patient', label: 'Patient Records', icon: <Users className="w-4 h-4" /> });
     }
 
+    // 6. Attendance (all staff)
+    items.push({ id: 'attendance', label: 'Attendance', icon: <Clock className="w-4 h-4" /> });
+
+    // 7. Billing
     if (canViewBilling(currentUser, modules)) {
       items.push({ id: 'billing', label: 'Billing', icon: <CreditCard className="w-4 h-4" /> });
     }
 
-    items.push({ id: 'attendance', label: 'Attendance', icon: <Clock className="w-4 h-4" /> });
+    // 8. Administrative
+    if (hasAdminAccess) {
+      items.push({ id: 'access_control', label: 'Administrative', icon: <ShieldCheck className="w-4 h-4" /> });
+    }
 
     return items;
   };

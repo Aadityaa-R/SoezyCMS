@@ -340,7 +340,7 @@ export const BillingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const actor = currentUser
       ? { id: currentUser.id, name: currentUser.name }
-      : { id: 'usr-1', name: 'Dr. Marcus Vance (Managing Director)' };
+      : { id: 'usr-adm-1', name: 'Meera Krishnan (Clinic Administrator)' };
 
     try {
       const { reversal } = engineReversePayment(
@@ -445,7 +445,7 @@ export const BillingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const actor = currentUser
       ? { id: currentUser.id, name: currentUser.name }
-      : { id: 'usr-1', name: 'Dr. Marcus Vance (Managing Director)' };
+      : { id: 'usr-adm-1', name: 'Meera Krishnan (Clinic Administrator)' };
 
     try {
       const updatedInvoice = engineApplyDiscount(
@@ -497,7 +497,7 @@ export const BillingProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const actor = currentUser
       ? { id: currentUser.id, name: currentUser.name }
-      : { id: 'usr-1', name: 'Dr. Marcus Vance (Managing Director)' };
+      : { id: 'usr-adm-1', name: 'Meera Krishnan (Clinic Administrator)' };
 
     try {
       const updatedInvoice = engineVoidInvoice(

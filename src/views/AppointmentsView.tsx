@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useClinic } from '@/context/ClinicContext';
+import { useAuth } from '@/context/AuthContext';
+import { getScopedAppointments } from '@/lib/selectors';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Table, ColumnDef } from '@/components/ui/Table';
@@ -55,7 +57,12 @@ function formatDisplayDate(dateStr: string): string {
 }
 
 export const AppointmentsView: React.FC = () => {
-  const { appointments: allAppointments = [], doctors = [] } = useClinic();
+  const { currentUser } = useAuth();
+  const { appointments: rawAppointments = [], doctors = [], modules, patientAssignments } = useClinic();
+  const allAppointments = useMemo(
+    () => getScopedAppointments(currentUser, rawAppointments, patientAssignments, null, modules),
+    [currentUser, rawAppointments, patientAssignments, modules]
+  );
 
   const todayStr = useMemo(() => formatLocalDate(), []);
   const [selectedDate, setSelectedDate] = useState<string>(todayStr);

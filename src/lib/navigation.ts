@@ -78,32 +78,38 @@ export function getAllowedNavItems(
 
   if (hasDashboardAccess(role, user, modules)) {
     items.push({ id: 'dashboard', label: 'Dashboard' });
-  items.push({ id: 'appointments', label: 'Appointments' });
   }
 
-  if (hasCapability(user, 'consultationWorkstation', modules) || isAdmin(user, modules)) {
+  const hasFrontDesk =
+    hasCapability(user, 'patientRegistration', modules) ||
+    hasCapability(user, 'patientCheckIn', modules);
+  const hasAdminAccess = hasCapability(user, 'administrativeAccess', modules);
+
+  if (hasFrontDesk || hasAdminAccess || role === 'receptionist') {
+    items.push({ id: 'appointments', label: 'Appointments' });
+  }
+
+  if (hasCapability(user, 'emrRecordsAccess', modules)) {
+    items.push({ id: 'patient', label: 'Patient Records' });
+  }
+
+  if (hasCapability(user, 'consultationWorkstation', modules) || role === 'doctor') {
     items.push({ id: 'doctor', label: 'Consultation Desk' });
   }
 
-  if (
-    hasCapability(user, 'patientRegistration', modules) ||
-    hasCapability(user, 'patientCheckIn', modules) ||
-    hasCapability(user, 'paymentRecording', modules) ||
-    isAdmin(user, modules)
-  ) {
+  if (hasFrontDesk || role === 'receptionist') {
     items.push({ id: 'role_receptionist', label: 'Reception' });
-    items.push({ id: 'patient', label: 'Patient Records' });
   }
+
+  items.push({ id: 'attendance', label: 'Attendance' });
 
   if (canViewBilling(user, modules)) {
     items.push({ id: 'billing', label: 'Billing' });
   }
 
-  if (hasCapability(user, 'administrativeAccess', modules)) {
+  if (hasAdminAccess) {
     items.push({ id: 'access_control', label: 'Administrative' });
   }
-
-  items.push({ id: 'attendance', label: 'Attendance' });
 
   return items;
 }
@@ -118,7 +124,6 @@ export function isTabAllowed(
   const cleanTab = tab.toLowerCase();
 
   if (cleanTab === 'profile') return true;
-  if (cleanTab === 'appointments' || cleanTab === 'appointment') return true;
 
   if (role === 'patient') {
     return [
@@ -137,34 +142,33 @@ export function isTabAllowed(
   }
 
   if (cleanTab === 'doctor' || cleanTab === 'role_doctor') {
-    return hasCapability(user, 'consultationWorkstation', modules) || isAdmin(user, modules);
+    return hasCapability(user, 'consultationWorkstation', modules);
   }
 
   if (cleanTab === 'consulting_calendar') {
-    return hasCapability(user, 'consultingCalendar', modules) || isAdmin(user, modules);
+    return hasCapability(user, 'consultingCalendar', modules);
   }
 
   if (
     cleanTab === 'role_receptionist' ||
-    cleanTab === 'receptionist' ||
-    cleanTab === 'calendar'
+    cleanTab === 'receptionist'
   ) {
     return (
       hasCapability(user, 'patientRegistration', modules) ||
+      hasCapability(user, 'patientCheckIn', modules)
+    );
+  }
+
+  if (cleanTab === 'calendar' || cleanTab === 'appointments' || cleanTab === 'appointment') {
+    return (
+      hasCapability(user, 'patientRegistration', modules) ||
       hasCapability(user, 'patientCheckIn', modules) ||
-      hasCapability(user, 'booking', modules) ||
-      hasCapability(user, 'paymentRecording', modules) ||
-      isAdmin(user, modules)
+      hasCapability(user, 'administrativeAccess', modules)
     );
   }
 
   if (cleanTab === 'patient' || cleanTab === 'role_patient') {
-    return (
-      hasCapability(user, 'patientRegistration', modules) ||
-      hasCapability(user, 'patientCheckIn', modules) ||
-      hasCapability(user, 'paymentRecording', modules) ||
-      isAdmin(user, modules)
-    );
+    return hasCapability(user, 'emrRecordsAccess', modules);
   }
 
   if (cleanTab === 'billing' || cleanTab === 'admin_billing') {
@@ -172,7 +176,7 @@ export function isTabAllowed(
   }
 
   if (cleanTab === 'access_control') {
-    return isAdmin(user, modules);
+    return hasCapability(user, 'administrativeAccess', modules);
   }
 
   if (cleanTab === 'attendance') {

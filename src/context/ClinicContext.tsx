@@ -548,17 +548,17 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // 4. Authorization check if actingUser passed
     if (actingUser) {
       if (isInitialAssignment) {
-        if (!isAdmin(actingUser) && actingUser.role !== 'receptionist') {
+        if (!hasCapability(actingUser, 'administrativeAccess', modules) && !isAdmin(actingUser, modules) && !hasCapability(actingUser, 'clinicalSupervision', modules)) {
           return {
             success: false,
-            error: 'Only clinic administrators or receptionists can assign unassigned patients.',
+            error: 'Unauthorized to assign patient care.',
             movedAppointmentsCount: 0,
             movedAppointmentIds: [],
             isInitialAssignment,
           };
         }
       } else {
-        if (!canTransferPatient(actingUser, patientId, patientAssignments)) {
+        if (!canTransferPatient(actingUser, patientId, patientAssignments, modules)) {
           return {
             success: false,
             error: 'Unauthorized to transfer patient care.',
@@ -655,7 +655,7 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     actingUser?: User | null
   ): RegistrationResult => {
     const actor = actingUser !== undefined ? actingUser : authUser;
-    if (actor && !canRegisterPatient(actor, modules) && !isAdmin(actor, modules)) {
+    if (actor && !canRegisterPatient(actor, modules)) {
       return {
         success: false,
         error: 'Unauthorized: Patient registration capability required.',
@@ -732,7 +732,7 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     dateOverride?: string
   ): CheckInResult => {
     const actor = actingUser !== undefined ? actingUser : authUser;
-    if (actor && !canCheckIn(actor, modules) && !isAdmin(actor, modules)) {
+    if (actor && !canCheckIn(actor, modules)) {
       return {
         success: false,
         error: 'Unauthorized: Patient check-in capability required.',
@@ -848,7 +848,7 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     dateOverride?: string
   ): CheckInResult => {
     const actor = actingUser !== undefined ? actingUser : authUser;
-    if (actor && !canCheckIn(actor, modules) && !isAdmin(actor, modules)) {
+    if (actor && !canCheckIn(actor, modules)) {
       return {
         success: false,
         error: 'Unauthorized: Patient check-in capability required.',
@@ -987,7 +987,7 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       actor?.role === 'patient' &&
       (actor.patientId === data.patientId || actor.id === data.patientId || data.patientId === 'pat-1');
 
-    if (!isPatientSelf && actor && !canBookAppointment(actor, modules) && !isAdmin(actor, modules)) {
+    if (!isPatientSelf && actor && !canBookAppointment(actor, modules)) {
       return {
         success: false,
         error: 'Unauthorized: Booking capability required.',
@@ -1197,7 +1197,7 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   ) => {
     const actor = actingUser !== undefined ? actingUser : authUser;
     if (status === 'checked_in') {
-      if (actor && !canCheckIn(actor, modules) && !isAdmin(actor, modules)) {
+      if (actor && !canCheckIn(actor, modules)) {
         console.error('Unauthorized: only receptionists can check in patients.');
         return;
       }
@@ -1783,18 +1783,18 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       accessIds,
       memberIds: [],
       isSystem: false,
-      createdBy: actor?.name || 'Dr. Marcus Vance (Managing Director)',
+      createdBy: actor?.name || 'Meera Krishnan (Clinic Administrator)',
       createdAt: timestamp,
     };
 
     setModules((prev) => [...prev, newModule]);
 
     addAuditLogEntry({
-      targetRole: 'md',
+      targetRole: 'admin',
       targetStaffName: trimmedName,
       action: 'module_created',
-      description: `Role '${trimmedName}' created with ${accessIds.length} access(es) by ${actor?.name || 'Managing Director'}`,
-      authorizedBy: actor?.name || 'Dr. Marcus Vance (Managing Director)',
+      description: `Role '${trimmedName}' created with ${accessIds.length} access(es) by ${actor?.name || 'Clinic Administrator'}`,
+      authorizedBy: actor?.name || 'Meera Krishnan (Clinic Administrator)',
     });
 
     return { success: true, module: newModule };
@@ -1839,11 +1839,11 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     );
 
     addAuditLogEntry({
-      targetRole: 'md',
+      targetRole: 'admin',
       targetStaffName: trimmedName,
       action: 'module_renamed',
-      description: `Module '${target.name}' renamed to '${trimmedName}' by ${actor?.name || 'Managing Director'}`,
-      authorizedBy: actor?.name || 'Dr. Marcus Vance (Managing Director)',
+      description: `Module '${target.name}' renamed to '${trimmedName}' by ${actor?.name || 'Clinic Administrator'}`,
+      authorizedBy: actor?.name || 'Meera Krishnan (Clinic Administrator)',
     });
 
     return { success: true };
@@ -1866,11 +1866,11 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setModules((prev) => prev.filter((m) => m.id !== id));
 
     addAuditLogEntry({
-      targetRole: 'md',
+      targetRole: 'admin',
       targetStaffName: target.name,
       action: 'module_deleted',
-      description: `Module '${target.name}' deleted by ${actor?.name || 'Managing Director'}`,
-      authorizedBy: actor?.name || 'Dr. Marcus Vance (Managing Director)',
+      description: `Module '${target.name}' deleted by ${actor?.name || 'Clinic Administrator'}`,
+      authorizedBy: actor?.name || 'Meera Krishnan (Clinic Administrator)',
     });
 
     return { success: true };
@@ -1900,12 +1900,12 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     );
 
     addAuditLogEntry({
-      targetRole: 'md',
+      targetRole: 'admin',
       targetStaffName: target.name,
       capability: accessId,
       action: 'module_access_included',
-      description: `Access '${accessId}' included in module '${target.name}' by ${actor?.name || 'Managing Director'}`,
-      authorizedBy: actor?.name || 'Dr. Marcus Vance (Managing Director)',
+      description: `Access '${accessId}' included in module '${target.name}' by ${actor?.name || 'Clinic Administrator'}`,
+      authorizedBy: actor?.name || 'Meera Krishnan (Clinic Administrator)',
     });
 
     return { success: true };
@@ -1935,12 +1935,12 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     );
 
     addAuditLogEntry({
-      targetRole: 'md',
+      targetRole: 'admin',
       targetStaffName: target.name,
       capability: accessId,
       action: 'module_access_removed',
-      description: `Access '${accessId}' removed from module '${target.name}' by ${actor?.name || 'Managing Director'}`,
-      authorizedBy: actor?.name || 'Dr. Marcus Vance (Managing Director)',
+      description: `Access '${accessId}' removed from module '${target.name}' by ${actor?.name || 'Clinic Administrator'}`,
+      authorizedBy: actor?.name || 'Meera Krishnan (Clinic Administrator)',
     });
 
     return { success: true };
@@ -1994,8 +1994,8 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       targetStaffName: staffDisplayName,
       targetUserId: staffId,
       action: 'module_member_added',
-      description: `Staff member '${staffDisplayName}' added to module '${target.name}' by ${actor?.name || 'Managing Director'}${reasonText}`,
-      authorizedBy: actor?.name || 'Dr. Marcus Vance (Managing Director)',
+      description: `Staff member '${staffDisplayName}' added to module '${target.name}' by ${actor?.name || 'Clinic Administrator'}${reasonText}`,
+      authorizedBy: actor?.name || 'Meera Krishnan (Clinic Administrator)',
     });
 
     return { success: true };
@@ -2054,8 +2054,8 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       targetStaffName: staffDisplayName,
       targetUserId: staffId,
       action: 'module_member_removed',
-      description: `Staff member '${staffDisplayName}' removed from module '${target.name}' by ${actor?.name || 'Managing Director'}${reasonText}`,
-      authorizedBy: actor?.name || 'Dr. Marcus Vance (Managing Director)',
+      description: `Staff member '${staffDisplayName}' removed from module '${target.name}' by ${actor?.name || 'Clinic Administrator'}${reasonText}`,
+      authorizedBy: actor?.name || 'Meera Krishnan (Clinic Administrator)',
     });
 
     return { success: true };
@@ -2100,11 +2100,11 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
 
     addAuditLogEntry({
-      targetRole: 'md',
+      targetRole: 'admin',
       targetStaffName: trimmedLabel,
       action: 'module_created',
-      description: `Access privilege '${trimmedLabel}' created by ${actor?.name || 'Managing Director'}`,
-      authorizedBy: actor?.name || 'Dr. Marcus Vance (Managing Director)',
+      description: `Access privilege '${trimmedLabel}' created by ${actor?.name || 'Clinic Administrator'}`,
+      authorizedBy: actor?.name || 'Meera Krishnan (Clinic Administrator)',
     });
 
     return { success: true, accessItem: newAccess };

@@ -21,7 +21,7 @@ import {
   canAddCharge,
   isAdmin,
 } from '@/lib/permissions';
-import { getScopedInvoices, getScopedPayments } from '@/lib/selectors';
+import { getScopedInvoices, getScopedPayments, getScopedPatients } from '@/lib/selectors';
 import { formatLocalDate, formatDate, formatTime } from '@/lib/time';
 import { DetailList, DetailItem } from '@/components/ui/DetailList';
 import { Tabs } from '@/components/ui/Tabs';
@@ -55,7 +55,11 @@ export interface BillingViewProps {
 
 export const BillingView: React.FC<BillingViewProps> = ({ initialTab = 'invoices' }) => {
   const { currentUser } = useAuth();
-  const { modules, patients } = useClinic();
+  const { modules, patients: rawPatients = [], patientAssignments = [] } = useClinic();
+  const patients = useMemo(
+    () => getScopedPatients(currentUser, rawPatients, patientAssignments, null, modules),
+    [currentUser, rawPatients, patientAssignments, modules]
+  );
   const {
     invoices: allInvoices,
     payments: allPayments,

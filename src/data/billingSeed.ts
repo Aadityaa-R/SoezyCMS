@@ -427,7 +427,7 @@ export const INITIAL_SEED_PAYMENTS: Payment[] = [
     kind: 'reversal',
     reversesPaymentId: 'pay-2026-0009',
     receivedAt: '2026-10-13T11:00:00.000Z',
-    receivedBy: { id: 'usr-1', name: 'Dr. Marcus Vance (Managing Director)' },
+    receivedBy: { id: 'usr-adm-1', name: 'Meera Krishnan (Clinic Administrator)' },
     reason: 'Correction of cashier duplicate receipt record',
     receiptNumber: 'RCT-2026-0010',
   },

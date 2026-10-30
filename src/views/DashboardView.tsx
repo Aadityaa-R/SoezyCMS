@@ -601,9 +601,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigate }) => {
   const [selectedWaitingApt, setSelectedWaitingApt] = useState<Appointment | null>(null);
 
   // Access checks
-  const canUserCheckIn = useMemo(() => canCheckIn(currentUser, modules) || isAdmin(currentUser, modules), [currentUser, modules]);
-  const canUserRegister = useMemo(() => canRegisterPatient(currentUser, modules) || isAdmin(currentUser, modules), [currentUser, modules]);
-  const canUserBook = useMemo(() => canBookAppointment(currentUser, modules) || isAdmin(currentUser, modules), [currentUser, modules]);
+  const canUserCheckIn = useMemo(() => canCheckIn(currentUser, modules), [currentUser, modules]);
+  const canUserRegister = useMemo(() => canRegisterPatient(currentUser, modules), [currentUser, modules]);
+  const canUserBook = useMemo(() => canBookAppointment(currentUser, modules), [currentUser, modules]);
   const hasPaymentRec = useMemo(() => hasCapability(currentUser, 'paymentRecording', modules), [currentUser, modules]);
   const hasBillingOrAdmin = useMemo(() => hasPaymentRec || isAdmin(currentUser, modules), [hasPaymentRec, currentUser, modules]);
 

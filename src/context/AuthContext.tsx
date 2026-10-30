@@ -42,10 +42,16 @@ export interface RoleMeta {
 
 export const ALL_ROLES: RoleMeta[] = [
   {
+    role: 'admin',
+    label: 'Administrator',
+    department: 'Administration',
+    description: 'Clinic Administrator: Staff approvals, role management, access privileges, and security ledger.',
+  },
+  {
     role: 'md',
-    label: 'MD',
-    department: 'Executive Clinic Governance',
-    description: 'Managing Director & Chief Physician: Supreme clinic leadership, operations, and clinical consultations.',
+    label: 'Lead Physician',
+    department: 'Internal Medicine',
+    description: 'Lead Physician & Chief Physician: Outpatient clinical consultations, patient care transfers, and clinical supervision.',
   },
   {
     role: 'doctor',
@@ -142,12 +148,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const params = new URLSearchParams(window.location.search);
       const urlRole = params.get('role') as UserRole;
-      if (urlRole && DEMO_USERS[urlRole]) return urlRole === 'admin' ? 'md' : urlRole;
+      if (urlRole && DEMO_USERS[urlRole]) return urlRole;
     } catch {
       // fallback
     }
     const savedRole = sessionStorage.getItem('cms_auth_role') as UserRole;
-    return savedRole && DEMO_USERS[savedRole] ? (savedRole === 'admin' ? 'md' : savedRole) : 'md';
+    return savedRole && DEMO_USERS[savedRole] ? savedRole : 'md';
   });
 
   const [activeUserKey, setActiveUserKey] = useState<string>(() => {
@@ -507,7 +513,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isRoleSuspended = (role: UserRole): boolean => {
-    if (role === 'md') return false;
+    if (role === 'md' || role === 'admin') return false;
     const roleStaff = staffAccessList.filter((s) => s.role === role);
     if (roleStaff.length === 0) return false;
     return roleStaff.every((s) => s.status === 'revoked');
@@ -541,7 +547,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       newState: entry.newState,
       action: entry.action,
       description: entry.description,
-      authorizedBy: entry.authorizedBy || currentUser.name || 'Dr. Marcus Vance (Managing Director)',
+      authorizedBy: entry.authorizedBy || currentUser.name || 'Meera Krishnan (Clinic Administrator)',
     };
     saveAuditLog([newAudit, ...accessAuditLog]);
   };
@@ -967,7 +973,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const loginAs = (role: UserRole) => {
-    const targetRole = role === 'admin' ? 'md' : role;
+    const targetRole = role;
     if (DEMO_USERS[targetRole]) {
       if (isRoleSuspended(targetRole)) {
         return;

@@ -225,7 +225,7 @@ export async function login(
     return {
       code: 'suspended',
       success: false,
-      error: `Access Suspended: Station credentials for ${account.fullName} have been revoked by the Managing Director.`,
+      error: `Access Suspended: Station credentials for ${account.fullName} have been revoked by the Clinic Administrator.`,
     };
   }
   if (account.status === 'pending') {
@@ -254,7 +254,7 @@ export async function login(
     return {
       code: 'suspended',
       success: false,
-      error: 'Access Suspended: Station credentials have been revoked by the Managing Director (Dr. Marcus Vance).',
+      error: 'Access Suspended: Station credentials have been revoked by the Clinic Administrator (Meera Krishnan).',
     };
   }
 

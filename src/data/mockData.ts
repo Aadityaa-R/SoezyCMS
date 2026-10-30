@@ -2298,7 +2298,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     status: 'granted',
     moduleIds: ['mod-clinical'],
     lastUpdated: '2026-10-14 08:00',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Active clinical appointment in good standing',
     permissions: [
       { id: 'perm-admin', name: 'Administrative Access', description: 'Promote to clinic administrator with staff management and security ledger authority', enabled: false },
@@ -2318,7 +2318,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     status: 'granted',
     moduleIds: ['mod-clinical'],
     lastUpdated: '2026-10-14 08:00',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Active clinical appointment in good standing',
     permissions: [
       { id: 'perm-admin', name: 'Administrative Access', description: 'Promote to clinic administrator with staff management and security ledger authority', enabled: false },
@@ -2338,7 +2338,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     status: 'granted',
     moduleIds: ['mod-frontdesk'],
     lastUpdated: '2026-10-14 08:00',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Active front desk intake assignment in good standing',
     permissions: [
       { id: 'perm-register', name: 'Patient Registration', description: 'Enroll new outpatients and generate medical record numbers', enabled: true },
@@ -2356,7 +2356,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     status: 'granted',
     moduleIds: ['mod-frontdesk'],
     lastUpdated: '2026-10-14 08:30',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Active front desk admissions & intake assignment in good standing',
     permissions: [
       { id: 'perm-register', name: 'Patient Registration', description: 'Enroll new outpatients and generate medical record numbers', enabled: true },
@@ -2373,7 +2373,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     badgeNumber: 'MRN-84291',
     status: 'granted',
     lastUpdated: '2026-10-14 08:00',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Verified outpatient medical record and portal credentials',
     permissions: [
       { id: 'perm-pat-emr', name: 'Personal Health Records & Vitals', description: 'Authorize outpatient to view personal medical history, diagnosis summary, and vital signs', enabled: true },
@@ -2392,7 +2392,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     badgeNumber: 'MRN-84292',
     status: 'granted',
     lastUpdated: '2026-10-14 08:00',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Verified outpatient medical record and portal credentials',
     permissions: [
       { id: 'perm-pat-emr', name: 'Personal Health Records & Vitals', description: 'Authorize outpatient to view personal medical history, diagnosis summary, and vital signs', enabled: true },
@@ -2411,7 +2411,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     badgeNumber: 'MRN-84293',
     status: 'granted',
     lastUpdated: '2026-10-14 08:00',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Verified outpatient medical record and portal credentials',
     permissions: [
       { id: 'perm-pat-emr', name: 'Personal Health Records & Vitals', description: 'Authorize outpatient to view personal medical history, diagnosis summary, and vital signs', enabled: true },
@@ -2430,7 +2430,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     badgeNumber: 'MRN-84294',
     status: 'granted',
     lastUpdated: '2026-10-14 08:00',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Verified outpatient medical record and portal credentials',
     permissions: [
       { id: 'perm-pat-emr', name: 'Personal Health Records & Vitals', description: 'Authorize outpatient to view personal medical history, diagnosis summary, and vital signs', enabled: true },
@@ -2449,7 +2449,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     badgeNumber: 'MRN-84295',
     status: 'granted',
     lastUpdated: '2026-10-14 08:00',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Verified outpatient medical record and portal credentials',
     permissions: [
       { id: 'perm-pat-emr', name: 'Personal Health Records & Vitals', description: 'Authorize outpatient to view personal medical history, diagnosis summary, and vital signs', enabled: true },
@@ -2468,7 +2468,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     badgeNumber: 'MRN-84296',
     status: 'granted',
     lastUpdated: '2026-10-14 08:00',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Verified outpatient medical record and portal credentials',
     permissions: [
       { id: 'perm-pat-emr', name: 'Personal Health Records & Vitals', description: 'Authorize outpatient to view personal medical history, diagnosis summary, and vital signs', enabled: true },
@@ -2487,7 +2487,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     badgeNumber: 'MRN-84297',
     status: 'granted',
     lastUpdated: '2026-10-14 08:00',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Verified outpatient medical record and portal credentials',
     permissions: [
       { id: 'perm-pat-emr', name: 'Personal Health Records & Vitals', description: 'Authorize outpatient to view personal medical history, diagnosis summary, and vital signs', enabled: true },
@@ -2506,7 +2506,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     badgeNumber: 'MRN-84298',
     status: 'granted',
     lastUpdated: '2026-10-14 08:00',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Verified outpatient medical record and portal credentials',
     permissions: [
       { id: 'perm-pat-emr', name: 'Personal Health Records & Vitals', description: 'Authorize outpatient to view personal medical history, diagnosis summary, and vital signs', enabled: true },
@@ -2525,7 +2525,7 @@ export const INITIAL_STAFF_ACCESS: StaffAccessRecord[] = [
     badgeNumber: 'MRN-84299',
     status: 'granted',
     lastUpdated: '2026-10-14 08:00',
-    updatedBy: 'Dr. Marcus Vance (Managing Director)',
+    updatedBy: 'Meera Krishnan (Clinic Administrator)',
     reason: 'Verified outpatient medical record and portal credentials',
     permissions: [
       { id: 'perm-pat-emr', name: 'Personal Health Records & Vitals', description: 'Authorize outpatient to view personal medical history, diagnosis summary, and vital signs', enabled: true },
@@ -2544,8 +2544,8 @@ export const INITIAL_ACCESS_AUDIT_LOG: AccessAuditLogEntry[] = [
     targetRole: 'doctor',
     targetStaffName: 'Dr. Nathan Hayes',
     action: 'access_granted',
-    description: 'Workstation credentials and prescribing privileges verified by Managing Director',
-    authorizedBy: 'Dr. Marcus Vance (Managing Director)',
+    description: 'Workstation credentials and prescribing privileges verified by Clinic Administrator',
+    authorizedBy: 'Meera Krishnan (Clinic Administrator)',
   },
   {
     id: 'aud-2',
@@ -2553,8 +2553,8 @@ export const INITIAL_ACCESS_AUDIT_LOG: AccessAuditLogEntry[] = [
     targetRole: 'doctor',
     targetStaffName: 'Dr. Sophia Reed',
     action: 'access_granted',
-    description: 'Family medicine station and EMR access clearance approved by Managing Director',
-    authorizedBy: 'Dr. Marcus Vance (Managing Director)',
+    description: 'Family medicine station and EMR access clearance approved by Clinic Administrator',
+    authorizedBy: 'Meera Krishnan (Clinic Administrator)',
   },
   {
     id: 'aud-3',
@@ -2562,8 +2562,8 @@ export const INITIAL_ACCESS_AUDIT_LOG: AccessAuditLogEntry[] = [
     targetRole: 'receptionist',
     targetStaffName: 'Priya Sharma',
     action: 'access_granted',
-    description: 'Reception desk token dispatch and intake terminal clearance granted',
-    authorizedBy: 'Dr. Marcus Vance (Managing Director)',
+    description: 'Reception desk token dispatch and intake terminal clearance granted by Clinic Administrator',
+    authorizedBy: 'Meera Krishnan (Clinic Administrator)',
   },
   {
     id: 'aud-4',
@@ -2571,8 +2571,8 @@ export const INITIAL_ACCESS_AUDIT_LOG: AccessAuditLogEntry[] = [
     targetRole: 'receptionist',
     targetStaffName: 'David Kim',
     action: 'access_granted',
-    description: 'Admissions and triage intake workstation credentials approved by Managing Director',
-    authorizedBy: 'Dr. Marcus Vance (Managing Director)',
+    description: 'Admissions and triage intake workstation credentials approved by Clinic Administrator',
+    authorizedBy: 'Meera Krishnan (Clinic Administrator)',
   },
 ];
 

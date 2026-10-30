@@ -34,6 +34,7 @@ import {
   Printer,
 } from 'lucide-react';
 import { BloodGroup, Prescription } from '@/types';
+import { hasCapability } from '@/lib/permissions';
 import { handlePrint } from '@/lib/print';
 import { PrescriptionPrintDocument } from '@/components/prescriptions/PrescriptionPrintDocument';
 import { PatientPortal } from './PatientPortal';
@@ -44,9 +45,7 @@ interface PatientViewProps {
 }
 
 export const PatientView: React.FC<PatientViewProps> = ({ activeTab: _activeTab = 'overview', isReadOnlyView: isReadOnlyProp }) => {
-  const { currentUser, currentRole } = useAuth();
-  const isMD = currentRole === 'md' || currentRole === 'admin' || currentUser?.role === 'md';
-  const isReadOnly = Boolean(isReadOnlyProp || isMD);
+  const { currentUser } = useAuth();
   const {
     patients: rawPatients,
     appointments: rawAppointments,
@@ -57,6 +56,8 @@ export const PatientView: React.FC<PatientViewProps> = ({ activeTab: _activeTab 
     addPatient,
     updatePatient,
   } = useClinic();
+  const isSupervisory = hasCapability(currentUser, 'clinicalSupervision', modules) || !hasCapability(currentUser, 'consultationWorkstation', modules);
+  const isReadOnly = Boolean(isReadOnlyProp || isSupervisory);
 
   const patients = React.useMemo(() => {
     return getScopedPatients(currentUser, rawPatients, patientAssignments, null, modules);

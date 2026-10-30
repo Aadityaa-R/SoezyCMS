@@ -18,9 +18,17 @@ export function isNotificationForUser(n: InAppNotification, user: User | null): 
     return true;
   }
 
-  // Managing Director (MD / Dr. Marcus Vance): matches 'doc-1', 'usr-doc-1', 'md', 'admin'
+  // Administrator (Meera Krishnan): matches 'admin', 'administrator', 'usr-adm-1'
   if (
-    (user.role === 'md' || user.role === 'admin' || user.id === 'usr-doc-1') &&
+    (user.role === 'admin' || user.id === 'usr-adm-1') &&
+    (n.recipientId === 'admin' || n.recipientId === 'administrator' || n.recipientId === 'usr-adm-1' || n.recipientId === 'all_staff')
+  ) {
+    return true;
+  }
+
+  // Lead Physician (Dr. Marcus Vance): matches 'doc-1', 'usr-doc-1', 'md'
+  if (
+    (user.role === 'md' || user.id === 'usr-doc-1') &&
     (n.recipientId === 'doc-1' || n.recipientId === 'usr-doc-1' || n.recipientId === 'md' || n.recipientId === 'all_doctors')
   ) {
     return true;

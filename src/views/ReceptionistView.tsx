@@ -20,7 +20,7 @@ import { Activity, Pill, Calendar } from 'lucide-react';
 import { useNotifications } from '@/context/NotificationContext';
 import { Appointment, Patient, AccessAuditLogEntry } from '@/types';
 import { getScopedPatients, getScopedAppointments } from '@/lib/selectors';
-import { getAssignedDoctorId, hasCapability, isAdmin } from '@/lib/permissions';
+import { getAssignedDoctorId, hasCapability, canTransferPatient } from '@/lib/permissions';
 import { isDoctorAvailable, getStoredAttendanceData } from '@/lib/availability';
 import { getAvailableSlots, validateBooking } from '@/lib/scheduling';
 import { getRepository } from '@/data/storage';
@@ -44,9 +44,33 @@ interface ReceptionistViewProps {
 }
 
 export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 'lounge', isReadOnlyView: isReadOnlyProp }) => {
-  const { currentUser, currentRole, addAuditLogEntry } = useAuth();
+  const { currentUser, addAuditLogEntry } = useAuth();
   const { addNotification } = useNotifications();
-  const isMD = Boolean(isReadOnlyProp || currentRole === 'md' || currentRole === 'admin' || currentUser?.role === 'md' || isAdmin(currentUser));
+  const {
+    appointments: rawAppointments,
+    patients: rawPatients,
+    doctors,
+    patientAssignments = [],
+    modules = [],
+    vitals = [],
+    prescriptions = [],
+    registerPatient,
+    updatePatient,
+    transferPatient,
+    checkInAppointment,
+    checkInWalkIn,
+    bookAppointment,
+    updateAppointmentStatus,
+    cancelAppointmentAction,
+    rescheduleAppointmentAction,
+  } = useClinic();
+  const { invoices: billingInvoices, payments: billingPayments } = useBilling();
+
+  const isReadOnlyDesk = Boolean(
+    isReadOnlyProp ||
+    (!hasCapability(currentUser, 'patientRegistration', modules) &&
+      !hasCapability(currentUser, 'patientCheckIn', modules))
+  );
 
   // Map legacy and new tab ids
   const normalizeTab = (tabId: string): string => {
@@ -67,26 +91,6 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
       setSelectedTab(normalizeTab(activeTab));
     }
   }, [activeTab]);
-
-  const {
-    appointments: rawAppointments,
-    patients: rawPatients,
-    doctors,
-    patientAssignments = [],
-    modules = [],
-    vitals = [],
-    prescriptions = [],
-    registerPatient,
-    updatePatient,
-    transferPatient,
-    checkInAppointment,
-    checkInWalkIn,
-    bookAppointment,
-    updateAppointmentStatus,
-    cancelAppointmentAction,
-    rescheduleAppointmentAction,
-  } = useClinic();
-  const { invoices: billingInvoices, payments: billingPayments } = useBilling();
 
   const patients = useMemo(() => {
     return getScopedPatients(currentUser, rawPatients, patientAssignments, null, modules);
@@ -996,7 +1000,7 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
         const isConcluded = apt.status === 'in_consultation' || apt.status === 'completed';
         const pat = rawPatients.find((p) => p.id === apt.patientId);
         const actions: RowActionItem[] = [];
-        if (!isConcluded && !isMD) {
+        if (!isConcluded && !isReadOnlyDesk) {
           actions.push({
             label: 'Call Next',
             onClick: () => handleCallNext(apt),
@@ -1013,11 +1017,13 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
               onClick: () => handleOpenViewRecord(pat),
               ariaLabel: `View record for ${apt.patientName}`,
             });
-            actions.push({
-              label: 'Transfer',
-              onClick: () => handleOpenTransferModal(pat),
-              ariaLabel: `Transfer ${apt.patientName} to another doctor`,
-            });
+            if (canTransferPatient(currentUser, pat.id, patientAssignments, modules)) {
+              actions.push({
+                label: 'Transfer',
+                onClick: () => handleOpenTransferModal(pat),
+                ariaLabel: `Transfer ${apt.patientName} to another doctor`,
+              });
+            }
           }
         } else if (pat) {
           actions.push({
@@ -1025,6 +1031,13 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
             onClick: () => handleOpenViewRecord(pat),
             ariaLabel: `View record for ${apt.patientName}`,
           });
+          if (!isConcluded && canTransferPatient(currentUser, pat.id, patientAssignments, modules)) {
+            actions.push({
+              label: 'Transfer',
+              onClick: () => handleOpenTransferModal(pat),
+              ariaLabel: `Transfer ${apt.patientName} to another doctor`,
+            });
+          }
         }
         return (
           <RowActions
@@ -1100,7 +1113,7 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
         const pat = rawPatients.find((p) => p.id === apt.patientId);
         const actions: RowActionItem[] = [];
 
-        if (canCheckInItem && !isMD) {
+        if (canCheckInItem && !isReadOnlyDesk) {
           actions.push({
             label: 'Check In',
             variant: 'primary',
@@ -1117,7 +1130,7 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
           });
         }
 
-        if (apt.status !== 'completed' && apt.status !== 'in_consultation' && pat && !isMD) {
+        if (apt.status !== 'completed' && apt.status !== 'in_consultation' && pat && canTransferPatient(currentUser, pat.id, patientAssignments, modules)) {
           actions.push({
             label: 'Transfer',
             onClick: () => handleOpenTransferModal(pat),
@@ -1191,19 +1204,19 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
             ariaLabel: `View medical record for ${p.firstName} ${p.lastName}`,
           },
         ];
-        if (!isMD) {
-          actions.push(
-            {
-              label: 'Edit',
-              onClick: () => handleOpenEditPatient(p),
-              ariaLabel: `Edit information for ${p.firstName} ${p.lastName}`,
-            },
-            {
-              label: isUnassigned ? 'Assign' : 'Transfer',
-              onClick: () => handleOpenTransferModal(p),
-              ariaLabel: `${isUnassigned ? 'Assign' : 'Transfer'} care for ${p.firstName} ${p.lastName}`,
-            }
-          );
+        if (!isReadOnlyDesk) {
+          actions.push({
+            label: 'Edit',
+            onClick: () => handleOpenEditPatient(p),
+            ariaLabel: `Edit information for ${p.firstName} ${p.lastName}`,
+          });
+        }
+        if (canTransferPatient(currentUser, p.id, patientAssignments, modules)) {
+          actions.push({
+            label: isUnassigned ? 'Assign' : 'Transfer',
+            onClick: () => handleOpenTransferModal(p),
+            ariaLabel: `${isUnassigned ? 'Assign' : 'Transfer'} care for ${p.firstName} ${p.lastName}`,
+          });
         }
         return (
           <RowActions
@@ -1329,7 +1342,7 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
         return (
           <RowActions
             actions={
-              canManageRegistration && !isMD
+              canManageRegistration && !isReadOnlyDesk
                 ? [
                     {
                       label: 'Approve',
@@ -1391,7 +1404,7 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
           document.getElementById('main-content')?.scrollTo({ top: 0, behavior: 'instant' });
         }}
         controls={
-          !isMD ? (
+          !isReadOnlyDesk ? (
             <div className="flex items-center gap-2 shrink-0">
               <Button
                 size="compact"
@@ -1534,8 +1547,8 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
               appointments={rawAppointments}
               doctors={doctors}
               todayStr={todayStr}
-              hideCheckInButton={isMD}
-              onOpenWalkInModal={isMD ? undefined : () => setIsWalkInOpen(true)}
+              hideCheckInButton={isReadOnlyDesk}
+              onOpenWalkInModal={isReadOnlyDesk ? undefined : () => setIsWalkInOpen(true)}
             />
           )}
         </div>

@@ -258,7 +258,7 @@ export function cancelAppointment(
     return { success: false, error: 'Appointment is already cancelled.' };
   }
 
-  const isStaff = actor?.role === 'receptionist' || actor?.role === 'admin' || actor?.role === 'md';
+  const isStaff = Boolean(actor && actor.role !== 'patient');
   const aptTime = new Date(appointment.dateTime).getTime();
   const diffMinutes = (aptTime - now.getTime()) / (60 * 1000);
 
@@ -307,7 +307,7 @@ export function rescheduleAppointment(
   leaves: LeaveRequest[],
   now: Date
 ): RescheduleResult {
-  const isStaff = actor?.role === 'receptionist' || actor?.role === 'admin' || actor?.role === 'md';
+  const isStaff = Boolean(actor && actor.role !== 'patient');
   const aptTime = new Date(appointment.dateTime).getTime();
   const diffMinutes = (aptTime - now.getTime()) / (60 * 1000);
 

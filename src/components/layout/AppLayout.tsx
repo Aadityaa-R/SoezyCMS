@@ -19,7 +19,7 @@ import { ProfileView } from '@/views/ProfileView';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-import { isAdmin, hasCapability, canViewBilling } from '@/lib/permissions';
+import { hasCapability, canViewBilling } from '@/lib/permissions';
 import { UserRole } from '@/types';
 import {
   hasExistingValidSession,
@@ -183,7 +183,7 @@ export const AppLayout: React.FC = () => {
 
   // If a user was viewing access_control and their admin capability was revoked, return immediately to dashboard
   useEffect(() => {
-    if (activeTab === 'access_control' && !isAdmin(currentUser, modules)) {
+    if (activeTab === 'access_control' && !hasCapability(currentUser, 'administrativeAccess', modules)) {
       setActiveTab('dashboard');
       setActiveSubTab(undefined);
     }
@@ -277,41 +277,47 @@ export const AppLayout: React.FC = () => {
     }
 
     if (activeTab === 'doctor' || activeTab === 'role_doctor') {
-      if (hasCapability(currentUser, 'consultationWorkstation', modules) || isAdmin(currentUser, modules)) {
-        return <DoctorView activeTab={activeSubTab || 'overview'} isReadOnlyView={isAdmin(currentUser, modules)} />;
+      if (hasCapability(currentUser, 'consultationWorkstation', modules)) {
+        return <DoctorView activeTab={activeSubTab || 'overview'} isReadOnlyView={false} />;
       }
       return <DashboardView onNavigate={handleNavigate} />;
     }
 
     if (activeTab === 'consulting_calendar') {
-      if (hasCapability(currentUser, 'consultingCalendar', modules) || isAdmin(currentUser, modules)) {
-        return <DoctorView activeTab={activeSubTab || 'overview'} isReadOnlyView={isAdmin(currentUser, modules)} />;
+      if (hasCapability(currentUser, 'consultingCalendar', modules)) {
+        return <DoctorView activeTab={activeSubTab || 'overview'} isReadOnlyView={false} />;
       }
       return <DashboardView onNavigate={handleNavigate} />;
     }
 
     if (activeTab === 'role_receptionist' || activeTab === 'receptionist' || activeTab === 'calendar') {
-      if (
+      const hasFrontDesk =
         hasCapability(currentUser, 'patientRegistration', modules) ||
-        hasCapability(currentUser, 'patientCheckIn', modules) ||
-        hasCapability(currentUser, 'booking', modules) ||
-        hasCapability(currentUser, 'paymentRecording', modules) ||
-        isAdmin(currentUser, modules)
-      ) {
-        return <ReceptionistView activeTab={activeTab === 'calendar' ? 'calendar' : (activeSubTab || 'overview')} isReadOnlyView={isAdmin(currentUser, modules)} />;
+        hasCapability(currentUser, 'patientCheckIn', modules);
+      const hasAdmin = hasCapability(currentUser, 'administrativeAccess', modules);
+      if (hasFrontDesk || hasAdmin) {
+        return (
+          <ReceptionistView
+            activeTab={activeTab === 'calendar' ? 'calendar' : (activeSubTab || 'overview')}
+            isReadOnlyView={!hasFrontDesk}
+          />
+        );
       }
       return <DashboardView onNavigate={handleNavigate} />;
     }
 
     if (activeTab === 'access_control') {
-      if (isAdmin(currentUser, modules)) {
+      if (hasCapability(currentUser, 'administrativeAccess', modules)) {
         return <AccessControlView activeTab={activeSubTab || 'modules'} onNavigate={handleNavigate} />;
       }
       return <DashboardView onNavigate={handleNavigate} />;
     }
 
     if (activeTab === 'role_patient' || activeTab === 'patient' || activeTab === 'patients') {
-      return <PatientView activeTab={activeSubTab || 'overview'} isReadOnlyView={isAdmin(currentUser, modules)} />;
+      if (hasCapability(currentUser, 'emrRecordsAccess', modules)) {
+        return <PatientView activeTab={activeSubTab || 'overview'} isReadOnlyView={false} />;
+      }
+      return <DashboardView onNavigate={handleNavigate} />;
     }
 
     if (activeTab === 'admin_billing' || activeTab === 'billing') {
