@@ -16,9 +16,29 @@ import {
 
 export const ROLE_CREDENTIALS: RoleCredential[] = [
   {
+    role: 'platform_super_admin',
+    username: 'superadmin',
+    email: 'superadmin@soezy.io',
+    password: 'SuperAdmin@12345',
+    label: 'Platform Super Admin',
+    department: 'Platform Architecture',
+    fullName: 'Platform Super Admin',
+    description: 'Global SaaS Super Admin • Provision clinics, manage Clinic Super Admins, multi-clinic switcher',
+  },
+  {
+    role: 'clinic_super_admin',
+    username: 'subiksham_super',
+    email: 'director@subiksham.local',
+    password: 'ClinicSuper@123',
+    label: 'Clinic Super Admin',
+    department: 'Executive Board',
+    fullName: 'Dr. R. Subiksham',
+    description: 'Clinic Super Admin • Clinic ownership, clinic branding, manage Clinic Admins, financial audits',
+  },
+  {
     role: 'admin',
     username: 'admin',
-    email: 'admin@beaconclinic.com',
+    email: 'admin@subiksham.local',
     password: 'Admin@12345',
     label: 'Administrator',
     department: 'Administration',

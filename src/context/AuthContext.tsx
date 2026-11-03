@@ -42,6 +42,18 @@ export interface RoleMeta {
 
 export const ALL_ROLES: RoleMeta[] = [
   {
+    role: 'platform_super_admin',
+    label: 'Platform Super Admin',
+    department: 'Platform Architecture',
+    description: 'Global SaaS Super Admin: Multi-clinic switcher, provision clinics, manage Clinic Super Admins.',
+  },
+  {
+    role: 'clinic_super_admin',
+    label: 'Clinic Super Admin',
+    department: 'Executive Board',
+    description: 'Clinic Owner / Director: Clinic branding, clinic settings, manage Clinic Admins, financial audits.',
+  },
+  {
     role: 'admin',
     label: 'Administrator',
     department: 'Administration',

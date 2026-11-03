@@ -1,13 +1,17 @@
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { UserRole } from '@/types';
-import { Shield, Stethoscope, User, Calendar } from 'lucide-react';
+import { Shield, Stethoscope, User, Calendar, Globe, Building2 } from 'lucide-react';
 
 export const RoleSwitcher: React.FC = () => {
   const { currentRole, switchRole, availableRoles, currentUser, isRoleSuspended } = useAuth();
 
   const getRoleIcon = (role: UserRole) => {
     switch (role) {
+      case 'platform_super_admin':
+        return <Globe className="w-3.5 h-3.5 text-purple-300" />;
+      case 'clinic_super_admin':
+        return <Building2 className="w-3.5 h-3.5 text-indigo-300" />;
       case 'md':
       case 'admin':
         return <Shield className="w-3.5 h-3.5 text-teal-300" />;

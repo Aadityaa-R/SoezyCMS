@@ -188,6 +188,11 @@ export function getEffectiveAccesses(
     }
   }
 
+  // Platform & Clinic Super Admins always retain administrativeAccess while account is active
+  if (user && 'role' in user && (user.role === 'platform_super_admin' || user.role === 'clinic_super_admin')) {
+    accessSet.add('administrativeAccess');
+  }
+
   // The original administrator always retains administrativeAccess while account is active
   const isOriginal = Boolean(user && 'isOriginalAdmin' in user && user.isOriginalAdmin);
   if (isOriginal) {

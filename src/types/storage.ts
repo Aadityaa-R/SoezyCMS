@@ -17,6 +17,7 @@ import { PendingStaffApproval } from '../data/mockData';
 
 export interface Account {
   id: string;
+  clinicId?: string | null;
   username: string;
   email: string;
   fullName: string;

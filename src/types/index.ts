@@ -1,9 +1,11 @@
 export type UserRole =
+  | 'platform_super_admin'
+  | 'clinic_super_admin'
+  | 'admin'
   | 'md'
   | 'doctor'
   | 'receptionist'
-  | 'patient'
-  | 'admin';
+  | 'patient';
 
 export interface User {
   id: string;
@@ -11,6 +13,7 @@ export interface User {
   email: string;
   phone?: string;
   role: UserRole;
+  clinicId?: string;
   avatarUrl?: string;
   department?: string;
   title?: string;

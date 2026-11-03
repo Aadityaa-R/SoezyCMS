@@ -136,7 +136,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const { currentRole, currentUser } = useAuth();
   const { modules } = useClinic();
-  const isUserAdmin = currentRole === 'md' || currentRole === 'admin' || isAdmin(currentUser, modules);
+  const isUserAdmin = currentRole === 'md' || currentRole === 'admin' || currentRole === 'clinic_super_admin' || currentRole === 'platform_super_admin' || isAdmin(currentUser, modules);
 
   const getNavItems = (): NavItem[] => {
     if (currentRole === 'patient') {

@@ -50,7 +50,7 @@ export function audienceOf(
   if (role === 'patient') {
     return 'patient';
   }
-  if (role === 'md' || role === 'admin') {
+  if (role === 'md' || role === 'admin' || role === 'platform_super_admin' || role === 'clinic_super_admin') {
     return 'admin';
   }
   return 'staff';
