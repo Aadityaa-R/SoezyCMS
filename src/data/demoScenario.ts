@@ -42,6 +42,16 @@ export interface DemoScenarioData {
 
 // Precomputed PBKDF2 hashes for seed accounts (iterations: 100000)
 const SEED_ACCOUNT_HASHES: Record<string, { hash: string; salt: string; iterations: number }> = {
+  superadmin: {
+    hash: 'b4f79752b97721be4815c48a4d8913e460a2839a279021df8ec4fb5dd7a790bc',
+    salt: 'a425f225072799245b6c0e436e2f18c9',
+    iterations: 100000,
+  },
+  subiksham_super: {
+    hash: '45472fa5f054d645851945d3e299b7bbe7928c440b6db1efcec75c562247a470',
+    salt: 'a06966d45abbb8eb315b97b13685e3d8',
+    iterations: 100000,
+  },
   admin: {
     hash: 'a74c278958ce4a094a823c748e07ccf41d49dcfae96df97b68921c812bf7c1eb',
     salt: '07906dd9617d8509c92aa3761d728546',
@@ -106,6 +116,40 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
 
   // 1. Staff Accounts & Credentials
   const accounts: Account[] = [
+    {
+      id: 'acc-platform-superadmin',
+      clinicId: null,
+      username: 'superadmin',
+      email: 'superadmin@soezy.io',
+      fullName: 'Platform Super Admin',
+      phone: '+91 99999 00000',
+      role: 'platform_super_admin',
+      passwordHash: SEED_ACCOUNT_HASHES.superadmin.hash,
+      passwordSalt: SEED_ACCOUNT_HASHES.superadmin.salt,
+      passwordIterations: SEED_ACCOUNT_HASHES.superadmin.iterations,
+      status: 'active',
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+      createdAt: offsetIso(-180),
+      updatedAt: offsetIso(-180),
+    },
+    {
+      id: 'acc-clinic-super-subiksham',
+      clinicId: 'CLN-001',
+      username: 'subiksham_super',
+      email: 'director@subiksham.local',
+      fullName: 'Dr. R. Subiksham',
+      phone: '+91 95432 79001',
+      role: 'clinic_super_admin',
+      passwordHash: SEED_ACCOUNT_HASHES.subiksham_super.hash,
+      passwordSalt: SEED_ACCOUNT_HASHES.subiksham_super.salt,
+      passwordIterations: SEED_ACCOUNT_HASHES.subiksham_super.iterations,
+      status: 'active',
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+      createdAt: offsetIso(-180),
+      updatedAt: offsetIso(-180),
+    },
     {
       id: 'acc-adm-1',
       username: 'admin',
