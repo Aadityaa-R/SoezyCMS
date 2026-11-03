@@ -21,6 +21,7 @@ import { OrganizationsView } from '@/views/OrganizationsView';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { AlertCircle } from 'lucide-react';
 import { hasCapability, canViewBilling } from '@/lib/permissions';
 import { UserRole } from '@/types';
 import {
@@ -37,7 +38,7 @@ import { PageContainer } from './PageContainer';
 
 export const AppLayout: React.FC = () => {
   const { currentRole, currentUser, isAuthenticated, isRoleSuspended, logout } = useAuth();
-  const { modules } = useClinic();
+  const { modules, currentOrganization } = useClinic();
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<string>(() => {
     try {
@@ -76,7 +77,7 @@ export const AppLayout: React.FC = () => {
     }
 
     const targetAudience = currentRole === 'patient' ? 'patient' : (currentRole === 'md' ? 'admin' : 'staff');
-    const allowed = getAllowedNavItems(currentRole, currentUser, modules);
+    const allowed = getAllowedNavItems(currentRole, currentUser, modules, currentOrganization?.facilities);
     const hasDashboard = currentRole === 'patient' || allowed.some((item) => item.id === 'dashboard');
     const defaultLandingTab = currentRole === 'patient'
       ? 'dashboard'
@@ -126,7 +127,7 @@ export const AppLayout: React.FC = () => {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab');
 
-      if (tabParam && isTabAllowed(tabParam, currentRole, currentUser, modules)) {
+      if (tabParam && isTabAllowed(tabParam, currentRole, currentUser, modules, currentOrganization?.facilities)) {
         // Keep the page named in ?tab= if allowed (refresh stays on the same page)
         setActiveTab(tabParam);
       } else {
@@ -143,7 +144,7 @@ export const AppLayout: React.FC = () => {
         } catch {}
       }
     }
-  }, [isAuthenticated, currentRole, currentUser, modules]);
+  }, [isAuthenticated, currentRole, currentUser, modules, currentOrganization?.facilities]);
 
   // Sync URL history state on popstate
   useEffect(() => {
@@ -162,7 +163,7 @@ export const AppLayout: React.FC = () => {
           setActiveSubTab(undefined);
           return;
         }
-        if (tabParam && isTabAllowed(tabParam, currentRole, currentUser, modules)) {
+        if (tabParam && isTabAllowed(tabParam, currentRole, currentUser, modules, currentOrganization?.facilities)) {
           setActiveTab(tabParam);
         } else {
           setActiveTab(currentRole === 'patient' ? 'overview' : 'dashboard');
@@ -172,7 +173,7 @@ export const AppLayout: React.FC = () => {
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [currentRole, currentUser, modules]);
+  }, [currentRole, currentUser, modules, currentOrganization?.facilities]);
 
   // Sync document page title
   useEffect(() => {
@@ -383,6 +384,18 @@ export const AppLayout: React.FC = () => {
               activeTab={activeTab}
               onNavigate={handleNavigate}
             />
+
+            {/* Compliance License Expired Notice (Minimalist & Non-intrusive) */}
+            {currentOrganization?.licenseStatus === 'expired' && currentRole !== 'platform_super_admin' && (
+              <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-900/50 px-4 py-2 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>
+                    <strong>License Expired:</strong> {currentOrganization.name}&apos;s license expired on {currentOrganization.licenseValidUntil}. Clinical workstations are operating in compliance renewal mode. Please contact Platform Super Admin for license renewal.
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Main View Area - dedicated scrollable container extending full width flush against panels */}
             <main

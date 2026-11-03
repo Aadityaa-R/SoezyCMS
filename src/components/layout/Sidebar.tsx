@@ -136,8 +136,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }, [isOpen, close]);
 
   const { currentRole, currentUser } = useAuth();
-  const { modules } = useClinic();
-  const isUserAdmin = currentRole === 'md' || currentRole === 'admin' || currentRole === 'platform_super_admin' || isAdmin(currentUser, modules);
+  const { modules, isFacilityEnabled } = useClinic();
+  const isSuperAdmin = currentRole === 'platform_super_admin';
+  const isUserAdmin = currentRole === 'md' || currentRole === 'admin' || isSuperAdmin || isAdmin(currentUser, modules);
 
   const getNavItems = (): NavItem[] => {
     if (currentRole === 'patient') {
@@ -173,17 +174,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
       hasCapability(currentUser, 'patientCheckIn', modules);
     const hasAdminAccess = hasCapability(currentUser, 'administrativeAccess', modules);
 
-    if (hasFrontDesk || hasAdminAccess || currentRole === 'receptionist') {
+    if ((hasFrontDesk || hasAdminAccess || currentRole === 'receptionist') && (isSuperAdmin || isFacilityEnabled('OPD'))) {
       items.push({ id: 'appointments', label: 'Appointments', icon: <Calendar className="w-4 h-4" /> });
     }
 
     // 5. Consultation Desk (Clinical Station)
-    if (hasCapability(currentUser, 'consultationWorkstation', modules) || currentRole === 'doctor') {
+    if ((hasCapability(currentUser, 'consultationWorkstation', modules) || currentRole === 'doctor') && (isSuperAdmin || isFacilityEnabled('OPD'))) {
       items.push({ id: 'doctor', label: 'Consultation Desk', icon: <Stethoscope className="w-4 h-4" /> });
     }
 
     // 6. Front Desk Reception intake
-    if (hasFrontDesk || currentRole === 'receptionist') {
+    if ((hasFrontDesk || currentRole === 'receptionist') && (isSuperAdmin || isFacilityEnabled('OPD'))) {
       items.push({ id: 'role_receptionist', label: 'Reception', icon: <UserCheck className="w-4 h-4" /> });
     }
 
@@ -191,7 +192,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     items.push({ id: 'attendance', label: 'Attendance', icon: <Clock className="w-4 h-4" /> });
 
     // 7. Billing
-    if (canViewBilling(currentUser, modules)) {
+    if (canViewBilling(currentUser, modules) && (isSuperAdmin || isFacilityEnabled('Billing'))) {
       items.push({ id: 'billing', label: 'Billing', icon: <CreditCard className="w-4 h-4" /> });
     }
 

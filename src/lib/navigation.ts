@@ -1,4 +1,4 @@
-import { User, UserRole, AccessModule } from '@/types';
+import { User, UserRole, AccessModule, FacilityModule } from '@/types';
 import { hasCapability, isAdmin, canViewBilling } from '@/lib/permissions';
 import { getVisibleWidgets } from '@/lib/dashboardWidgets';
 import { SESSION_STORAGE_KEY } from '@/lib/authConstants';
@@ -63,7 +63,8 @@ export function hasDashboardAccess(
 export function getAllowedNavItems(
   role: UserRole,
   user: User | null | undefined,
-  modules: AccessModule[] = []
+  modules: AccessModule[] = [],
+  enabledFacilities?: FacilityModule[]
 ): AllowedNavItem[] {
   if (role === 'patient') {
     return [
@@ -75,12 +76,15 @@ export function getAllowedNavItems(
   }
 
   const items: AllowedNavItem[] = [];
+  const isSuperAdmin = role === 'platform_super_admin';
+  const isOpdEnabled = isSuperAdmin || !enabledFacilities || enabledFacilities.includes('OPD');
+  const isBillingEnabled = isSuperAdmin || !enabledFacilities || enabledFacilities.includes('Billing');
 
   if (hasDashboardAccess(role, user, modules)) {
     items.push({ id: 'dashboard', label: 'Dashboard' });
   }
 
-  if (role === 'platform_super_admin') {
+  if (isSuperAdmin) {
     items.push({ id: 'organizations', label: 'Organizations' });
   }
 
@@ -93,7 +97,7 @@ export function getAllowedNavItems(
     hasCapability(user, 'patientCheckIn', modules);
   const hasAdminAccess = hasCapability(user, 'administrativeAccess', modules);
 
-  if (hasFrontDesk || hasAdminAccess || role === 'receptionist') {
+  if ((hasFrontDesk || hasAdminAccess || role === 'receptionist') && isOpdEnabled) {
     items.push({ id: 'appointments', label: 'Appointments' });
   }
 
@@ -101,17 +105,17 @@ export function getAllowedNavItems(
     items.push({ id: 'patient', label: 'Patient Records' });
   }
 
-  if (hasCapability(user, 'consultationWorkstation', modules) || role === 'doctor') {
+  if ((hasCapability(user, 'consultationWorkstation', modules) || role === 'doctor') && isOpdEnabled) {
     items.push({ id: 'doctor', label: 'Consultation Desk' });
   }
 
-  if (hasFrontDesk || role === 'receptionist') {
+  if ((hasFrontDesk || role === 'receptionist') && isOpdEnabled) {
     items.push({ id: 'role_receptionist', label: 'Reception' });
   }
 
   items.push({ id: 'attendance', label: 'Attendance' });
 
-  if (canViewBilling(user, modules)) {
+  if (canViewBilling(user, modules) && isBillingEnabled) {
     items.push({ id: 'billing', label: 'Billing' });
   }
 
@@ -126,7 +130,8 @@ export function isTabAllowed(
   tab: string | null | undefined,
   role: UserRole,
   user: User | null | undefined,
-  modules: AccessModule[] = []
+  modules: AccessModule[] = [],
+  enabledFacilities?: FacilityModule[]
 ): boolean {
   if (!tab) return false;
   const cleanTab = tab.toLowerCase();
@@ -147,6 +152,35 @@ export function isTabAllowed(
 
   if (cleanTab === 'organizations') {
     return role === 'platform_super_admin';
+  }
+
+  // Platform super admin has global unrestricted access
+  if (role === 'platform_super_admin') {
+    return true;
+  }
+
+  const isOpdEnabled = !enabledFacilities || enabledFacilities.includes('OPD');
+  const isBillingEnabled = !enabledFacilities || enabledFacilities.includes('Billing');
+
+  // Block tabs gated behind facility modules
+  if (
+    [
+      'doctor',
+      'role_doctor',
+      'consulting_calendar',
+      'receptionist',
+      'role_receptionist',
+      'calendar',
+      'appointments',
+      'appointment',
+    ].includes(cleanTab) &&
+    !isOpdEnabled
+  ) {
+    return false;
+  }
+
+  if (['billing', 'admin_billing'].includes(cleanTab) && !isBillingEnabled) {
+    return false;
   }
 
   if (cleanTab === 'dashboard') {

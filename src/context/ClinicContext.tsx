@@ -137,11 +137,28 @@ interface ClinicContextType {
 
   // Enterprise Organizations
   organizations: Organization[];
+  currentOrganization?: Organization;
+  isFacilityEnabled: (facility: FacilityModule) => boolean;
   createOrganization: (data: Partial<Organization>) => Promise<Organization>;
   updateOrganization: (id: string, updates: Partial<Organization>) => Promise<Organization>;
   deleteOrganization: (id: string) => Promise<{ success: boolean; error?: string }>;
-  appointOrganizationAdmin: (orgId: string, adminId: string, adminName: string, adminEmail: string) => Promise<void>;
-  linkClinicToOrganization: (clinicId: string, organizationId: string | null) => Promise<void>;
+  appointOrganizationAdmin: (
+    orgId: string,
+    adminDataOrId:
+      | string
+      | {
+          adminId?: string;
+          adminName: string;
+          adminEmail: string;
+          adminUsername?: string;
+          adminPassword?: string;
+          adminPhone?: string;
+          isNewAccount?: boolean;
+        },
+    optionalName?: string,
+    optionalEmail?: string
+  ) => Promise<{ success: boolean; error?: string; provisionedAdmin?: ProvisionedAdminInfo }>;
+  linkClinicToOrganization: (clinicId: string, organizationId: string | null) => Promise<{ success: boolean; error?: string }>;
   patients: Patient[];
   doctors: Doctor[];
   appointments: Appointment[];
@@ -421,6 +438,13 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     fetchOrganizations();
   }, []);
 
+  const currentOrganization = organizations.find((o) => o.id === currentClinic.organizationId);
+
+  const isFacilityEnabled = (facility: FacilityModule): boolean => {
+    if (!currentOrganization) return true;
+    return currentOrganization.facilities ? currentOrganization.facilities.includes(facility) : true;
+  };
+
   const loadClinicData = async (targetClinicId = activeClinicId) => {
     try {
       const repoPatients = getRepository<Patient>('patients');
@@ -506,6 +530,20 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const createClinic = async (clinicData: CreateClinicParams): Promise<Clinic & { adminAccount?: ProvisionedAdminInfo }> => {
+    // Quota Enforcement: Check branch limit if linked to an organization
+    if (clinicData.organizationId) {
+      const targetOrg = organizations.find((o) => o.id === clinicData.organizationId);
+      if (targetOrg) {
+        const existingBranches = clinics.filter((c) => c.organizationId === targetOrg.id);
+        const maxBranches = targetOrg.maxBranches ?? 5;
+        if (existingBranches.length >= maxBranches) {
+          throw new Error(
+            `Branch quota reached: Organization "${targetOrg.name}" (${targetOrg.code}) is licensed for a maximum of ${maxBranches} branches. Upgrade the license tier to add additional branches.`
+          );
+        }
+      }
+    }
+
     const nextNumber = clinics.length + 1;
     const newId = clinicData.id || `CLN-${String(nextNumber).padStart(3, '0')}`;
     const code = (clinicData.code || clinicData.name || `CLN${nextNumber}`).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
@@ -865,21 +903,147 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const appointOrganizationAdmin = async (
     orgId: string,
-    adminId: string,
-    adminName: string,
-    adminEmail: string
-  ): Promise<void> => {
+    adminDataOrId:
+      | string
+      | {
+          adminId?: string;
+          adminName: string;
+          adminEmail: string;
+          adminUsername?: string;
+          adminPassword?: string;
+          adminPhone?: string;
+          isNewAccount?: boolean;
+        },
+    optionalName?: string,
+    optionalEmail?: string
+  ): Promise<{ success: boolean; error?: string; provisionedAdmin?: ProvisionedAdminInfo }> => {
+    let adminId: string;
+    let adminName: string;
+    let adminEmail: string;
+    let provisionedAdmin: ProvisionedAdminInfo | undefined;
+
+    if (typeof adminDataOrId === 'string') {
+      adminId = adminDataOrId;
+      adminName = optionalName || 'Administrator';
+      adminEmail = optionalEmail || '';
+    } else {
+      adminName = adminDataOrId.adminName;
+      adminEmail = adminDataOrId.adminEmail;
+
+      if (adminDataOrId.isNewAccount) {
+        const targetOrg = organizations.find((o) => o.id === orgId);
+        const orgCode = targetOrg?.code || 'ORG';
+        const username = (adminDataOrId.adminUsername || `${orgCode.toLowerCase()}_admin`).trim().toLowerCase();
+        const password = (adminDataOrId.adminPassword || 'Admin@12345').trim();
+        const phone = (adminDataOrId.adminPhone || '').trim();
+
+        // Check if username already exists
+        if (isSupabaseConfigured && supabase) {
+          const { data: existingUser } = await supabase
+            .from('accounts')
+            .select('id')
+            .eq('username', username)
+            .maybeSingle();
+
+          if (existingUser) {
+            return {
+              success: false,
+              error: `Username "${username}" is already in use. Please select a different username.`,
+            };
+          }
+        }
+
+        // 1. Hash password & generate ID
+        const { hash, salt, iterations } = await hashPassword(password);
+        const accountId = `acc-adm-${orgCode.toLowerCase()}-${Date.now().toString(36).slice(-4)}`;
+        const primaryClinic = clinics.find((c) => c.organizationId === orgId) || currentClinic;
+
+        if (isSupabaseConfigured && supabase) {
+          try {
+            const { error: accErr } = await supabase.from('accounts').insert({
+              id: accountId,
+              clinic_id: primaryClinic.id,
+              username,
+              email: adminEmail,
+              full_name: adminName,
+              phone: phone || null,
+              role: 'admin',
+              password_hash: hash,
+              password_salt: salt,
+              password_iterations: iterations,
+              status: 'active',
+              failed_login_attempts: 0,
+            });
+
+            if (accErr) {
+              console.error('Supabase admin account creation error:', accErr.message);
+              return { success: false, error: accErr.message };
+            }
+
+            const staffId = `stf-adm-${orgCode.toLowerCase()}-${Date.now().toString(36).slice(-4)}`;
+            await supabase.from('staff').insert({
+              id: staffId,
+              clinic_id: primaryClinic.id,
+              account_id: accountId,
+              name: adminName,
+              title: `${targetOrg?.name || 'Organization'} Lead Administrator`,
+              department: 'Administration',
+              role: 'admin',
+              phone: phone || null,
+              email: adminEmail,
+              is_on_duty: true,
+              is_original_admin: true,
+              status: 'active',
+              capabilities: ['administrativeAccess', 'staffManagement', 'accessControl', 'billingView'],
+            });
+          } catch (err: any) {
+            console.warn('Supabase admin provision exception:', err);
+          }
+        }
+
+        adminId = accountId;
+        provisionedAdmin = {
+          id: accountId,
+          username,
+          email: adminEmail,
+          fullName: adminName,
+          temporaryPassword: password,
+        };
+      } else {
+        adminId = adminDataOrId.adminId || `acc-adm-${Date.now().toString(36)}`;
+      }
+    }
+
     await updateOrganization(orgId, {
       appointedAdminId: adminId,
       appointedAdminName: adminName,
       appointedAdminEmail: adminEmail,
     });
+
+    return {
+      success: true,
+      provisionedAdmin,
+    };
   };
 
   const linkClinicToOrganization = async (
     clinicId: string,
     organizationId: string | null
-  ): Promise<void> => {
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (organizationId) {
+      const targetOrg = organizations.find((o) => o.id === organizationId);
+      if (targetOrg) {
+        const existingBranches = clinics.filter((c) => c.organizationId === targetOrg.id && c.id !== clinicId);
+        const maxBranches = targetOrg.maxBranches ?? 5;
+        if (existingBranches.length >= maxBranches) {
+          return {
+            success: false,
+            error: `Branch quota reached: Organization "${targetOrg.name}" has reached its limit of ${maxBranches} branches. Upgrade the license tier to attach additional branches.`,
+          };
+        }
+      }
+    }
+
     if (isSupabaseConfigured && supabase) {
       try {
         await supabase.from('clinics').update({ organization_id: organizationId }).eq('id', clinicId);
@@ -903,6 +1067,7 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setClinics((prev) =>
       prev.map((c) => (c.id === clinicId ? { ...c, organizationId: organizationId || undefined } : c))
     );
+    return { success: true };
   };
 
   // Cross-tab sync and realtime event listener
@@ -1279,6 +1444,14 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const addDoctor = (data: Omit<Doctor, 'id'>): Doctor => {
+    if (currentOrganization) {
+      const maxDoctors = currentOrganization.maxDoctors ?? 50;
+      if (doctors.length >= maxDoctors) {
+        throw new Error(
+          `Doctor capacity reached: Organization "${currentOrganization.name}" (${currentOrganization.code}) has reached its licensed limit of ${maxDoctors} doctors. Upgrade license tier to enroll additional doctors.`
+        );
+      }
+    }
     const newId = `doc-${doctors.length + 1}`;
     const newDoc: Doctor = {
       ...data,
@@ -2685,6 +2858,8 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         switchClinic,
         createClinic,
         organizations,
+        currentOrganization,
+        isFacilityEnabled,
         createOrganization,
         updateOrganization,
         deleteOrganization,

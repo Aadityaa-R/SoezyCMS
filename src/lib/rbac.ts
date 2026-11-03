@@ -1,6 +1,13 @@
 import { UserRole } from '../types';
 
 export type Permission =
+  // Enterprise Organizations & Licensing
+  | 'organizations:view'
+  | 'organizations:create'
+  | 'organizations:delete'
+  | 'organizations:appoint_admin'
+  | 'organizations:license'
+  | 'organizations:facilities'
   // Platform & Clinic Management
   | 'clinics:manage_all'
   | 'clinics:switch'
@@ -41,6 +48,12 @@ export type Permission =
  */
 export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   platform_super_admin: [
+    'organizations:view',
+    'organizations:create',
+    'organizations:delete',
+    'organizations:appoint_admin',
+    'organizations:license',
+    'organizations:facilities',
     'clinics:manage_all',
     'clinics:switch',
     'clinics:create',
@@ -79,6 +92,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
   ],
 
   admin: [
+    'organizations:view',
     'staff:view',
     'staff:manage',
     'staff:roster',
@@ -218,6 +232,18 @@ export function isClinicSuperAdmin(role?: UserRole): boolean {
 
 export function isClinicAdmin(role?: UserRole): boolean {
   return role === 'admin';
+}
+
+export function canManageOrganizations(role?: UserRole): boolean {
+  return role === 'platform_super_admin';
+}
+
+export function canAppointOrganizationAdmin(role?: UserRole): boolean {
+  return role === 'platform_super_admin';
+}
+
+export function canManageOrganizationLicenses(role?: UserRole): boolean {
+  return role === 'platform_super_admin';
 }
 
 /**

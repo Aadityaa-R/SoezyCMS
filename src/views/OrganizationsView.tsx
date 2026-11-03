@@ -20,8 +20,10 @@ import {
   ChevronUp,
   Hospital,
   Search,
+  Copy,
+  Check,
 } from 'lucide-react';
-import { Organization, LicenseTier, FacilityModule } from '@/types';
+import { Organization, LicenseTier, FacilityModule, ProvisionedAdminInfo } from '@/types';
 
 interface OrganizationsViewProps {
   onNavigate?: (tab: string, subTab?: string) => void;
@@ -130,9 +132,15 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
   const [editStatus, setEditStatus] = useState<'active' | 'suspended' | 'trial' | 'inactive'>('active');
 
   // Form states for Appoint Admin
+  const [appointMode, setAppointMode] = useState<'select_existing' | 'provision_new'>('select_existing');
   const [appointedName, setAppointedName] = useState('');
   const [appointedEmail, setAppointedEmail] = useState('');
+  const [appointedUsername, setAppointedUsername] = useState('');
+  const [appointedPassword, setAppointedPassword] = useState('Admin@12345');
+  const [appointedPhone, setAppointedPhone] = useState('');
   const [selectedStaffId, setSelectedStaffId] = useState('');
+  const [provisionedAdminResult, setProvisionedAdminResult] = useState<ProvisionedAdminInfo | null>(null);
+  const [hasCopiedAdminCreds, setHasCopiedAdminCreds] = useState(false);
 
   // Form states for Delete Confirmation
   const [deleteConfirmationCode, setDeleteConfirmationCode] = useState('');
@@ -325,9 +333,16 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
   // Open Appoint Admin Modal
   const openAppointModal = (org: Organization) => {
     setAppointingOrg(org);
+    setAppointMode('select_existing');
     setAppointedName(org.appointedAdminName || '');
     setAppointedEmail(org.appointedAdminEmail || '');
+    setAppointedUsername(`${org.code.toLowerCase()}_admin`);
+    setAppointedPassword('Admin@12345');
+    setAppointedPhone(org.phone || '');
     setSelectedStaffId(org.appointedAdminId || '');
+    setProvisionedAdminResult(null);
+    setHasCopiedAdminCreds(false);
+    setFormError('');
   };
 
   // Handle staff selection in Appoint Admin
@@ -348,16 +363,35 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
       setFormError('Administrator full name is required.');
       return;
     }
+    if (appointMode === 'provision_new' && !appointedUsername.trim()) {
+      setFormError('Username is required for provisioning an administrator.');
+      return;
+    }
 
     setIsSubmitting(true);
+    setFormError('');
     try {
-      await appointOrganizationAdmin(
-        appointingOrg.id,
-        selectedStaffId || `acc-adm-${Date.now().toString(36)}`,
-        appointedName.trim(),
-        appointedEmail.trim()
-      );
-      setAppointingOrg(null);
+      const res = await appointOrganizationAdmin(appointingOrg.id, {
+        isNewAccount: appointMode === 'provision_new',
+        adminId: appointMode === 'select_existing' ? selectedStaffId : undefined,
+        adminName: appointedName.trim(),
+        adminEmail: appointedEmail.trim(),
+        adminUsername: appointedUsername.trim().toLowerCase(),
+        adminPassword: appointedPassword.trim(),
+        adminPhone: appointedPhone.trim(),
+      });
+
+      if (!res.success) {
+        setFormError(res.error || 'Failed to appoint administrator.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (res.provisionedAdmin) {
+        setProvisionedAdminResult(res.provisionedAdmin);
+      } else {
+        setAppointingOrg(null);
+      }
     } catch (err: any) {
       setFormError(err?.message || 'Failed to appoint administrator.');
     } finally {
@@ -409,8 +443,14 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
     if (!attachingOrg || !selectedClinicToAttach) return;
 
     setIsSubmitting(true);
+    setFormError('');
     try {
-      await linkClinicToOrganization(selectedClinicToAttach, attachingOrg.id);
+      const res = await linkClinicToOrganization(selectedClinicToAttach, attachingOrg.id);
+      if (!res.success) {
+        setFormError(res.error || 'Failed to attach branch.');
+        setIsSubmitting(false);
+        return;
+      }
       setAttachingOrg(null);
     } catch (err: any) {
       setFormError(err?.message || 'Failed to attach branch.');
@@ -1259,77 +1299,274 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
           isOpen={true}
           onClose={() => setAppointingOrg(null)}
           title={`Appoint Administrator: ${appointingOrg.name}`}
-          description="Designate a primary administrator responsible for organization operations."
+          description={
+            provisionedAdminResult
+              ? 'Administrator account has been provisioned. Please securely share these credentials.'
+              : 'Designate an existing administrator or provision a new institutional authority account.'
+          }
           maxWidth="sm"
           footer={
             <div className="flex items-center justify-end gap-2.5 w-full">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setAppointingOrg(null)}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleAppointSubmit}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Confirming...' : 'Confirm Appointment'}
-              </Button>
+              {provisionedAdminResult ? (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => setAppointingOrg(null)}
+                >
+                  Done
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAppointingOrg(null)}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleAppointSubmit}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting
+                      ? 'Saving...'
+                      : appointMode === 'provision_new'
+                      ? 'Provision & Appoint'
+                      : 'Confirm Appointment'}
+                  </Button>
+                </>
+              )}
             </div>
           }
         >
-          <form onSubmit={handleAppointSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Select from Staff Directory
-              </label>
-              <select
-                value={selectedStaffId}
-                onChange={(e) => handleStaffSelect(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 mb-2"
-              >
-                <option value="">-- Or enter custom administrator below --</option>
-                {staffAccessList
-                  .filter((s) => s.role === 'admin' || s.role === 'md')
-                  .map((staff) => (
-                    <option key={staff.id} value={staff.id}>
-                      {staff.staffName} ({staff.staffTitle})
-                    </option>
-                  ))}
-              </select>
-            </div>
+          {provisionedAdminResult ? (
+            <div className="space-y-3.5">
+              <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-2.5 text-xs">
+                <span className="font-semibold text-slate-800 dark:text-slate-200 block">
+                  Generated Administrator Credentials
+                </span>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Administrator Full Name *
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. Meera Krishnan"
-                value={appointedName}
-                onChange={(e) => setAppointedName(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
-              />
-            </div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-slate-500 block text-[11px]">Administrator</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      {provisionedAdminResult.fullName}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-500 block text-[11px]">Email</span>
+                    <span className="font-mono text-slate-800 dark:text-slate-200">
+                      {provisionedAdminResult.email}
+                    </span>
+                  </div>
+                  <div className="bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-700">
+                    <span className="text-slate-500 block text-[10px] uppercase font-bold">Username</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">
+                      {provisionedAdminResult.username}
+                    </span>
+                  </div>
+                  <div className="bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-700">
+                    <span className="text-slate-500 block text-[10px] uppercase font-bold">Temporary Password</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">
+                      {provisionedAdminResult.temporaryPassword}
+                    </span>
+                  </div>
+                </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Administrator Email Address
-              </label>
-              <input
-                type="email"
-                placeholder="admin@hospital.local"
-                value={appointedEmail}
-                onChange={(e) => setAppointedEmail(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
-              />
+                <div className="pt-2 flex items-center justify-between border-t border-slate-200/60 dark:border-slate-700/60">
+                  <span className="text-[11px] text-slate-500">Bound to {appointingOrg.name} ({appointingOrg.code})</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const text = [
+                        `Organization: ${appointingOrg.name} (${appointingOrg.code})`,
+                        `Role: Clinic Administrator (admin)`,
+                        `Username: ${provisionedAdminResult.username}`,
+                        `Temporary Password: ${provisionedAdminResult.temporaryPassword}`,
+                        `Email: ${provisionedAdminResult.email}`,
+                      ].join('\n');
+                      navigator.clipboard.writeText(text);
+                      setHasCopiedAdminCreds(true);
+                      setTimeout(() => setHasCopiedAdminCreds(false), 2500);
+                    }}
+                    className="flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                  >
+                    {hasCopiedAdminCreds ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy Credentials</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
-          </form>
+          ) : (
+            <form onSubmit={handleAppointSubmit} className="space-y-4">
+              {formError && (
+                <div className="p-2.5 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs">
+                  {formError}
+                </div>
+              )}
+
+              {/* Mode Toggle */}
+              <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-md">
+                <button
+                  type="button"
+                  onClick={() => setAppointMode('select_existing')}
+                  className={`py-1.5 text-xs font-medium rounded transition-colors ${
+                    appointMode === 'select_existing'
+                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  }`}
+                >
+                  Select Existing Staff
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAppointMode('provision_new')}
+                  className={`py-1.5 text-xs font-medium rounded transition-colors ${
+                    appointMode === 'provision_new'
+                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  }`}
+                >
+                  Provision New Account
+                </button>
+              </div>
+
+              {appointMode === 'select_existing' ? (
+                <>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Select from Staff Directory
+                    </label>
+                    <select
+                      value={selectedStaffId}
+                      onChange={(e) => handleStaffSelect(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 mb-2"
+                    >
+                      <option value="">-- Or enter custom administrator below --</option>
+                      {staffAccessList
+                        .filter((s) => s.role === 'admin' || s.role === 'md')
+                        .map((staff) => (
+                          <option key={staff.id} value={staff.id}>
+                            {staff.staffName} ({staff.staffTitle})
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Administrator Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Meera Krishnan"
+                      value={appointedName}
+                      onChange={(e) => setAppointedName(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Administrator Email Address
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="admin@hospital.local"
+                      value={appointedEmail}
+                      onChange={(e) => setAppointedEmail(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Full Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Anand Mahindra"
+                        value={appointedName}
+                        onChange={(e) => setAppointedName(e.target.value)}
+                        className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Username *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. subiksham_admin"
+                        value={appointedUsername}
+                        onChange={(e) => setAppointedUsername(e.target.value)}
+                        className="w-full px-3 py-1.5 text-xs font-mono lowercase bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Temporary Password *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={appointedPassword}
+                        onChange={(e) => setAppointedPassword(e.target.value)}
+                        className="w-full px-3 py-1.5 text-xs font-mono bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Official Phone
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="+91 90000 00000"
+                        value={appointedPhone}
+                        onChange={(e) => setAppointedPhone(e.target.value)}
+                        className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="admin@organization.local"
+                      value={appointedEmail}
+                      onChange={(e) => setAppointedEmail(e.target.value)}
+                      className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
+                    />
+                  </div>
+                </>
+              )}
+            </form>
+          )}
         </Modal>
       )}
 
@@ -1390,57 +1627,76 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
       )}
 
       {/* MODAL 5: Attach Branch to Organization */}
-      {attachingOrg && (
-        <Modal
-          isOpen={true}
-          onClose={() => setAttachingOrg(null)}
-          title={`Attach Branch: ${attachingOrg.name}`}
-          description="Select an existing clinic location to link under this organization."
-          maxWidth="sm"
-          footer={
-            <div className="flex items-center justify-end gap-2.5 w-full">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setAttachingOrg(null)}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleAttachBranchSubmit}
-                disabled={isSubmitting || !selectedClinicToAttach}
-              >
-                {isSubmitting ? 'Linking...' : 'Link Branch'}
-              </Button>
+      {attachingOrg && (() => {
+        const currentBranches = clinics.filter((c) => c.organizationId === attachingOrg.id).length;
+        const maxBranches = attachingOrg.maxBranches ?? 5;
+        const isQuotaReached = currentBranches >= maxBranches;
+
+        return (
+          <Modal
+            isOpen={true}
+            onClose={() => setAttachingOrg(null)}
+            title={`Attach Branch: ${attachingOrg.name}`}
+            description={`Attach an existing clinic location. Quota: ${currentBranches} of ${maxBranches} branches attached.`}
+            maxWidth="sm"
+            footer={
+              <div className="flex items-center justify-end gap-2.5 w-full">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setAttachingOrg(null)}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleAttachBranchSubmit}
+                  disabled={isSubmitting || !selectedClinicToAttach || isQuotaReached}
+                >
+                  {isSubmitting ? 'Linking...' : 'Link Branch'}
+                </Button>
+              </div>
+            }
+          >
+            <div className="space-y-4">
+              {isQuotaReached && (
+                <div className="p-3 rounded-md bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300">
+                  Branch quota reached: This organization is currently at its licensed limit of {maxBranches} branches. Upgrade the license tier in Licensing to attach additional branches.
+                </div>
+              )}
+
+              {formError && (
+                <div className="p-2.5 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs">
+                  {formError}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Select Clinic Location
+                </label>
+                <select
+                  disabled={isQuotaReached}
+                  value={selectedClinicToAttach}
+                  onChange={(e) => setSelectedClinicToAttach(e.target.value)}
+                  className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 disabled:opacity-50"
+                >
+                  <option value="">-- Choose a clinic to attach --</option>
+                  {clinics
+                    .filter((c) => c.organizationId !== attachingOrg.id)
+                    .map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} ({c.code}) {c.organizationId ? '[Reassign]' : ''}
+                      </option>
+                    ))}
+                </select>
+              </div>
             </div>
-          }
-        >
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Select Clinic Location
-              </label>
-              <select
-                value={selectedClinicToAttach}
-                onChange={(e) => setSelectedClinicToAttach(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
-              >
-                <option value="">-- Choose a clinic to attach --</option>
-                {clinics
-                  .filter((c) => c.organizationId !== attachingOrg.id)
-                  .map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} ({c.code}) {c.organizationId ? '[Reassign]' : ''}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          </div>
-        </Modal>
-      )}
+          </Modal>
+        );
+      })()}
     </div>
   );
 };
