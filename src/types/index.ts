@@ -27,6 +27,22 @@ export interface Clinic {
   updatedAt?: string;
 }
 
+export interface ProvisionedAdminInfo {
+  id: string;
+  username: string;
+  email: string;
+  fullName: string;
+  temporaryPassword?: string;
+}
+
+export interface CreateClinicParams extends Partial<Clinic> {
+  adminFullName?: string;
+  adminUsername?: string;
+  adminEmail?: string;
+  adminPassword?: string;
+  adminPhone?: string;
+}
+
 export interface User {
   id: string;
   name: string;

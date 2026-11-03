@@ -18,7 +18,11 @@ import {
   InAppNotification,
   Visit,
   Clinic,
+  CreateClinicParams,
+  ProvisionedAdminInfo,
 } from '@/types';
+import { hashPassword } from '@/lib/auth';
+import { Account } from '@/types/storage';
 import { broadcastRealtimeEvent, subscribeRealtimeEvent } from '@/lib/realtime';
 import {
   isAdmin,
@@ -123,7 +127,7 @@ interface ClinicContextType {
   currentClinic: Clinic;
   activeClinicId: string;
   switchClinic: (clinicId: string) => Promise<void>;
-  createClinic: (clinicData: Partial<Clinic>) => Promise<Clinic>;
+  createClinic: (clinicData: CreateClinicParams) => Promise<Clinic & { adminAccount?: ProvisionedAdminInfo }>;
   patients: Patient[];
   doctors: Doctor[];
   appointments: Appointment[];
@@ -440,7 +444,7 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     await loadClinicData(clinicId);
   };
 
-  const createClinic = async (clinicData: Partial<Clinic>): Promise<Clinic> => {
+  const createClinic = async (clinicData: CreateClinicParams): Promise<Clinic & { adminAccount?: ProvisionedAdminInfo }> => {
     const nextNumber = clinics.length + 1;
     const newId = clinicData.id || `CLN-${String(nextNumber).padStart(3, '0')}`;
     const code = (clinicData.code || clinicData.name || `CLN${nextNumber}`).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
@@ -465,9 +469,17 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       updatedAt: new Date().toISOString(),
     };
 
+    let provisionedAdmin: ProvisionedAdminInfo | undefined;
+    const adminUsername = (clinicData.adminUsername || `${code.toLowerCase()}_admin`).trim().toLowerCase();
+    const adminPassword = (clinicData.adminPassword || 'Admin@12345').trim();
+    const adminFullName = (clinicData.adminFullName || `${newClinic.name} Administrator`).trim();
+    const adminEmail = (clinicData.adminEmail || `admin@${code.toLowerCase()}.local`).trim().toLowerCase();
+    const adminPhone = (clinicData.adminPhone || newClinic.phone || '').trim();
+
     if (isSupabaseConfigured && supabase) {
       try {
-        const { error } = await supabase.from('clinics').insert({
+        // 1. Insert clinic row
+        const { error: clinicErr } = await supabase.from('clinics').insert({
           id: newClinic.id,
           name: newClinic.name,
           code: newClinic.code,
@@ -486,12 +498,110 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           created_at: newClinic.createdAt,
           updated_at: newClinic.updatedAt,
         });
-        if (error) {
-          console.error('Supabase clinic insert error:', error.message);
+
+        if (clinicErr) {
+          console.error('Supabase clinic insert error:', clinicErr.message);
+          throw new Error(clinicErr.message);
         }
-      } catch (err) {
+
+        // 2. Hash password & insert initial Clinic Administrator account
+        const { hash, salt, iterations } = await hashPassword(adminPassword);
+        const accountId = `acc-admin-${code.toLowerCase()}-${Date.now().toString(36).slice(-4)}`;
+
+        const { error: accErr } = await supabase.from('accounts').insert({
+          id: accountId,
+          clinic_id: newClinic.id,
+          username: adminUsername,
+          email: adminEmail,
+          full_name: adminFullName,
+          phone: adminPhone || null,
+          role: 'admin',
+          password_hash: hash,
+          password_salt: salt,
+          password_iterations: iterations,
+          status: 'active',
+          failed_login_attempts: 0,
+        });
+
+        if (accErr) {
+          console.error('Supabase account insert error:', accErr.message);
+        } else {
+          provisionedAdmin = {
+            id: accountId,
+            username: adminUsername,
+            email: adminEmail,
+            fullName: adminFullName,
+            temporaryPassword: adminPassword,
+          };
+        }
+
+        // 3. Insert staff record for the administrator
+        const staffId = `stf-admin-${code.toLowerCase()}-${Date.now().toString(36).slice(-4)}`;
+        const { error: stfErr } = await supabase.from('staff').insert({
+          id: staffId,
+          clinic_id: newClinic.id,
+          account_id: accountId,
+          name: adminFullName,
+          title: 'Clinic Administrator',
+          department: 'Administration',
+          role: 'admin',
+          phone: adminPhone || null,
+          email: adminEmail,
+          is_on_duty: true,
+          is_original_admin: true,
+          status: 'active',
+          capabilities: ['administrativeAccess', 'staffManagement', 'accessControl', 'billingView'],
+        });
+
+        if (stfErr) {
+          console.error('Supabase staff insert error:', stfErr.message);
+        }
+
+        // 4. Record access audit log entry
+        const auditId = `audit-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+        await supabase.from('access_audit_log').insert({
+          id: auditId,
+          clinic_id: newClinic.id,
+          action: 'clinic_provisioned',
+          staff_id: staffId,
+          staff_name: adminFullName,
+          authorized_by: authUser?.name || 'Platform Super Admin',
+          details: `Provisioned new clinic tenant "${newClinic.name}" (${newClinic.code}) and initialized Clinic Administrator "${adminUsername}"`,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (err: any) {
         console.error('Supabase clinic exception:', err);
+        throw err;
       }
+    } else {
+      // In-memory or fallback repository storage
+      const repoAccounts = getRepository<Account>('accounts');
+      const { hash, salt, iterations } = await hashPassword(adminPassword);
+      const accountId = `acc-admin-${code.toLowerCase()}`;
+      await repoAccounts.create({
+        id: accountId,
+        clinicId: newClinic.id,
+        username: adminUsername,
+        email: adminEmail,
+        fullName: adminFullName,
+        phone: adminPhone || '',
+        role: 'admin',
+        passwordHash: hash,
+        passwordSalt: salt,
+        passwordIterations: iterations,
+        status: 'active',
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      provisionedAdmin = {
+        id: accountId,
+        username: adminUsername,
+        email: adminEmail,
+        fullName: adminFullName,
+        temporaryPassword: adminPassword,
+      };
     }
 
     setClinics((prev) => {
@@ -499,7 +609,10 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return exists ? prev : [...prev, newClinic];
     });
 
-    return newClinic;
+    return {
+      ...newClinic,
+      adminAccount: provisionedAdmin,
+    };
   };
 
   // Cross-tab sync and realtime event listener
