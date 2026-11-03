@@ -383,6 +383,10 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               updatedAt: row.updated_at,
             }));
             setClinics(mapped);
+            if (!mapped.some((c) => c.id === activeClinicId) && mapped.length > 0) {
+              setActiveClinicId(mapped[0].id);
+              setActiveClinicIdState(mapped[0].id);
+            }
           }
         } catch {
           // Fallback
