@@ -296,7 +296,7 @@ export const ClinicSwitcher: React.FC = () => {
               <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
                 Clinic Switcher
               </span>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400">
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400">
                 {clinics.length} {clinics.length === 1 ? 'Clinic' : 'Clinics'}
               </span>
             </div>
@@ -390,7 +390,7 @@ export const ClinicSwitcher: React.FC = () => {
                       Initial Administrator Credentials
                     </span>
                   </div>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 font-semibold">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 font-semibold">
                     Clinic Admin
                   </span>
                 </div>

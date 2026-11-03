@@ -7,7 +7,6 @@ import { Modal } from '@/components/ui/Modal';
 import {
   Building2,
   ShieldCheck,
-  Layers,
   Plus,
   Edit3,
   Trash2,
@@ -16,15 +15,11 @@ import {
   Phone,
   Mail,
   AlertCircle,
-  CheckCircle2,
   ExternalLink,
   ChevronDown,
   ChevronUp,
   Hospital,
-  Check,
   Search,
-  Shield,
-  FileCheck,
 } from 'lucide-react';
 import { Organization, LicenseTier, FacilityModule } from '@/types';
 
@@ -33,39 +28,35 @@ interface OrganizationsViewProps {
 }
 
 const ALL_FACILITIES: { id: FacilityModule; label: string; description: string }[] = [
-  { id: 'OPD', label: 'OPD (Outpatient)', description: 'Outpatient consultations, doctor schedules, walk-in tokens' },
-  { id: 'IPD', label: 'IPD (Inpatient)', description: 'Ward management, admissions, bed allocation, discharge summaries' },
-  { id: 'Pharmacy', label: 'Pharmacy & Formulary', description: 'Drug formulary, prescription dispensing, stock tracking' },
-  { id: 'Laboratory', label: 'Laboratory Diagnostics', description: 'Diagnostic test orders, specimen tracking, pathology results' },
-  { id: 'Emergency', label: 'Emergency & Trauma', description: 'Triage queue, rapid intake, crash cart and critical stabilization' },
-  { id: 'Billing', label: 'Billing & Invoicing', description: 'Fee schedules, split invoices, receipts, payment reconciliation' },
+  { id: 'OPD', label: 'OPD (Outpatient)', description: 'Outpatient consultations and scheduling' },
+  { id: 'IPD', label: 'IPD (Inpatient)', description: 'Inpatient admissions and bed allocation' },
+  { id: 'Pharmacy', label: 'Pharmacy', description: 'Drug formulary and dispensary' },
+  { id: 'Laboratory', label: 'Laboratory', description: 'Diagnostic test orders and pathology' },
+  { id: 'Emergency', label: 'Emergency', description: 'Urgent care triage and trauma queue' },
+  { id: 'Billing', label: 'Billing', description: 'Invoicing and payment reconciliation' },
 ];
 
 const LICENSE_TIER_DETAILS: Record<
   LicenseTier,
-  { label: string; badgeClass: string; maxBranchesDefault: number; maxDoctorsDefault: number }
+  { label: string; maxBranchesDefault: number; maxDoctorsDefault: number }
 > = {
   starter: {
     label: 'Starter Tier',
-    badgeClass: 'bg-blue-500/10 text-blue-400 border border-blue-500/30',
     maxBranchesDefault: 2,
     maxDoctorsDefault: 10,
   },
   professional: {
     label: 'Professional Tier',
-    badgeClass: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30',
     maxBranchesDefault: 5,
     maxDoctorsDefault: 30,
   },
   enterprise: {
     label: 'Enterprise Tier',
-    badgeClass: 'bg-purple-500/10 text-purple-400 border border-purple-500/30',
     maxBranchesDefault: 10,
     maxDoctorsDefault: 100,
   },
   custom: {
     label: 'Custom Tier',
-    badgeClass: 'bg-amber-500/10 text-amber-400 border border-amber-500/30',
     maxBranchesDefault: 25,
     maxDoctorsDefault: 250,
   },
@@ -193,15 +184,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
   }, [organizations, searchTerm, statusFilter]);
 
   // Overall metrics calculation
-  const totalBranchesCount = useMemo(() => {
-    return clinics.length;
-  }, [clinics]);
+  const totalBranchesCount = useMemo(() => clinics.length, [clinics]);
+  const totalDoctorsCount = useMemo(() => doctors.length, [doctors]);
 
-  const totalDoctorsCount = useMemo(() => {
-    return doctors.length;
-  }, [doctors]);
-
-  // Helper for license badge styling and expiry info
+  // Helper for license expiry info
   const getLicenseInfo = (org: Organization) => {
     const validDate = new Date(org.licenseValidUntil);
     const now = new Date();
@@ -211,24 +197,21 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
     if (diffDays < 0) {
       return {
         label: 'Expired',
-        badge: 'bg-rose-500/10 text-rose-400 border border-rose-500/30',
-        remainingText: `Expired ${Math.abs(diffDays)} days ago`,
-        isCritical: true,
+        statusColor: 'text-rose-600 dark:text-rose-400',
+        remainingText: `Expired ${Math.abs(diffDays)}d ago`,
       };
     }
     if (diffDays <= 30) {
       return {
         label: 'Expiring Soon',
-        badge: 'bg-amber-500/10 text-amber-400 border border-amber-500/30',
-        remainingText: `${diffDays} days remaining`,
-        isCritical: true,
+        statusColor: 'text-amber-600 dark:text-amber-400',
+        remainingText: `${diffDays}d remaining`,
       };
     }
     return {
-      label: 'Active & Compliant',
-      badge: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30',
-      remainingText: `${diffDays} days remaining`,
-      isCritical: false,
+      label: 'Active',
+      statusColor: 'text-emerald-600 dark:text-emerald-400',
+      remainingText: `${diffDays}d remaining`,
     };
   };
 
@@ -445,130 +428,102 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white p-6 rounded-2xl border border-slate-700/60 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="relative z-10 space-y-1">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30 mb-2">
-            <Building2 className="w-3.5 h-3.5" />
-            <span>Platform Super Admin Control Plane</span>
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">
-            Enterprise Organizations & Healthcare Networks
+    <div className="space-y-5">
+      {/* Minimalist Top Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Organizations
           </h1>
-          <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
-            Multi-branch institutional governance, enterprise software licensing, facility module authorization,
-            and appointed hospital administrator oversight.
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Enterprise healthcare networks, software licensing quotas, facility modules, and branch governance.
           </p>
         </div>
 
-        <div className="relative z-10 flex items-center gap-3">
-          <Button
-            variant="primary"
-            size="md"
-            onClick={openCreateModal}
-            className="bg-purple-600 hover:bg-purple-700 text-white font-medium shadow-lg shadow-purple-900/40 flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            <span>New Organization</span>
-          </Button>
-        </div>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={openCreateModal}
+          className="flex items-center gap-1.5 self-start sm:self-auto"
+        >
+          <Plus className="w-4 h-4" />
+          <span>New Organization</span>
+        </Button>
       </div>
 
       {/* KPI Metric Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 p-5 shadow-xs">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <Card className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Organizations
-              </span>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                {organizations.length}
-              </p>
-              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" />
-                Active Enterprise Tenants
-              </span>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center">
-              <Building2 className="w-6 h-6" />
-            </div>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              Organizations
+            </span>
+            <Building2 className="w-4 h-4 text-slate-400" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-slate-900 dark:text-white">
+              {organizations.length}
+            </span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">enterprise groups</span>
           </div>
         </Card>
 
-        <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 p-5 shadow-xs">
+        <Card className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Operating Branches
-              </span>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                {totalBranchesCount}
-              </p>
-              <span className="text-xs text-blue-600 dark:text-blue-400 font-medium flex items-center gap-1">
-                <Hospital className="w-3 h-3" />
-                Hospital & Clinic Branches
-              </span>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
-              <Hospital className="w-6 h-6" />
-            </div>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              Operating Branches
+            </span>
+            <Hospital className="w-4 h-4 text-slate-400" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-slate-900 dark:text-white">
+              {totalBranchesCount}
+            </span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">hospital locations</span>
           </div>
         </Card>
 
-        <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 p-5 shadow-xs">
+        <Card className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Enrolled Doctors
-              </span>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                {totalDoctorsCount}
-              </p>
-              <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1">
-                <UserCheck className="w-3 h-3" />
-                Licensed Clinical Providers
-              </span>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
-              <UserCheck className="w-6 h-6" />
-            </div>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              Enrolled Doctors
+            </span>
+            <UserCheck className="w-4 h-4 text-slate-400" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-slate-900 dark:text-white">
+              {totalDoctorsCount}
+            </span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">clinical providers</span>
           </div>
         </Card>
 
-        <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 p-5 shadow-xs">
+        <Card className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xs">
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Licensing Status
-              </span>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                100%
-              </p>
-              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3" />
-                Valid & Compliant
-              </span>
-            </div>
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              Licensing Compliance
+            </span>
+            <ShieldCheck className="w-4 h-4 text-slate-400" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-slate-900 dark:text-white">
+              100%
+            </span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">valid & active</span>
           </div>
         </Card>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
-        <div className="relative flex-1 max-w-md">
+      {/* Filter and Search Row */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="relative flex-1 max-w-sm">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by organization name, code, license, city..."
-            className="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="Search by organization name, code, city..."
+            className="w-full pl-9 pr-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
           />
         </div>
 
@@ -576,10 +531,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
           >
-            <option value="all">All License Statuses</option>
-            <option value="active">Active & Compliant</option>
+            <option value="all">All Statuses</option>
+            <option value="active">Active</option>
             <option value="expiring_soon">Expiring Soon</option>
             <option value="expired">Expired</option>
             <option value="suspended">Suspended</option>
@@ -588,23 +543,23 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
       </div>
 
       {/* Organizations Directory */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         {filteredOrganizations.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-12 text-center">
-            <Building2 className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-            <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">
+          <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-10 text-center">
+            <Building2 className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
               No organizations found
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
-              No enterprise organizations match your search or filter criteria. Create a new organization to get started.
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xs mx-auto">
+              No enterprise organizations match your criteria. Create a new organization to get started.
             </p>
             <Button
               variant="primary"
               size="sm"
               onClick={openCreateModal}
-              className="mt-4 bg-purple-600 hover:bg-purple-700 text-white"
+              className="mt-3"
             >
-              Create New Organization
+              Create Organization
             </Button>
           </div>
         ) : (
@@ -614,83 +569,77 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
             const orgClinics = clinics.filter((c) => c.organizationId === org.id);
             const isExpanded = expandedBranches[org.id] ?? true;
 
-            const branchUsagePct = Math.min(100, Math.round((orgClinics.length / (org.maxBranches || 1)) * 100));
-            const doctorUsagePct = Math.min(100, Math.round((totalDoctorsCount / (org.maxDoctors || 1)) * 100));
-
             return (
               <div
                 key={org.id}
-                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-all duration-200 hover:border-slate-300 dark:hover:border-slate-700"
+                className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden"
               >
-                {/* Organization Card Header */}
-                <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md shrink-0">
-                      {org.code.slice(0, 2)}
+                {/* Organization Header */}
+                <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+                        {org.name}
+                      </h2>
+                      <span className="px-1.5 py-0.5 rounded text-xs font-mono font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                        {org.code}
+                      </span>
+                      <span className="text-xs text-slate-400 dark:text-slate-500">•</span>
+                      <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
+                        {tierConfig.label}
+                      </span>
+                      <span className="text-xs text-slate-400 dark:text-slate-500">•</span>
+                      <span className={`text-xs font-medium ${licenseInfo.statusColor}`}>
+                        {licenseInfo.label}
+                      </span>
                     </div>
-                    <div className="space-y-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                          {org.name}
-                        </h2>
-                        <span className="px-2 py-0.5 rounded-md text-xs font-mono font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                          {org.code}
-                        </span>
-                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${tierConfig.badgeClass}`}>
-                          {tierConfig.label}
-                        </span>
-                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${licenseInfo.badge}`}>
-                          {licenseInfo.label}
-                        </span>
-                      </div>
 
-                      <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-slate-500 dark:text-slate-400">
-                        {org.city && (
-                          <span className="flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                            {org.city}, {org.state || org.country}
-                          </span>
-                        )}
-                        {org.phone && (
-                          <span className="flex items-center gap-1">
-                            <Phone className="w-3.5 h-3.5 text-slate-400" />
-                            {org.phone}
-                          </span>
-                        )}
-                        {org.email && (
-                          <span className="flex items-center gap-1">
-                            <Mail className="w-3.5 h-3.5 text-slate-400" />
-                            {org.email}
-                          </span>
-                        )}
-                      </div>
+                    <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-slate-500 dark:text-slate-400">
+                      {org.city && (
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                          {org.city}, {org.state || org.country}
+                        </span>
+                      )}
+                      {org.phone && (
+                        <span className="flex items-center gap-1">
+                          <Phone className="w-3.5 h-3.5 text-slate-400" />
+                          {org.phone}
+                        </span>
+                      )}
+                      {org.email && (
+                        <span className="flex items-center gap-1">
+                          <Mail className="w-3.5 h-3.5 text-slate-400" />
+                          {org.email}
+                        </span>
+                      )}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 self-end lg:self-center">
+                  <div className="flex items-center gap-2 self-end sm:self-center">
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="xs"
                       onClick={() => openAppointModal(org)}
-                      className="text-xs flex items-center gap-1.5"
+                      className="text-xs flex items-center gap-1"
                     >
-                      <UserCheck className="w-3.5 h-3.5 text-indigo-500" />
+                      <UserCheck className="w-3.5 h-3.5" />
                       <span>Appoint Admin</span>
                     </Button>
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="xs"
                       onClick={() => openEditModal(org)}
-                      className="text-xs flex items-center gap-1.5"
+                      className="text-xs flex items-center gap-1"
                     >
-                      <Edit3 className="w-3.5 h-3.5 text-blue-500" />
-                      <span>Licensing & Modules</span>
+                      <Edit3 className="w-3.5 h-3.5" />
+                      <span>Licensing</span>
                     </Button>
                     <Button
                       variant="danger"
-                      size="sm"
+                      size="xs"
                       onClick={() => openDeleteModal(org)}
-                      className="text-xs flex items-center gap-1.5"
+                      className="text-xs flex items-center gap-1"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Delete</span>
@@ -698,139 +647,85 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   </div>
                 </div>
 
-                {/* Organization Details Grid */}
-                <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Minimalist Details Grid */}
+                <div className="p-4 grid grid-cols-1 lg:grid-cols-3 gap-4 text-xs">
                   {/* Column 1: Software Licensing & Capacity */}
-                  <div className="space-y-4 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <div className="space-y-2.5 bg-slate-50/60 dark:bg-slate-800/30 p-3.5 rounded-lg border border-slate-100 dark:border-slate-800/80">
                     <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-700/60">
-                      <div className="flex items-center gap-2">
-                        <FileCheck className="w-4 h-4 text-purple-500" />
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                          Licensing & Capacity
-                        </h4>
-                      </div>
-                      <span className="text-xs font-mono font-medium text-slate-500 dark:text-slate-400">
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">
+                        Licensing & Quotas
+                      </span>
+                      <span className="font-mono text-slate-500 dark:text-slate-400">
                         {org.licenseNumber}
                       </span>
                     </div>
 
-                    <div className="space-y-3">
-                      <div>
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="text-slate-600 dark:text-slate-400">Branch Quota:</span>
-                          <span className="font-semibold text-slate-900 dark:text-white">
-                            {orgClinics.length} / {org.maxBranches} branches ({branchUsagePct}%)
-                          </span>
-                        </div>
-                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
-                          <div
-                            className={`h-2 rounded-full transition-all duration-300 ${
-                              branchUsagePct >= 100
-                                ? 'bg-rose-500'
-                                : branchUsagePct >= 80
-                                ? 'bg-amber-500'
-                                : 'bg-purple-600'
-                            }`}
-                            style={{ width: `${branchUsagePct}%` }}
-                          />
-                        </div>
+                    <div className="space-y-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 dark:text-slate-400">Branch Capacity:</span>
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">
+                          {orgClinics.length} of {org.maxBranches} branches
+                        </span>
                       </div>
-
-                      <div>
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="text-slate-600 dark:text-slate-400">Doctor Capacity:</span>
-                          <span className="font-semibold text-slate-900 dark:text-white">
-                            {totalDoctorsCount} / {org.maxDoctors} doctors ({doctorUsagePct}%)
-                          </span>
-                        </div>
-                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
-                          <div
-                            className={`h-2 rounded-full transition-all duration-300 ${
-                              doctorUsagePct >= 100
-                                ? 'bg-rose-500'
-                                : doctorUsagePct >= 80
-                                ? 'bg-amber-500'
-                                : 'bg-indigo-600'
-                            }`}
-                            style={{ width: `${doctorUsagePct}%` }}
-                          />
-                        </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 dark:text-slate-400">Doctor Limit:</span>
+                        <span className="font-semibold text-slate-800 dark:text-slate-200">
+                          {totalDoctorsCount} of {org.maxDoctors} doctors
+                        </span>
                       </div>
-
-                      <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-xs">
-                        <span className="text-slate-500 dark:text-slate-400">Valid Until:</span>
-                        <div className="text-right">
-                          <p className="font-semibold text-slate-900 dark:text-white">
-                            {org.licenseValidUntil ? new Date(org.licenseValidUntil).toLocaleDateString() : 'Lifetime'}
-                          </p>
-                          <p className={`text-[11px] font-medium ${licenseInfo.isCritical ? 'text-amber-500' : 'text-emerald-500'}`}>
-                            {licenseInfo.remainingText}
-                          </p>
-                        </div>
+                      <div className="flex items-center justify-between pt-1 border-t border-slate-200/40 dark:border-slate-700/40">
+                        <span className="text-slate-500 dark:text-slate-400">Validity:</span>
+                        <span className="font-medium text-slate-700 dark:text-slate-300">
+                          {org.licenseValidUntil ? new Date(org.licenseValidUntil).toLocaleDateString() : 'Active'} ({licenseInfo.remainingText})
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   {/* Column 2: Appointed Administrator */}
-                  <div className="space-y-4 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <div className="space-y-2.5 bg-slate-50/60 dark:bg-slate-800/30 p-3.5 rounded-lg border border-slate-100 dark:border-slate-800/80">
                     <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-700/60">
-                      <div className="flex items-center gap-2">
-                        <Shield className="w-4 h-4 text-indigo-500" />
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                          Appointed Administrator
-                        </h4>
-                      </div>
-                      <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
-                        Primary Contact
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">
+                        Appointed Administrator
+                      </span>
+                      <span className="text-slate-400">
+                        Primary Authority
                       </span>
                     </div>
 
                     {org.appointedAdminName ? (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center border border-indigo-500/20">
-                            {org.appointedAdminName
-                              .split(' ')
-                              .map((n) => n[0])
-                              .join('')
-                              .slice(0, 2)
-                              .toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-slate-900 dark:text-white">
-                              {org.appointedAdminName}
-                            </p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400">
-                              {org.appointedAdminEmail || 'No email configured'}
-                            </p>
-                          </div>
+                      <div className="space-y-2 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-500 dark:text-slate-400">Name:</span>
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
+                            {org.appointedAdminName}
+                          </span>
                         </div>
-
-                        <div className="p-2.5 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-xs text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 shrink-0" />
-                          <span>Appointed as institutional authority for {org.name}</span>
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-500 dark:text-slate-400">Email:</span>
+                          <span className="font-mono text-slate-700 dark:text-slate-300">
+                            {org.appointedAdminEmail || 'Not configured'}
+                          </span>
                         </div>
-
+                        <div className="pt-1.5">
+                          <Button
+                            variant="outline"
+                            size="xs"
+                            onClick={() => openAppointModal(org)}
+                            className="w-full text-xs"
+                          >
+                            Change Administrator
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="py-2.5 text-center space-y-2">
+                        <p className="text-slate-400">No administrator appointed.</p>
                         <Button
                           variant="outline"
                           size="xs"
                           onClick={() => openAppointModal(org)}
-                          className="w-full text-xs"
-                        >
-                          Reappoint / Change Admin
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="text-center py-4 space-y-2">
-                        <UserCheck className="w-8 h-8 text-slate-400 mx-auto" />
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          No primary administrator appointed yet.
-                        </p>
-                        <Button
-                          variant="primary"
-                          size="xs"
-                          onClick={() => openAppointModal(org)}
-                          className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                          className="text-xs"
                         >
                           Appoint Administrator
                         </Button>
@@ -839,64 +734,51 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   </div>
 
                   {/* Column 3: Facility Modules */}
-                  <div className="space-y-4 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <div className="space-y-2.5 bg-slate-50/60 dark:bg-slate-800/30 p-3.5 rounded-lg border border-slate-100 dark:border-slate-800/80">
                     <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-slate-700/60">
-                      <div className="flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-emerald-500" />
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                          Facility Modules
-                        </h4>
-                      </div>
-                      <span className="text-xs text-slate-500 dark:text-slate-400">
+                      <span className="font-semibold text-slate-700 dark:text-slate-300">
+                        Facility Modules
+                      </span>
+                      <span className="text-slate-400">
                         {org.facilities?.length || 0} Enabled
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-1.5">
                       {ALL_FACILITIES.map((facility) => {
                         const isEnabled = org.facilities?.includes(facility.id);
                         return (
                           <div
                             key={facility.id}
-                            title={facility.description}
-                            className={`p-2 rounded-lg border text-xs flex items-center justify-between transition-colors ${
+                            className={`px-2 py-1.5 rounded text-xs text-center border font-medium ${
                               isEnabled
-                                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400 font-semibold'
-                                : 'bg-slate-100/50 dark:bg-slate-800/20 border-slate-200 dark:border-slate-700 text-slate-400 line-through opacity-60'
+                                ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200'
+                                : 'bg-transparent border-dashed border-slate-200 dark:border-slate-800 text-slate-400 line-through'
                             }`}
                           >
-                            <span>{facility.id}</span>
-                            {isEnabled ? (
-                              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                            ) : (
-                              <span className="text-[10px] uppercase font-mono">Off</span>
-                            )}
+                            {facility.id}
                           </div>
                         );
                       })}
                     </div>
-
-                    <p className="text-[11px] text-slate-400 dark:text-slate-500 italic">
-                      Modules determine the authorized hospital wings and departments accessible to branches.
-                    </p>
                   </div>
                 </div>
 
-                {/* Operating Branches Drawer */}
-                <div className="border-t border-slate-100 dark:border-slate-800 px-6 py-4 bg-slate-50/20 dark:bg-slate-900/20">
-                  <div className="flex items-center justify-between mb-3">
+                {/* Operating Branches List */}
+                <div className="border-t border-slate-100 dark:border-slate-800 px-4 py-3 bg-slate-50/30 dark:bg-slate-900/30">
+                  <div className="flex items-center justify-between mb-2">
                     <button
                       onClick={() =>
                         setExpandedBranches((prev) => ({ ...prev, [org.id]: !isExpanded }))
                       }
-                      className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 hover:text-purple-600 transition-colors"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                     >
-                      <Hospital className="w-4 h-4 text-blue-500" />
+                      <Hospital className="w-3.5 h-3.5 text-slate-400" />
                       <span>Operating Branches ({orgClinics.length})</span>
                       {isExpanded ? (
-                        <ChevronUp className="w-3.5 h-3.5" />
+                        <ChevronUp className="w-3 h-3" />
                       ) : (
-                        <ChevronDown className="w-3.5 h-3.5" />
+                        <ChevronDown className="w-3 h-3" />
                       )}
                     </button>
 
@@ -904,69 +786,67 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                       variant="outline"
                       size="xs"
                       onClick={() => openAttachBranchModal(org)}
-                      className="text-xs flex items-center gap-1.5"
+                      className="text-xs flex items-center gap-1"
                     >
-                      <Plus className="w-3.5 h-3.5" />
+                      <Plus className="w-3 h-3" />
                       <span>Attach Branch</span>
                     </Button>
                   </div>
 
                   {isExpanded && (
-                    <div className="space-y-2 mt-3">
+                    <div className="mt-2">
                       {orgClinics.length === 0 ? (
-                        <p className="text-xs text-slate-400 dark:text-slate-500 py-2">
-                          No hospital branches attached to this organization yet. Click &quot;Attach Branch&quot; to link a clinic.
+                        <p className="text-xs text-slate-400 py-1">
+                          No hospital branches attached to this organization.
                         </p>
                       ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
                           {orgClinics.map((clinic) => {
                             const isCurrent = clinic.id === activeClinicId;
                             return (
                               <div
                                 key={clinic.id}
-                                className={`p-3.5 rounded-xl border transition-all ${
+                                className={`p-3 rounded-lg border text-xs ${
                                   isCurrent
-                                    ? 'bg-purple-500/5 border-purple-500/40 ring-1 ring-purple-500/30'
-                                    : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700'
+                                    ? 'bg-slate-50 dark:bg-slate-800/80 border-slate-300 dark:border-slate-600'
+                                    : 'bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'
                                 }`}
                               >
-                                <div className="flex items-start justify-between gap-2 mb-2">
+                                <div className="flex items-start justify-between gap-2 mb-1.5">
                                   <div>
                                     <div className="flex items-center gap-1.5">
-                                      <h5 className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                                      <span className="font-semibold text-slate-900 dark:text-white">
                                         {clinic.name}
-                                      </h5>
+                                      </span>
                                       {isCurrent && (
-                                        <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-600 text-white">
+                                        <span className="px-1 py-0.2 rounded text-[10px] font-medium bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
                                           Current
                                         </span>
                                       )}
                                     </div>
-                                    <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                                    <span className="text-[11px] font-mono text-slate-500">
                                       {clinic.code} • {clinic.city || 'Headquarters'}
                                     </span>
                                   </div>
-
-                                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 mt-1" />
                                 </div>
 
-                                <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700/60 mt-2">
+                                <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700/60 mt-1.5">
                                   <button
                                     onClick={() => handleSwitchToBranch(clinic.id)}
                                     disabled={isCurrent}
-                                    className={`text-xs font-semibold flex items-center gap-1 ${
+                                    className={`text-xs font-medium flex items-center gap-1 ${
                                       isCurrent
                                         ? 'text-slate-400 cursor-default'
-                                        : 'text-purple-600 dark:text-purple-400 hover:underline'
+                                        : 'text-blue-600 dark:text-blue-400 hover:underline'
                                     }`}
                                   >
-                                    <span>{isCurrent ? 'Active Context' : 'Switch Branch'}</span>
+                                    <span>{isCurrent ? 'Current Clinic' : 'Switch Branch'}</span>
                                     {!isCurrent && <ExternalLink className="w-3 h-3" />}
                                   </button>
 
                                   <button
                                     onClick={() => linkClinicToOrganization(clinic.id, null)}
-                                    className="text-[11px] text-slate-400 hover:text-rose-500 transition-colors"
+                                    className="text-[11px] text-slate-400 hover:text-rose-500"
                                   >
                                     Unlink
                                   </button>
@@ -991,10 +871,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
           isOpen={true}
           onClose={() => setIsCreateModalOpen(false)}
           title="Create Enterprise Organization"
-          description="Provision a new healthcare parent enterprise with licensing tier, facility authorization, and initial governance."
+          description="Provision a new healthcare organization with licensing tier and facility authorization."
           maxWidth="lg"
           footer={
-            <div className="flex items-center justify-end gap-3 w-full">
+            <div className="flex items-center justify-end gap-2.5 w-full">
               <Button
                 variant="outline"
                 size="sm"
@@ -1008,22 +888,21 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                 size="sm"
                 onClick={handleCreateSubmit}
                 disabled={isSubmitting}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
               >
-                {isSubmitting ? 'Provisioning...' : 'Provision Organization'}
+                {isSubmitting ? 'Creating...' : 'Create Organization'}
               </Button>
             </div>
           }
         >
           <form onSubmit={handleCreateSubmit} className="space-y-4">
             {formError && (
-              <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
+              <div className="p-3 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{formError}</span>
               </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Organization Name *
@@ -1031,10 +910,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Apollo Hospitals Group"
+                  placeholder="e.g. Subiksham Healthcare Group"
                   value={newOrgName}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                 />
               </div>
 
@@ -1045,10 +924,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                 <input
                   type="text"
                   required
-                  placeholder="e.g. APOLLO"
+                  placeholder="e.g. SUBIKSHAM"
                   value={newOrgCode}
                   onChange={(e) => setNewOrgCode(e.target.value.toUpperCase())}
-                  className="w-full px-3 py-2 text-xs font-mono uppercase bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-1.5 text-xs font-mono uppercase bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                 />
               </div>
             </div>
@@ -1060,10 +939,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Mumbai"
+                  placeholder="e.g. Pune"
                   value={newOrgCity}
                   onChange={(e) => setNewOrgCity(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                 />
               </div>
               <div>
@@ -1075,7 +954,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   placeholder="e.g. Maharashtra"
                   value={newOrgState}
                   onChange={(e) => setNewOrgState(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                 />
               </div>
               <div>
@@ -1087,17 +966,16 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   placeholder="+91 90000 00000"
                   value={newOrgPhone}
                   onChange={(e) => setNewOrgPhone(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                 />
               </div>
             </div>
 
-            {/* Licensing Tier & Quotas */}
-            <div className="p-4 rounded-xl bg-purple-500/5 border border-purple-500/20 space-y-3">
-              <h4 className="text-xs font-bold text-purple-900 dark:text-purple-300 uppercase tracking-wider flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4" />
-                <span>Enterprise Licensing & Quotas</span>
-              </h4>
+            {/* Licensing & Quotas */}
+            <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-3">
+              <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block">
+                Licensing & Capacity Quotas
+              </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
@@ -1107,7 +985,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   <select
                     value={newOrgLicenseTier}
                     onChange={(e) => handleTierChange(e.target.value as LicenseTier)}
-                    className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                   >
                     <option value="starter">Starter (Up to 2 branches, 10 doctors)</option>
                     <option value="professional">Professional (Up to 5 branches, 30 doctors)</option>
@@ -1125,7 +1003,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                     placeholder="MED-LIC-..."
                     value={newOrgLicenseNumber}
                     onChange={(e) => setNewOrgLicenseNumber(e.target.value)}
-                    className="w-full px-3 py-2 text-xs font-mono bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-1.5 text-xs font-mono bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                   />
                 </div>
               </div>
@@ -1139,7 +1017,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                     type="date"
                     value={newOrgValidUntil}
                     onChange={(e) => setNewOrgValidUntil(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                   />
                 </div>
 
@@ -1153,7 +1031,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                     max={50}
                     value={newOrgMaxBranches}
                     onChange={(e) => setNewOrgMaxBranches(parseInt(e.target.value) || 1)}
-                    className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                   />
                 </div>
 
@@ -1167,15 +1045,15 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                     max={500}
                     value={newOrgMaxDoctors}
                     onChange={(e) => setNewOrgMaxDoctors(parseInt(e.target.value) || 1)}
-                    className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Facility Modules Selection */}
+            {/* Facility Modules */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 Authorized Facility Modules
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -1184,17 +1062,17 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   return (
                     <label
                       key={facility.id}
-                      className={`p-2.5 rounded-lg border text-xs cursor-pointer flex items-center gap-2 transition-colors ${
+                      className={`p-2 rounded border text-xs cursor-pointer flex items-center gap-2 ${
                         isChecked
-                          ? 'bg-purple-50 dark:bg-purple-950/30 border-purple-400 dark:border-purple-600 text-purple-900 dark:text-purple-200 font-semibold'
-                          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500'
+                          ? 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 font-medium'
+                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleFacility(newOrgFacilities, setNewOrgFacilities, facility.id)}
-                        className="rounded text-purple-600 focus:ring-purple-500 h-3.5 w-3.5"
+                        className="rounded border-slate-300 h-3.5 w-3.5"
                       />
                       <span>{facility.label}</span>
                     </label>
@@ -1204,11 +1082,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
             </div>
 
             {/* Initial Appointed Administrator */}
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-3">
-              <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-                <UserCheck className="w-4 h-4 text-indigo-500" />
-                <span>Initial Appointed Administrator (Optional)</span>
-              </h4>
+            <div className="p-3.5 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 space-y-3">
+              <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block">
+                Initial Appointed Administrator (Optional)
+              </span>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
@@ -1217,10 +1094,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. Dr. Rajesh Sharma"
+                    placeholder="e.g. Meera Krishnan"
                     value={newOrgAdminName}
                     onChange={(e) => setNewOrgAdminName(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                   />
                 </div>
 
@@ -1230,10 +1107,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   </label>
                   <input
                     type="email"
-                    placeholder="rajesh.sharma@hospital.org"
+                    placeholder="admin@hospital.local"
                     value={newOrgAdminEmail}
                     onChange={(e) => setNewOrgAdminEmail(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                   />
                 </div>
               </div>
@@ -1248,10 +1125,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
           isOpen={true}
           onClose={() => setEditingOrg(null)}
           title={`Edit Licensing: ${editingOrg.name}`}
-          description="Update enterprise subscription terms, capacity allocations, and authorized clinical wings."
+          description="Update subscription terms, capacity allocations, and authorized clinical wings."
           maxWidth="md"
           footer={
-            <div className="flex items-center justify-end gap-3 w-full">
+            <div className="flex items-center justify-end gap-2.5 w-full">
               <Button
                 variant="outline"
                 size="sm"
@@ -1265,7 +1142,6 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                 size="sm"
                 onClick={handleEditSubmit}
                 disabled={isSubmitting}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
               >
                 {isSubmitting ? 'Saving...' : 'Save Changes'}
               </Button>
@@ -1281,7 +1157,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                 <select
                   value={editTier}
                   onChange={(e) => setEditTier(e.target.value as LicenseTier)}
-                  className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                 >
                   <option value="starter">Starter Tier</option>
                   <option value="professional">Professional Tier</option>
@@ -1298,7 +1174,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   type="text"
                   value={editLicenseNum}
                   onChange={(e) => setEditLicenseNum(e.target.value)}
-                  className="w-full px-3 py-2 text-xs font-mono bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-1.5 text-xs font-mono bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                 />
               </div>
             </div>
@@ -1312,7 +1188,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   type="date"
                   value={editValidUntil}
                   onChange={(e) => setEditValidUntil(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                 />
               </div>
 
@@ -1326,7 +1202,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   max={50}
                   value={editMaxBranches}
                   onChange={(e) => setEditMaxBranches(parseInt(e.target.value) || 1)}
-                  className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                 />
               </div>
 
@@ -1340,14 +1216,14 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   max={500}
                   value={editMaxDoctors}
                   onChange={(e) => setEditMaxDoctors(parseInt(e.target.value) || 1)}
-                  className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                Toggle Authorized Facilities
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                Authorized Facilities
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {ALL_FACILITIES.map((facility) => {
@@ -1355,17 +1231,17 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                   return (
                     <label
                       key={facility.id}
-                      className={`p-2 rounded-lg border text-xs cursor-pointer flex items-center gap-2 ${
+                      className={`p-2 rounded border text-xs cursor-pointer flex items-center gap-2 ${
                         isChecked
-                          ? 'bg-purple-50 dark:bg-purple-950/30 border-purple-400 dark:border-purple-600 text-purple-900 dark:text-purple-200 font-semibold'
-                          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500'
+                          ? 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 font-medium'
+                          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => toggleFacility(editFacilities, setEditFacilities, facility.id)}
-                        className="rounded text-purple-600 focus:ring-purple-500 h-3.5 w-3.5"
+                        className="rounded border-slate-300 h-3.5 w-3.5"
                       />
                       <span>{facility.id}</span>
                     </label>
@@ -1383,10 +1259,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
           isOpen={true}
           onClose={() => setAppointingOrg(null)}
           title={`Appoint Administrator: ${appointingOrg.name}`}
-          description="Designate a primary executive administrator responsible for hospital operations and staff authority."
+          description="Designate a primary administrator responsible for organization operations."
           maxWidth="sm"
           footer={
-            <div className="flex items-center justify-end gap-3 w-full">
+            <div className="flex items-center justify-end gap-2.5 w-full">
               <Button
                 variant="outline"
                 size="sm"
@@ -1400,7 +1276,6 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                 size="sm"
                 onClick={handleAppointSubmit}
                 disabled={isSubmitting}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white"
               >
                 {isSubmitting ? 'Confirming...' : 'Confirm Appointment'}
               </Button>
@@ -1410,19 +1285,19 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
           <form onSubmit={handleAppointSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Select from Platform Staff Directory
+                Select from Staff Directory
               </label>
               <select
                 value={selectedStaffId}
                 onChange={(e) => handleStaffSelect(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-2"
+                className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500 mb-2"
               >
                 <option value="">-- Or enter custom administrator below --</option>
                 {staffAccessList
                   .filter((s) => s.role === 'admin' || s.role === 'md')
                   .map((staff) => (
                     <option key={staff.id} value={staff.id}>
-                      {staff.staffName} ({staff.staffTitle} • {staff.department})
+                      {staff.staffName} ({staff.staffTitle})
                     </option>
                   ))}
               </select>
@@ -1438,7 +1313,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                 placeholder="e.g. Meera Krishnan"
                 value={appointedName}
                 onChange={(e) => setAppointedName(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
               />
             </div>
 
@@ -1451,7 +1326,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                 placeholder="admin@hospital.local"
                 value={appointedEmail}
                 onChange={(e) => setAppointedEmail(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
               />
             </div>
           </form>
@@ -1464,10 +1339,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
           isOpen={true}
           onClose={() => setDeletingOrg(null)}
           title={`Delete Organization: ${deletingOrg.name}`}
-          description="Are you sure you want to permanently delete this enterprise organization? This operation cannot be undone."
+          description="Permanently delete this organization. Attached branches will be safely detached as independent clinics."
           maxWidth="sm"
           footer={
-            <div className="flex items-center justify-end gap-3 w-full">
+            <div className="flex items-center justify-end gap-2.5 w-full">
               <Button
                 variant="outline"
                 size="sm"
@@ -1482,39 +1357,32 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                 onClick={handleDeleteSubmit}
                 disabled={isSubmitting || deleteConfirmationCode.trim().toUpperCase() !== deletingOrg.code.toUpperCase()}
               >
-                {isSubmitting ? 'Deleting...' : 'Permanently Delete'}
+                {isSubmitting ? 'Deleting...' : 'Delete Organization'}
               </Button>
             </div>
           }
         >
-          <div className="space-y-4">
-            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-800 dark:text-amber-300 space-y-1">
-              <p className="font-semibold flex items-center gap-1.5">
-                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                <span>Operating Branches Safety Notice</span>
-              </p>
-              <p>
-                Any hospital branches attached to this organization will be safely detached as independent standalone
-                clinics. Their patient records, medical charts, and billing entries will remain intact.
-              </p>
+          <div className="space-y-3.5">
+            <div className="p-3 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300">
+              Attached hospital branches will be detached as standalone clinics. Patient records and medical charts will remain intact.
             </div>
 
             {formError && (
-              <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs">
+              <div className="p-2.5 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs">
                 {formError}
               </div>
             )}
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Type <span className="font-mono text-rose-600 font-bold">{deletingOrg.code}</span> to confirm:
+                Type <span className="font-mono font-bold">{deletingOrg.code}</span> to confirm:
               </label>
               <input
                 type="text"
                 placeholder={deletingOrg.code}
                 value={deleteConfirmationCode}
                 onChange={(e) => setDeleteConfirmationCode(e.target.value)}
-                className="w-full px-3 py-2 text-xs font-mono uppercase bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500"
+                className="w-full px-3 py-1.5 text-xs font-mono uppercase bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
               />
             </div>
           </div>
@@ -1527,10 +1395,10 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
           isOpen={true}
           onClose={() => setAttachingOrg(null)}
           title={`Attach Branch: ${attachingOrg.name}`}
-          description="Select an existing hospital or clinic location to link under this enterprise organization hierarchy."
+          description="Select an existing clinic location to link under this organization."
           maxWidth="sm"
           footer={
-            <div className="flex items-center justify-end gap-3 w-full">
+            <div className="flex items-center justify-end gap-2.5 w-full">
               <Button
                 variant="outline"
                 size="sm"
@@ -1544,7 +1412,6 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
                 size="sm"
                 onClick={handleAttachBranchSubmit}
                 disabled={isSubmitting || !selectedClinicToAttach}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
               >
                 {isSubmitting ? 'Linking...' : 'Link Branch'}
               </Button>
@@ -1559,14 +1426,14 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
               <select
                 value={selectedClinicToAttach}
                 onChange={(e) => setSelectedClinicToAttach(e.target.value)}
-                className="w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white focus:outline-none focus:border-slate-400 dark:focus:border-slate-500"
               >
                 <option value="">-- Choose a clinic to attach --</option>
                 {clinics
                   .filter((c) => c.organizationId !== attachingOrg.id)
                   .map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.name} ({c.code} • {c.city || 'Pune'}) {c.organizationId ? '[Reassign]' : ''}
+                      {c.name} ({c.code}) {c.organizationId ? '[Reassign]' : ''}
                     </option>
                   ))}
               </select>
