@@ -17,7 +17,7 @@ import { AttendanceView } from '@/views/AttendanceView';
 import { BillingView } from '@/views/BillingView';
 import { ProfileView } from '@/views/ProfileView';
 import { ClinicStaffView } from '@/views/ClinicStaffView';
-import { OrganizationsView } from '@/views/OrganizationsView';
+import { SuperAdminPortal } from '@/views/superadmin/SuperAdminPortal';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
@@ -47,11 +47,15 @@ export const AppLayout: React.FC = () => {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab');
       if (tabParam === 'profile') return 'profile';
-      if (currentRole === 'platform_super_admin') return 'organizations';
+      if (currentRole === 'platform_super_admin') {
+        return (tabParam && (tabParam.startsWith('super_') || tabParam === 'organizations'))
+          ? tabParam
+          : 'super_dashboard';
+      }
       if (hasExistingValidSession() && tabParam) return tabParam;
       return currentRole === 'patient' ? 'overview' : 'dashboard';
     } catch {
-      return currentRole === 'platform_super_admin' ? 'organizations' : (currentRole === 'patient' ? 'overview' : 'dashboard');
+      return currentRole === 'platform_super_admin' ? 'super_dashboard' : (currentRole === 'patient' ? 'overview' : 'dashboard');
     }
   });
   const [activeSubTab, setActiveSubTab] = useState<string | undefined>(() => {
@@ -85,7 +89,7 @@ export const AppLayout: React.FC = () => {
     const allowed = getAllowedNavItems(currentRole, currentUser, modules, currentOrganization?.facilities);
     const hasDashboard = currentRole === 'patient' || allowed.some((item) => item.id === 'dashboard');
     const defaultLandingTab = currentRole === 'platform_super_admin'
-      ? 'organizations'
+      ? 'super_dashboard'
       : currentRole === 'patient'
       ? 'dashboard'
       : (hasDashboard ? 'dashboard' : (allowed[0]?.id || 'dashboard'));
@@ -97,9 +101,9 @@ export const AppLayout: React.FC = () => {
       clearRememberedLastPage();
       const params = new URLSearchParams(window.location.search);
       const urlTab = params.get('tab');
-      const targetTab = currentRole === 'platform_super_admin'
-        ? 'organizations'
-        : (urlTab && isTabAllowed(urlTab, currentRole, currentUser, modules, currentOrganization?.facilities) ? urlTab : defaultLandingTab);
+      const targetTab = (urlTab && isTabAllowed(urlTab, currentRole, currentUser, modules, currentOrganization?.facilities))
+        ? urlTab
+        : defaultLandingTab;
       setActiveTab(targetTab);
       setActiveSubTab(undefined);
       try {
@@ -352,8 +356,8 @@ export const AppLayout: React.FC = () => {
       return <AttendanceView activeTab={activeSubTab} />;
     }
 
-    if (activeTab === 'organizations') {
-      return <OrganizationsView onNavigate={handleNavigate} />;
+    if (currentRole === 'platform_super_admin' || activeTab.startsWith('super_') || activeTab === 'organizations') {
+      return <SuperAdminPortal initialTab={activeTab} onNavigateGlobal={handleNavigate} />;
     }
 
     return <DashboardView onNavigate={handleNavigate} />;

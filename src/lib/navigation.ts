@@ -75,10 +75,18 @@ export function getAllowedNavItems(
     ];
   }
 
-  // Platform Super Admin: strictly enterprise organizations (all clinic child modules removed)
+  // Platform Super Admin: strictly multi-branch enterprise governance (all clinic child modules removed)
   if (role === 'platform_super_admin') {
     return [
-      { id: 'organizations', label: 'Organizations' },
+      { id: 'super_dashboard', label: 'Executive Overview' },
+      { id: 'super_clinics', label: 'Clinic Directory' },
+      { id: 'super_admins', label: 'Admin Accounts' },
+      { id: 'super_agreements', label: 'Licence Agreements' },
+      { id: 'super_facilities', label: 'Facility Entitlements' },
+      { id: 'super_onboarding', label: 'Branch Onboarding' },
+      { id: 'super_reports', label: 'Administrative Reports' },
+      { id: 'super_alerts', label: 'Actionable Alerts' },
+      { id: 'super_settings', label: 'Platform Settings' },
     ];
   }
 
@@ -152,9 +160,20 @@ export function isTabAllowed(
     ].includes(cleanTab);
   }
 
-  // Platform super admin strictly accesses enterprise organizations
+  // Platform super admin strictly accesses enterprise governance modules
   if (role === 'platform_super_admin') {
-    return cleanTab === 'organizations';
+    return [
+      'organizations',
+      'super_dashboard',
+      'super_clinics',
+      'super_admins',
+      'super_agreements',
+      'super_facilities',
+      'super_onboarding',
+      'super_reports',
+      'super_alerts',
+      'super_settings',
+    ].includes(cleanTab);
   }
 
   const isOpdEnabled = !enabledFacilities || enabledFacilities.includes('OPD');
@@ -263,6 +282,15 @@ export function getPageTitle(tab: string, role: UserRole): string {
     admin_billing: 'Billing',
     access_control: 'Administrative',
     organizations: 'Enterprise Organizations',
+    super_dashboard: 'Executive Overview',
+    super_clinics: 'Clinic Directory',
+    super_admins: 'Admin Accounts',
+    super_agreements: 'Licence Agreements',
+    super_facilities: 'Facility Entitlements',
+    super_onboarding: 'Branch Onboarding',
+    super_reports: 'Administrative Reports',
+    super_alerts: 'Actionable Alerts',
+    super_settings: 'Platform Settings',
     attendance: 'Attendance',
     profile: 'My Profile',
   };

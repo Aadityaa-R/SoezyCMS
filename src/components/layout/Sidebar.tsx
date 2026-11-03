@@ -22,6 +22,11 @@ import {
   Users,
   Contact,
   Building2,
+  Layers,
+  ClipboardCheck,
+  BarChart3,
+  Bell,
+  Settings,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -150,10 +155,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ];
     }
 
-    // Platform Super Admin: strictly enterprise organizations (all clinic child modules removed)
+    // Platform Super Admin: strictly enterprise governance modules (all clinic child modules removed)
     if (currentRole === 'platform_super_admin') {
       return [
-        { id: 'organizations', label: 'Organizations', icon: <Building2 className="w-4 h-4" /> },
+        { id: 'super_dashboard', label: 'Overview', icon: <LayoutDashboard className="w-4 h-4" /> },
+        { id: 'super_clinics', label: 'Clinics', icon: <Building2 className="w-4 h-4" /> },
+        { id: 'super_admins', label: 'Admins', icon: <Users className="w-4 h-4" /> },
+        { id: 'super_agreements', label: 'Agreements', icon: <ShieldCheck className="w-4 h-4" /> },
+        { id: 'super_facilities', label: 'Facilities', icon: <Layers className="w-4 h-4" /> },
+        { id: 'super_onboarding', label: 'Onboarding', icon: <ClipboardCheck className="w-4 h-4" /> },
+        { id: 'super_reports', label: 'Reports', icon: <BarChart3 className="w-4 h-4" /> },
+        { id: 'super_alerts', label: 'Alerts', icon: <Bell className="w-4 h-4" /> },
+        { id: 'super_settings', label: 'Settings', icon: <Settings className="w-4 h-4" /> },
       ];
     }
 
