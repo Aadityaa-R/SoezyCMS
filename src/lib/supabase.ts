@@ -1,9 +1,23 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// Disconnected in strictly local mode
-export const isSupabaseConfigured = false;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-export const supabase: SupabaseClient | null = null;
+export const isSupabaseConfigured = Boolean(
+  supabaseUrl &&
+  supabaseAnonKey &&
+  !supabaseUrl.includes('your-project-id') &&
+  !supabaseUrl.includes('placeholder')
+);
+
+export const supabase: SupabaseClient | null = isSupabaseConfigured
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+    })
+  : null;
 
 /**
  * Checks connectivity to the configured Supabase project.
@@ -13,8 +27,31 @@ export async function checkSupabaseConnection(): Promise<{
   message: string;
   error?: string;
 }> {
-  return {
-    connected: false,
-    message: 'Supabase is disconnected (strictly local offline mode)',
-  };
+  if (!isSupabaseConfigured || !supabase) {
+    return {
+      connected: false,
+      message: 'Supabase credentials are not configured in .env',
+    };
+  }
+
+  try {
+    const { error } = await supabase.from('clinics').select('id').limit(1);
+    if (error) {
+      return {
+        connected: false,
+        message: 'Failed to query Supabase',
+        error: error.message,
+      };
+    }
+    return {
+      connected: true,
+      message: 'Successfully connected to Supabase backend',
+    };
+  } catch (err: any) {
+    return {
+      connected: false,
+      message: 'Error connecting to Supabase instance',
+      error: err?.message || String(err),
+    };
+  }
 }
