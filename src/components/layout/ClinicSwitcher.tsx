@@ -25,13 +25,14 @@ import { Account } from '@/types/storage';
 
 export const ClinicSwitcher: React.FC = () => {
   const { currentRole } = useAuth();
-  const { clinics, currentClinic, activeClinicId, switchClinic, createClinic } = useClinic();
+  const { clinics, currentClinic, activeClinicId, switchClinic, createClinic, organizations } = useClinic();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // New clinic form state
+  const [selectedOrgId, setSelectedOrgId] = useState<string>('ORG-001');
   const [newClinicName, setNewClinicName] = useState('');
   const [newClinicCode, setNewClinicCode] = useState('');
   const [newClinicPhone, setNewClinicPhone] = useState('');
@@ -199,6 +200,7 @@ export const ClinicSwitcher: React.FC = () => {
       const result = await createClinic({
         name: trimmedName,
         code: trimmedCode,
+        organizationId: selectedOrgId || undefined,
         phone: newClinicPhone.trim() || undefined,
         city: newClinicCity.trim() || undefined,
         address: newClinicAddress.trim() || undefined,
@@ -510,7 +512,25 @@ export const ClinicSwitcher: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                    Parent Organization
+                  </label>
+                  <select
+                    value={selectedOrgId}
+                    onChange={(e) => setSelectedOrgId(e.target.value)}
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="">None (Standalone Hospital)</option>
+                    {organizations.map((org) => (
+                      <option key={org.id} value={org.id}>
+                        {org.name} ({org.code})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <div>
                   <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                     City / Location

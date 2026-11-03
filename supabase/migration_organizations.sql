@@ -119,3 +119,4 @@ INSERT INTO public.organizations (
 UPDATE public.clinics
 SET organization_id = 'ORG-001'
 WHERE id = 'CLN-001' AND (organization_id IS NULL OR organization_id = 'ORG-001');
+

@@ -17,6 +17,7 @@ import { AttendanceView } from '@/views/AttendanceView';
 import { BillingView } from '@/views/BillingView';
 import { ProfileView } from '@/views/ProfileView';
 import { ClinicStaffView } from '@/views/ClinicStaffView';
+import { OrganizationsView } from '@/views/OrganizationsView';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
@@ -339,6 +340,10 @@ export const AppLayout: React.FC = () => {
 
     if (activeTab === 'attendance') {
       return <AttendanceView activeTab={activeSubTab} />;
+    }
+
+    if (activeTab === 'organizations') {
+      return <OrganizationsView onNavigate={handleNavigate} />;
     }
 
     return <DashboardView onNavigate={handleNavigate} />;

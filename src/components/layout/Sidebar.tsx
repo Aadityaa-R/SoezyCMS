@@ -21,6 +21,7 @@ import {
   X,
   Users,
   Contact,
+  Building2,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -153,6 +154,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
     // 1. Dashboard
     if (hasDashboardAccess(currentRole, currentUser, modules)) {
       items.push({ id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> });
+    }
+
+    // Enterprise Organizations (Platform Super Admin exclusive)
+    if (currentRole === 'platform_super_admin') {
+      items.push({ id: 'organizations', label: 'Organizations', icon: <Building2 className="w-4 h-4 text-purple-400" /> });
     }
 
     // 2. Clinic Staff (All staff & admin)

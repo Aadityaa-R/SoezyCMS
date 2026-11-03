@@ -20,6 +20,10 @@ import {
   Clinic,
   CreateClinicParams,
   ProvisionedAdminInfo,
+  Organization,
+  LicenseTier,
+  LicenseStatus,
+  FacilityModule,
 } from '@/types';
 import { hashPassword } from '@/lib/auth';
 import { Account } from '@/types/storage';
@@ -63,6 +67,7 @@ import {
   INITIAL_INVOICES,
   INITIAL_PATIENT_ASSIGNMENTS,
   INITIAL_MODULES,
+  INITIAL_ORGANIZATIONS,
 } from '@/data/mockData';
 import { INITIAL_FORMULARY } from '@/data/formularySeed';
 import { ACCESS_CATALOG, AccessItem, registerCustomAccess } from '@/data/accessCatalog';
@@ -129,6 +134,14 @@ interface ClinicContextType {
   activeClinicId: string;
   switchClinic: (clinicId: string) => Promise<void>;
   createClinic: (clinicData: CreateClinicParams) => Promise<Clinic & { adminAccount?: ProvisionedAdminInfo }>;
+
+  // Enterprise Organizations
+  organizations: Organization[];
+  createOrganization: (data: Partial<Organization>) => Promise<Organization>;
+  updateOrganization: (id: string, updates: Partial<Organization>) => Promise<Organization>;
+  deleteOrganization: (id: string) => Promise<{ success: boolean; error?: string }>;
+  appointOrganizationAdmin: (orgId: string, adminId: string, adminName: string, adminEmail: string) => Promise<void>;
+  linkClinicToOrganization: (clinicId: string, organizationId: string | null) => Promise<void>;
   patients: Patient[];
   doctors: Doctor[];
   appointments: Appointment[];
@@ -334,6 +347,7 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           if (!error && data && data.length > 0) {
             const mapped: Clinic[] = data.map((row: any) => ({
               id: row.id,
+              organizationId: row.organization_id || (row.id === 'CLN-001' ? 'ORG-001' : undefined),
               name: row.name || '',
               code: row.code || '',
               subTitle: row.sub_title,
@@ -359,6 +373,52 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
     };
     fetchClinics();
+  }, []);
+
+  const [organizations, setOrganizations] = useState<Organization[]>(INITIAL_ORGANIZATIONS);
+
+  // Fetch organizations list from database
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase.from('organizations').select('*').order('name');
+          if (!error && data && data.length > 0) {
+            const mapped: Organization[] = data.map((row: any) => ({
+              id: row.id,
+              name: row.name || '',
+              code: row.code || '',
+              headquartersAddress: row.headquarters_address || '',
+              city: row.city || '',
+              state: row.state || '',
+              postalCode: row.postal_code || '',
+              country: row.country || 'India',
+              phone: row.phone || '',
+              email: row.email || '',
+              website: row.website || '',
+              logoUrl: row.logo_url || '/soezy-logo.png',
+              licenseTier: (row.license_tier as LicenseTier) || 'enterprise',
+              licenseNumber: row.license_number || '',
+              licenseValidUntil: row.license_valid_until || '',
+              licenseStatus: (row.license_status as LicenseStatus) || 'active',
+              maxBranches: Number(row.max_branches ?? 5),
+              maxDoctors: Number(row.max_doctors ?? 50),
+              facilities: (row.facilities as FacilityModule[]) || ['OPD', 'Pharmacy', 'Billing'],
+              appointedAdminId: row.appointed_admin_id || undefined,
+              appointedAdminName: row.appointed_admin_name || undefined,
+              appointedAdminEmail: row.appointed_admin_email || undefined,
+              status: row.status || 'active',
+              createdAt: row.created_at,
+              updatedAt: row.updated_at,
+            }));
+            setOrganizations(mapped);
+          }
+        } catch {
+          // Fallback to INITIAL_ORGANIZATIONS
+        }
+      }
+    };
+    fetchOrganizations();
   }, []);
 
   const loadClinicData = async (targetClinicId = activeClinicId) => {
@@ -452,6 +512,7 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const newClinic: Clinic = {
       id: newId,
+      organizationId: clinicData.organizationId || undefined,
       name: clinicData.name || `Clinic ${nextNumber}`,
       code: clinicData.code || code,
       subTitle: clinicData.subTitle || 'SOEZY Clinic Operations',
@@ -482,6 +543,7 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         // 1. Insert clinic row
         const { error: clinicErr } = await supabase.from('clinics').insert({
           id: newClinic.id,
+          organization_id: newClinic.organizationId || null,
           name: newClinic.name,
           code: newClinic.code,
           sub_title: newClinic.subTitle,
@@ -614,6 +676,233 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       ...newClinic,
       adminAccount: provisionedAdmin,
     };
+  };
+
+  const createOrganization = async (data: Partial<Organization>): Promise<Organization> => {
+    const nextNum = organizations.length + 1;
+    const newId = data.id || `ORG-${String(nextNum).padStart(3, '0')}`;
+    const code = (data.code || data.name || `ORG${nextNum}`).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+
+    const newOrg: Organization = {
+      id: newId,
+      name: data.name || `Organization ${nextNum}`,
+      code,
+      headquartersAddress: data.headquartersAddress || '',
+      city: data.city || '',
+      state: data.state || '',
+      postalCode: data.postalCode || '',
+      country: data.country || 'India',
+      phone: data.phone || '',
+      email: data.email || '',
+      website: data.website || '',
+      logoUrl: data.logoUrl || '/soezy-logo.png',
+      licenseTier: data.licenseTier || 'enterprise',
+      licenseNumber: data.licenseNumber || `MED-LIC-${code}-${new Date().getFullYear()}`,
+      licenseValidUntil: data.licenseValidUntil || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      licenseStatus: data.licenseStatus || 'active',
+      maxBranches: Number(data.maxBranches ?? 5),
+      maxDoctors: Number(data.maxDoctors ?? 50),
+      facilities: data.facilities && data.facilities.length > 0
+        ? data.facilities
+        : ['OPD', 'Pharmacy', 'Billing'],
+      appointedAdminId: data.appointedAdminId || undefined,
+      appointedAdminName: data.appointedAdminName || undefined,
+      appointedAdminEmail: data.appointedAdminEmail || undefined,
+      status: data.status || 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase.from('organizations').insert({
+          id: newOrg.id,
+          name: newOrg.name,
+          code: newOrg.code,
+          headquarters_address: newOrg.headquartersAddress,
+          city: newOrg.city,
+          state: newOrg.state,
+          postal_code: newOrg.postalCode,
+          country: newOrg.country,
+          phone: newOrg.phone,
+          email: newOrg.email,
+          website: newOrg.website,
+          logo_url: newOrg.logoUrl,
+          license_tier: newOrg.licenseTier,
+          license_number: newOrg.licenseNumber,
+          license_valid_until: newOrg.licenseValidUntil,
+          license_status: newOrg.licenseStatus,
+          max_branches: newOrg.maxBranches,
+          max_doctors: newOrg.maxDoctors,
+          facilities: newOrg.facilities,
+          appointed_admin_id: newOrg.appointedAdminId || null,
+          appointed_admin_name: newOrg.appointedAdminName || null,
+          appointed_admin_email: newOrg.appointedAdminEmail || null,
+          status: newOrg.status,
+          created_at: newOrg.createdAt,
+          updated_at: newOrg.updatedAt,
+        });
+
+        if (error) {
+          console.error('Supabase organization insert error:', error.message);
+        } else {
+          const auditId = `audit-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+          await supabase.from('access_audit_log').insert({
+            id: auditId,
+            clinic_id: activeClinicId,
+            action: 'organization_created',
+            authorized_by: authUser?.name || 'Platform Super Admin',
+            details: `Created enterprise organization "${newOrg.name}" (${newOrg.code}) with license ${newOrg.licenseNumber}`,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      } catch (err: any) {
+        console.warn('Supabase organization insert exception:', err);
+      }
+    }
+
+    setOrganizations((prev) => [...prev, newOrg]);
+    return newOrg;
+  };
+
+  const updateOrganization = async (id: string, updates: Partial<Organization>): Promise<Organization> => {
+    const existing = organizations.find((o) => o.id === id);
+    if (!existing) {
+      throw new Error(`Organization ${id} not found`);
+    }
+
+    const updated: Organization = {
+      ...existing,
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const dbPayload: any = {
+          updated_at: updated.updatedAt,
+        };
+        if (updates.name !== undefined) dbPayload.name = updates.name;
+        if (updates.code !== undefined) dbPayload.code = updates.code;
+        if (updates.headquartersAddress !== undefined) dbPayload.headquarters_address = updates.headquartersAddress;
+        if (updates.city !== undefined) dbPayload.city = updates.city;
+        if (updates.state !== undefined) dbPayload.state = updates.state;
+        if (updates.postalCode !== undefined) dbPayload.postal_code = updates.postalCode;
+        if (updates.country !== undefined) dbPayload.country = updates.country;
+        if (updates.phone !== undefined) dbPayload.phone = updates.phone;
+        if (updates.email !== undefined) dbPayload.email = updates.email;
+        if (updates.website !== undefined) dbPayload.website = updates.website;
+        if (updates.logoUrl !== undefined) dbPayload.logo_url = updates.logoUrl;
+        if (updates.licenseTier !== undefined) dbPayload.license_tier = updates.licenseTier;
+        if (updates.licenseNumber !== undefined) dbPayload.license_number = updates.licenseNumber;
+        if (updates.licenseValidUntil !== undefined) dbPayload.license_valid_until = updates.licenseValidUntil;
+        if (updates.licenseStatus !== undefined) dbPayload.license_status = updates.licenseStatus;
+        if (updates.maxBranches !== undefined) dbPayload.max_branches = updates.maxBranches;
+        if (updates.maxDoctors !== undefined) dbPayload.max_doctors = updates.maxDoctors;
+        if (updates.facilities !== undefined) dbPayload.facilities = updates.facilities;
+        if (updates.appointedAdminId !== undefined) dbPayload.appointed_admin_id = updates.appointedAdminId;
+        if (updates.appointedAdminName !== undefined) dbPayload.appointed_admin_name = updates.appointedAdminName;
+        if (updates.appointedAdminEmail !== undefined) dbPayload.appointed_admin_email = updates.appointedAdminEmail;
+        if (updates.status !== undefined) dbPayload.status = updates.status;
+
+        const { error } = await supabase.from('organizations').update(dbPayload).eq('id', id);
+        if (error) {
+          console.error('Supabase organization update error:', error.message);
+        } else {
+          const auditId = `audit-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+          await supabase.from('access_audit_log').insert({
+            id: auditId,
+            clinic_id: activeClinicId,
+            action: 'organization_updated',
+            authorized_by: authUser?.name || 'Platform Super Admin',
+            details: `Updated enterprise organization "${updated.name}" (${updated.code})`,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      } catch (err: any) {
+        console.warn('Supabase organization update exception:', err);
+      }
+    }
+
+    setOrganizations((prev) => prev.map((o) => (o.id === id ? updated : o)));
+    return updated;
+  };
+
+  const deleteOrganization = async (id: string): Promise<{ success: boolean; error?: string }> => {
+    const existing = organizations.find((o) => o.id === id);
+    if (!existing) {
+      return { success: false, error: 'Organization not found' };
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('clinics').update({ organization_id: null }).eq('organization_id', id);
+
+        const { error } = await supabase.from('organizations').delete().eq('id', id);
+        if (error) {
+          console.error('Supabase organization delete error:', error.message);
+          return { success: false, error: error.message };
+        }
+
+        const auditId = `audit-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+        await supabase.from('access_audit_log').insert({
+          id: auditId,
+          clinic_id: activeClinicId,
+          action: 'organization_deleted',
+          authorized_by: authUser?.name || 'Platform Super Admin',
+          details: `Deleted enterprise organization "${existing.name}" (${existing.code})`,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (err: any) {
+        console.warn('Supabase organization delete exception:', err);
+      }
+    }
+
+    setOrganizations((prev) => prev.filter((o) => o.id !== id));
+    setClinics((prev) => prev.map((c) => (c.organizationId === id ? { ...c, organizationId: undefined } : c)));
+    return { success: true };
+  };
+
+  const appointOrganizationAdmin = async (
+    orgId: string,
+    adminId: string,
+    adminName: string,
+    adminEmail: string
+  ): Promise<void> => {
+    await updateOrganization(orgId, {
+      appointedAdminId: adminId,
+      appointedAdminName: adminName,
+      appointedAdminEmail: adminEmail,
+    });
+  };
+
+  const linkClinicToOrganization = async (
+    clinicId: string,
+    organizationId: string | null
+  ): Promise<void> => {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.from('clinics').update({ organization_id: organizationId }).eq('id', clinicId);
+
+        const auditId = `audit-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+        await supabase.from('access_audit_log').insert({
+          id: auditId,
+          clinic_id: clinicId,
+          action: 'clinic_organization_linked',
+          authorized_by: authUser?.name || 'Platform Super Admin',
+          details: organizationId
+            ? `Linked clinic "${clinicId}" to organization "${organizationId}"`
+            : `Unlinked clinic "${clinicId}" from organization`,
+          timestamp: new Date().toISOString(),
+        });
+      } catch (err: any) {
+        console.warn('Supabase link clinic error:', err);
+      }
+    }
+
+    setClinics((prev) =>
+      prev.map((c) => (c.id === clinicId ? { ...c, organizationId: organizationId || undefined } : c))
+    );
   };
 
   // Cross-tab sync and realtime event listener
@@ -2395,6 +2684,12 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         activeClinicId,
         switchClinic,
         createClinic,
+        organizations,
+        createOrganization,
+        updateOrganization,
+        deleteOrganization,
+        appointOrganizationAdmin,
+        linkClinicToOrganization,
         patients,
         doctors,
         appointments,

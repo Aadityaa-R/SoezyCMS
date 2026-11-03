@@ -80,6 +80,10 @@ export function getAllowedNavItems(
     items.push({ id: 'dashboard', label: 'Dashboard' });
   }
 
+  if (role === 'platform_super_admin') {
+    items.push({ id: 'organizations', label: 'Organizations' });
+  }
+
   // Clinic Staff module (All staff and administrators)
   items.push({ id: 'clinic_staff', label: 'Clinic Staff' });
   items.push({ id: 'patient', label: 'Patients' });
@@ -139,6 +143,10 @@ export function isTabAllowed(
       'billing',
       'invoices',
     ].includes(cleanTab);
+  }
+
+  if (cleanTab === 'organizations') {
+    return role === 'platform_super_admin';
   }
 
   if (cleanTab === 'dashboard') {
@@ -222,6 +230,7 @@ export function getPageTitle(tab: string, role: UserRole): string {
     billing: 'Billing',
     admin_billing: 'Billing',
     access_control: 'Administrative',
+    organizations: 'Enterprise Organizations',
     attendance: 'Attendance',
     profile: 'My Profile',
   };
