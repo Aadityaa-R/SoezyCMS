@@ -48,12 +48,6 @@ export const ALL_ROLES: RoleMeta[] = [
     description: 'Global SaaS Super Admin: Multi-clinic switcher, provision clinics, manage Clinic Super Admins.',
   },
   {
-    role: 'clinic_super_admin',
-    label: 'Clinic Super Admin',
-    department: 'Executive Board',
-    description: 'Clinic Owner / Director: Clinic branding, clinic settings, manage Clinic Admins, financial audits.',
-  },
-  {
     role: 'admin',
     label: 'Administrator',
     department: 'Administration',
@@ -525,7 +519,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isRoleSuspended = (role: UserRole): boolean => {
-    if (role === 'md' || role === 'admin') return false;
+    if (role === 'clinic_super_admin') return true;
+    if (role === 'md' || role === 'admin' || role === 'platform_super_admin') return false;
     const roleStaff = staffAccessList.filter((s) => s.role === role);
     if (roleStaff.length === 0) return false;
     return roleStaff.every((s) => s.status === 'revoked');

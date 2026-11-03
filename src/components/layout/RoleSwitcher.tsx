@@ -33,12 +33,12 @@ export const RoleSwitcher: React.FC = () => {
           Development Role Switcher:
         </span>
         <span className="text-slate-400 hidden sm:inline text-[0.6875rem]">
-          Select any of the 4 clinic roles to test workstation and clearance:
+          Select a role to test workstation and clearance:
         </span>
       </div>
 
       <div className="flex flex-wrap items-center gap-1.5">
-        {availableRoles.map((r) => {
+        {availableRoles.filter((r) => r.role !== 'clinic_super_admin').map((r) => {
           const isActive = currentRole === r.role;
           const isSuspended = isRoleSuspended(r.role);
 

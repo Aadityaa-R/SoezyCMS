@@ -50,7 +50,7 @@ export function audienceOf(
   if (role === 'patient') {
     return 'patient';
   }
-  if (role === 'md' || role === 'admin' || role === 'platform_super_admin' || role === 'clinic_super_admin') {
+  if (role === 'md' || role === 'admin' || role === 'platform_super_admin') {
     return 'admin';
   }
   return 'staff';
@@ -68,6 +68,13 @@ export async function login(
   options?: LoginOptions
 ): Promise<LoginResult> {
   const cleanId = (identifier || '').trim().toLowerCase();
+  if (cleanId === 'subiksham_super' || cleanId === 'clinic_super_admin') {
+    return {
+      code: 'suspended',
+      success: false,
+      error: 'Clinic Super Admin role is currently deactivated.',
+    };
+  }
   const cleanPass = (password || '').trim();
   const now = Date.now();
 
@@ -189,7 +196,7 @@ export async function login(
 
   // Password is valid: check audience portal match
   if (audience === 'admin') {
-    if (account.role !== 'md' && account.role !== 'admin') {
+    if (account.role !== 'md' && account.role !== 'admin' && account.role !== 'platform_super_admin') {
       return {
         code: 'wrongPortal',
         success: false,

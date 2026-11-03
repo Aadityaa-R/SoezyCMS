@@ -412,10 +412,18 @@ export const LoginView: React.FC = () => {
                     <div className="flex flex-col gap-2 w-full text-left">
                       <button
                         type="button"
+                        onClick={() => handleFillDemoRole('superadmin', 'SuperAdmin@12345', 'admin')}
+                        className="px-3 py-1.5 text-xs rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-semibold transition-colors cursor-pointer flex items-center justify-between"
+                      >
+                        <span className="font-bold">Platform Super Admin (superadmin)</span>
+                        <span className="text-[11px] text-purple-700 font-normal">multi-clinic switcher, global network provisioning</span>
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => handleFillDemoRole('admin', 'Admin@12345', 'admin')}
                         className="px-3 py-1.5 text-xs rounded-lg bg-[#00c060]/10 hover:bg-[#00c060]/20 text-[#28465a] font-semibold transition-colors cursor-pointer flex items-center justify-between"
                       >
-                        <span className="font-bold">Administrator (Meera Krishnan)</span>
+                        <span className="font-bold">Clinic Administrator (Meera Krishnan)</span>
                         <span className="text-[11px] text-slate-500 font-normal">approve staff, manage roles, billing corrections, ledger</span>
                       </button>
                       <button

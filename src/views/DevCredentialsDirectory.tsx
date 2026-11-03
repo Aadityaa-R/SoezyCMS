@@ -37,7 +37,7 @@ export const DevCredentialsDirectory: React.FC<DevCredentialsDirectoryProps> = (
   onFill,
   currentAudience,
 }) => {
-  const allCredentials = roleCredentials || [];
+  const allCredentials = (roleCredentials || []).filter((c) => c.role !== 'clinic_super_admin');
   const credentialsList = currentAudience
     ? allCredentials.filter((c) => audienceOf(c) === currentAudience)
     : allCredentials;

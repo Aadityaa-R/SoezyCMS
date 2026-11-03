@@ -144,7 +144,7 @@ export function generateDemoScenario(now: Date = new Date()): DemoScenarioData {
       passwordHash: SEED_ACCOUNT_HASHES.subiksham_super.hash,
       passwordSalt: SEED_ACCOUNT_HASHES.subiksham_super.salt,
       passwordIterations: SEED_ACCOUNT_HASHES.subiksham_super.iterations,
-      status: 'active',
+      status: 'revoked',
       failedLoginAttempts: 0,
       lockedUntil: null,
       createdAt: offsetIso(-180),

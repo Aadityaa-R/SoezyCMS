@@ -178,6 +178,12 @@ export function canAccessClinic(
   return userClinicId === targetClinicId;
 }
 
+export const DEACTIVATED_ROLES: ReadonlySet<UserRole> = new Set(['clinic_super_admin']);
+
+export function isRoleDeactivated(role: UserRole): boolean {
+  return DEACTIVATED_ROLES.has(role);
+}
+
 /**
  * Hierarchical authority level (lower number = higher authority).
  */
@@ -196,6 +202,7 @@ export const ROLE_HIERARCHY_LEVEL: Record<UserRole, number> = {
  * Users can only manage roles strictly lower in the hierarchy.
  */
 export function canManageRole(actorRole: UserRole, targetRole: UserRole): boolean {
+  if (isRoleDeactivated(targetRole)) return false;
   const actorLevel = ROLE_HIERARCHY_LEVEL[actorRole] || 99;
   const targetLevel = ROLE_HIERARCHY_LEVEL[targetRole] || 99;
   return actorLevel < targetLevel;

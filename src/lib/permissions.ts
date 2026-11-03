@@ -188,8 +188,8 @@ export function getEffectiveAccesses(
     }
   }
 
-  // Platform & Clinic Super Admins always retain administrativeAccess while account is active
-  if (user && 'role' in user && (user.role === 'platform_super_admin' || user.role === 'clinic_super_admin')) {
+  // Platform Super Admin always retains administrativeAccess while account is active
+  if (user && 'role' in user && user.role === 'platform_super_admin') {
     accessSet.add('administrativeAccess');
   }
 
