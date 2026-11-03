@@ -236,3 +236,4 @@ export function getRoleBadgeInfo(role: UserRole): { label: string; bg: string; t
       return { label: String(role), bg: 'bg-gray-100', text: 'text-gray-800' };
   }
 }
+

@@ -1,30 +1,24 @@
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { CollectionName } from '../types/storage';
 import { Identifiable, Repository, BrowserRepository } from './repository';
-
-const TABLE_NAME_MAP: Partial<Record<CollectionName, string>> = {
-  claimRequests: 'claim_requests',
-  assignments: 'patient_assignments',
-  leave: 'leave_requests',
-};
-
-// Tracks whether unified table 'clinic_data' is present in Supabase
-let useUnifiedTable: boolean | null = null;
+import { TABLE_MAP, GLOBAL_TABLES, fromDatabaseRow, toDatabaseRow } from './relationalMappers';
 
 export class SupabaseRepository<T extends Identifiable> implements Repository<T> {
   private readonly collection: CollectionName;
-  private readonly specificTableName: string;
+  private readonly tableName: string;
   private readonly fallbackRepo: BrowserRepository<T>;
-  private isTableMissing: boolean = false;
+  private isTableMissing = false;
+  private clinicId = 'CLN-001';
 
-  constructor(collection: CollectionName) {
+  constructor(collection: CollectionName, clinicId = 'CLN-001') {
     this.collection = collection;
-    this.specificTableName = TABLE_NAME_MAP[collection] || collection;
+    this.tableName = TABLE_MAP[collection] || (collection as string);
     this.fallbackRepo = new BrowserRepository<T>(collection);
+    this.clinicId = clinicId;
   }
 
-  private getItemRowId(id: string): string {
-    return `${this.collection}__${id}`;
+  public setClinicId(clinicId: string): void {
+    this.clinicId = clinicId;
   }
 
   async list(): Promise<T[]> {
@@ -33,31 +27,16 @@ export class SupabaseRepository<T extends Identifiable> implements Repository<T>
     }
 
     try {
-      // 1. Try unified table first if detected or unknown
-      if (useUnifiedTable !== false) {
-        const { data, error } = await supabase
-          .from('clinic_data')
-          .select('data')
-          .eq('collection', this.collection);
+      let query = supabase.from(this.tableName).select('*');
 
-        if (!error && data) {
-          useUnifiedTable = true;
-          const items = data.map((r: any) => r.data as T).filter(Boolean);
-          await this.fallbackRepo.replaceAll(items);
-          return items;
-        }
-
-        if (error && error.code === 'PGRST205') {
-          useUnifiedTable = false;
-        }
+      // Filter by clinic_id if the table is clinic-scoped
+      if (!GLOBAL_TABLES.has(this.tableName) && this.tableName !== 'accounts') {
+        query = query.eq('clinic_id', this.clinicId);
+      } else if (this.tableName === 'accounts') {
+        query = query.or(`clinic_id.eq.${this.clinicId},clinic_id.is.null`);
       }
 
-      // 2. Try specific table (e.g. patients, appointments)
-      const { data, error } = await supabase
-        .from(this.specificTableName)
-        .select('data')
-        .order('created_at', { ascending: false });
-
+      const { data, error } = await query;
       if (error) {
         if (error.code === 'PGRST205') {
           this.isTableMissing = true;
@@ -65,9 +44,24 @@ export class SupabaseRepository<T extends Identifiable> implements Repository<T>
         return this.fallbackRepo.list();
       }
 
-      const items = (data || []).map((row: any) => row.data as T).filter(Boolean);
-      await this.fallbackRepo.replaceAll(items);
-      return items;
+      const items = (data || [])
+        .map((row: any) => fromDatabaseRow<T>(this.collection, row))
+        .filter(Boolean);
+
+      // Keep local repository in sync
+      if (items.length > 0) {
+        await this.fallbackRepo.replaceAll(items);
+        return items;
+      }
+
+      // If remote table has 0 items but local has items (e.g. initial load before seed), seed remote!
+      const localItems = await this.fallbackRepo.list();
+      if (localItems.length > 0) {
+        await this.seedRemote(localItems);
+        return localItems;
+      }
+
+      return [];
     } catch {
       return this.fallbackRepo.list();
     }
@@ -79,22 +73,9 @@ export class SupabaseRepository<T extends Identifiable> implements Repository<T>
     }
 
     try {
-      if (useUnifiedTable) {
-        const { data, error } = await supabase
-          .from('clinic_data')
-          .select('data')
-          .eq('id', this.getItemRowId(id))
-          .maybeSingle();
-
-        if (!error && data) {
-          return (data as any).data as T;
-        }
-        return this.fallbackRepo.get(id);
-      }
-
       const { data, error } = await supabase
-        .from(this.specificTableName)
-        .select('data')
+        .from(this.tableName)
+        .select('*')
         .eq('id', id)
         .maybeSingle();
 
@@ -102,7 +83,7 @@ export class SupabaseRepository<T extends Identifiable> implements Repository<T>
         return this.fallbackRepo.get(id);
       }
 
-      return (data as any).data as T;
+      return fromDatabaseRow<T>(this.collection, data);
     } catch {
       return this.fallbackRepo.get(id);
     }
@@ -116,31 +97,13 @@ export class SupabaseRepository<T extends Identifiable> implements Repository<T>
     }
 
     try {
-      if (useUnifiedTable) {
-        await supabase
-          .from('clinic_data')
-          .upsert({
-            id: this.getItemRowId(item.id),
-            collection: this.collection,
-            data: item,
-            updated_at: new Date().toISOString(),
-          });
-        return item;
-      }
-
-      const { error } = await supabase
-        .from(this.specificTableName)
-        .upsert({
-          id: item.id,
-          data: item,
-          updated_at: new Date().toISOString(),
-        });
-
+      const row = toDatabaseRow(this.collection, item, this.clinicId);
+      const { error } = await supabase.from(this.tableName).upsert(row);
       if (error && error.code === 'PGRST205') {
         this.isTableMissing = true;
       }
     } catch {
-      // Ignore
+      // Local fallback preserves data
     }
 
     return item;
@@ -154,30 +117,13 @@ export class SupabaseRepository<T extends Identifiable> implements Repository<T>
     }
 
     try {
-      if (useUnifiedTable) {
-        await supabase
-          .from('clinic_data')
-          .update({
-            data: updated,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', this.getItemRowId(id));
-        return updated;
-      }
-
-      const { error } = await supabase
-        .from(this.specificTableName)
-        .update({
-          data: updated,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', id);
-
+      const row = toDatabaseRow(this.collection, updated, this.clinicId);
+      const { error } = await supabase.from(this.tableName).update(row).eq('id', id);
       if (error && error.code === 'PGRST205') {
         this.isTableMissing = true;
       }
     } catch {
-      // Ignore
+      // Local fallback preserves data
     }
 
     return updated;
@@ -191,24 +137,12 @@ export class SupabaseRepository<T extends Identifiable> implements Repository<T>
     }
 
     try {
-      if (useUnifiedTable) {
-        await supabase
-          .from('clinic_data')
-          .delete()
-          .eq('id', this.getItemRowId(id));
-        return removed;
-      }
-
-      const { error } = await supabase
-        .from(this.specificTableName)
-        .delete()
-        .eq('id', id);
-
+      const { error } = await supabase.from(this.tableName).delete().eq('id', id);
       if (error && error.code === 'PGRST205') {
         this.isTableMissing = true;
       }
     } catch {
-      // Ignore
+      // Local fallback preserves data
     }
 
     return removed;
@@ -222,60 +156,18 @@ export class SupabaseRepository<T extends Identifiable> implements Repository<T>
     }
 
     try {
-      if (useUnifiedTable) {
-        await supabase
-          .from('clinic_data')
-          .delete()
-          .eq('collection', this.collection);
-
-        if (items.length > 0) {
-          const rows = items.map((item) => ({
-            id: this.getItemRowId(item.id),
-            collection: this.collection,
-            data: item,
-            updated_at: new Date().toISOString(),
-          }));
-          await supabase.from('clinic_data').upsert(rows);
-        }
-        return;
-      }
-
-      await supabase.from(this.specificTableName).delete().neq('id', '');
       if (items.length > 0) {
-        const rows = items.map((item) => ({
-          id: item.id,
-          data: item,
-          updated_at: new Date().toISOString(),
-        }));
-        await supabase.from(this.specificTableName).upsert(rows);
+        const rows = items.map((item) => toDatabaseRow(this.collection, item, this.clinicId));
+        await supabase.from(this.tableName).upsert(rows);
       }
     } catch {
-      // Ignore
+      // Local fallback preserves data
     }
   }
 
   async count(): Promise<number> {
-    if (!isSupabaseConfigured || !supabase || this.isTableMissing) {
-      return this.fallbackRepo.count();
-    }
-
-    try {
-      if (useUnifiedTable) {
-        const { count } = await supabase
-          .from('clinic_data')
-          .select('*', { count: 'exact', head: true })
-          .eq('collection', this.collection);
-        return typeof count === 'number' ? count : this.fallbackRepo.count();
-      }
-
-      const { count } = await supabase
-        .from(this.specificTableName)
-        .select('*', { count: 'exact', head: true });
-
-      return typeof count === 'number' ? count : this.fallbackRepo.count();
-    } catch {
-      return this.fallbackRepo.count();
-    }
+    const items = await this.list();
+    return items.length;
   }
 
   async clear(): Promise<void> {
@@ -286,11 +178,17 @@ export class SupabaseRepository<T extends Identifiable> implements Repository<T>
     }
 
     try {
-      if (useUnifiedTable) {
-        await supabase.from('clinic_data').delete().eq('collection', this.collection);
-        return;
-      }
-      await supabase.from(this.specificTableName).delete().neq('id', '');
+      await supabase.from(this.tableName).delete().eq('clinic_id', this.clinicId);
+    } catch {
+      // Local fallback preserves data
+    }
+  }
+
+  private async seedRemote(items: T[]): Promise<void> {
+    if (!isSupabaseConfigured || !supabase) return;
+    try {
+      const rows = items.map((item) => toDatabaseRow(this.collection, item, this.clinicId));
+      await supabase.from(this.tableName).upsert(rows);
     } catch {
       // Ignore
     }
