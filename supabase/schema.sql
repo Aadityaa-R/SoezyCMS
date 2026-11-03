@@ -9,6 +9,32 @@
 -- 3. Paste this entire file and click "Run"
 -- ==============================================================================
 
+-- ------------------------------------------------------------------------------
+-- RESET / CLEANUP (Safely drop prior tables to prevent schema collisions)
+-- ------------------------------------------------------------------------------
+DROP TABLE IF EXISTS public.access_audit_log CASCADE;
+DROP TABLE IF EXISTS public.notifications CASCADE;
+DROP TABLE IF EXISTS public.formulary CASCADE;
+DROP TABLE IF EXISTS public.shifts CASCADE;
+DROP TABLE IF EXISTS public.leave_requests CASCADE;
+DROP TABLE IF EXISTS public.attendance CASCADE;
+DROP TABLE IF EXISTS public.payments CASCADE;
+DROP TABLE IF EXISTS public.invoice_items CASCADE;
+DROP TABLE IF EXISTS public.invoices CASCADE;
+DROP TABLE IF EXISTS public.prescription_items CASCADE;
+DROP TABLE IF EXISTS public.prescriptions CASCADE;
+DROP TABLE IF EXISTS public.visits CASCADE;
+DROP TABLE IF EXISTS public.appointments CASCADE;
+DROP TABLE IF EXISTS public.patient_assignments CASCADE;
+DROP TABLE IF EXISTS public.patients CASCADE;
+DROP TABLE IF EXISTS public.staff CASCADE;
+DROP TABLE IF EXISTS public.accounts CASCADE;
+DROP TABLE IF EXISTS public.clinics CASCADE;
+DROP TABLE IF EXISTS public.ledger CASCADE;
+DROP TABLE IF EXISTS public.approvals CASCADE;
+DROP TABLE IF EXISTS public.claim_requests CASCADE;
+DROP TABLE IF EXISTS public.roles CASCADE;
+
 -- Enable UUID extension if needed
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -123,9 +149,10 @@ CREATE TABLE IF NOT EXISTS public.patients (
     source VARCHAR(50) DEFAULT 'reception',
     last_visit_date DATE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
-    CONSTRAINT uq_clinic_mrn UNIQUE(clinic_id, mrn)
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_patients_clinic_mrn ON public.patients(clinic_id, mrn);
 
 CREATE INDEX IF NOT EXISTS idx_patients_clinic_id ON public.patients(clinic_id);
 CREATE INDEX IF NOT EXISTS idx_patients_phone ON public.patients(phone);
@@ -344,9 +371,10 @@ CREATE TABLE IF NOT EXISTS public.attendance (
     status VARCHAR(20) DEFAULT 'present' CHECK (status IN ('present', 'absent', 'late', 'half_day', 'on_leave')),
     notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
-    CONSTRAINT uq_staff_date UNIQUE(clinic_id, staff_id, date)
+    updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_attendance_staff_date ON public.attendance(clinic_id, staff_id, date);
 
 CREATE INDEX IF NOT EXISTS idx_attendance_clinic_date ON public.attendance(clinic_id, date);
 CREATE INDEX IF NOT EXISTS idx_attendance_staff ON public.attendance(staff_id);
@@ -465,3 +493,30 @@ VALUES (
     '/soezy-logo.png',
     'active'
 ) ON CONFLICT (id) DO NOTHING;
+
+-- ==============================================================================
+-- Row Level Security (RLS) and Access Policies
+-- Allows the web client to read and write records with standard anon/authenticated API keys
+-- ==============================================================================
+DO $$
+DECLARE
+    tbl text;
+    tables text[] := ARRAY[
+        'clinics', 'accounts', 'staff', 'patients', 'patient_assignments',
+        'appointments', 'visits', 'prescriptions', 'prescription_items',
+        'invoices', 'invoice_items', 'payments', 'attendance', 'leave_requests',
+        'shifts', 'formulary', 'access_audit_log', 'notifications'
+    ];
+BEGIN
+    FOREACH tbl IN ARRAY tables LOOP
+        EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY;', tbl);
+        EXECUTE format('DROP POLICY IF EXISTS "Public select on %1$I" ON public.%1$I;', tbl);
+        EXECUTE format('CREATE POLICY "Public select on %1$I" ON public.%1$I FOR SELECT USING (true);', tbl);
+        EXECUTE format('DROP POLICY IF EXISTS "Public insert on %1$I" ON public.%1$I;', tbl);
+        EXECUTE format('CREATE POLICY "Public insert on %1$I" ON public.%1$I FOR INSERT WITH CHECK (true);', tbl);
+        EXECUTE format('DROP POLICY IF EXISTS "Public update on %1$I" ON public.%1$I;', tbl);
+        EXECUTE format('CREATE POLICY "Public update on %1$I" ON public.%1$I FOR UPDATE USING (true) WITH CHECK (true);', tbl);
+        EXECUTE format('DROP POLICY IF EXISTS "Public delete on %1$I" ON public.%1$I;', tbl);
+        EXECUTE format('CREATE POLICY "Public delete on %1$I" ON public.%1$I FOR DELETE USING (true);', tbl);
+    END LOOP;
+END $$;
