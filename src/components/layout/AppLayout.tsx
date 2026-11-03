@@ -47,10 +47,11 @@ export const AppLayout: React.FC = () => {
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab');
       if (tabParam === 'profile') return 'profile';
+      if (currentRole === 'platform_super_admin') return 'organizations';
       if (hasExistingValidSession() && tabParam) return tabParam;
       return currentRole === 'patient' ? 'overview' : 'dashboard';
     } catch {
-      return currentRole === 'patient' ? 'overview' : 'dashboard';
+      return currentRole === 'platform_super_admin' ? 'organizations' : (currentRole === 'patient' ? 'overview' : 'dashboard');
     }
   });
   const [activeSubTab, setActiveSubTab] = useState<string | undefined>(() => {
@@ -76,21 +77,29 @@ export const AppLayout: React.FC = () => {
       return;
     }
 
-    const targetAudience = currentRole === 'patient' ? 'patient' : (currentRole === 'md' ? 'admin' : 'staff');
+    const targetAudience = currentRole === 'patient'
+      ? 'patient'
+      : currentRole === 'platform_super_admin'
+      ? 'superadmin'
+      : (currentRole === 'md' ? 'admin' : 'staff');
     const allowed = getAllowedNavItems(currentRole, currentUser, modules, currentOrganization?.facilities);
     const hasDashboard = currentRole === 'patient' || allowed.some((item) => item.id === 'dashboard');
-    const defaultLandingTab = currentRole === 'patient'
+    const defaultLandingTab = currentRole === 'platform_super_admin'
+      ? 'organizations'
+      : currentRole === 'patient'
       ? 'dashboard'
       : (hasDashboard ? 'dashboard' : (allowed[0]?.id || 'dashboard'));
 
-    // 1. Fresh sign-in: set active page to Dashboard, clear remembered last page, keep only ?as=<audience>&tab=dashboard
+    // 1. Fresh sign-in: set active page to Organizations for super admin or Dashboard for others
     if (!prevAuthRef.current) {
       prevAuthRef.current = true;
       hasValidatedInitialSessionRef.current = true;
       clearRememberedLastPage();
       const params = new URLSearchParams(window.location.search);
       const urlTab = params.get('tab');
-      const targetTab = urlTab || defaultLandingTab;
+      const targetTab = currentRole === 'platform_super_admin'
+        ? 'organizations'
+        : (urlTab && isTabAllowed(urlTab, currentRole, currentUser, modules, currentOrganization?.facilities) ? urlTab : defaultLandingTab);
       setActiveTab(targetTab);
       setActiveSubTab(undefined);
       try {

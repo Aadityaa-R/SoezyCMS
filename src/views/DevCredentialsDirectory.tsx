@@ -27,6 +27,8 @@ function getRoleHint(role: string): string {
       return 'Try: Reception lounge, walk-in check-in, tokens, and billing.';
     case 'patient':
       return 'Try: Health portal, upcoming visits, prescriptions, and invoice settlement.';
+    case 'platform_super_admin':
+      return 'Try: Enterprise organizations, software licensing, facility wing governance, and admin appointments.';
     default:
       return 'Try: Standard station access.';
   }

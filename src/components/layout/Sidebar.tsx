@@ -150,16 +150,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ];
     }
 
+    // Platform Super Admin: strictly enterprise organizations (all clinic child modules removed)
+    if (currentRole === 'platform_super_admin') {
+      return [
+        { id: 'organizations', label: 'Organizations', icon: <Building2 className="w-4 h-4" /> },
+      ];
+    }
+
     const items: NavItem[] = [];
 
     // 1. Dashboard
     if (hasDashboardAccess(currentRole, currentUser, modules)) {
       items.push({ id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> });
-    }
-
-    // Enterprise Organizations (Platform Super Admin exclusive)
-    if (currentRole === 'platform_super_admin') {
-      items.push({ id: 'organizations', label: 'Organizations', icon: <Building2 className="w-4 h-4 text-purple-400" /> });
     }
 
     // 2. Clinic Staff (All staff & admin)
@@ -174,29 +176,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
       hasCapability(currentUser, 'patientCheckIn', modules);
     const hasAdminAccess = hasCapability(currentUser, 'administrativeAccess', modules);
 
-    if ((hasFrontDesk || hasAdminAccess || currentRole === 'receptionist') && (isSuperAdmin || isFacilityEnabled('OPD'))) {
+    if ((hasFrontDesk || hasAdminAccess || currentRole === 'receptionist') && isFacilityEnabled('OPD')) {
       items.push({ id: 'appointments', label: 'Appointments', icon: <Calendar className="w-4 h-4" /> });
     }
 
     // 5. Consultation Desk (Clinical Station)
-    if ((hasCapability(currentUser, 'consultationWorkstation', modules) || currentRole === 'doctor') && (isSuperAdmin || isFacilityEnabled('OPD'))) {
+    if ((hasCapability(currentUser, 'consultationWorkstation', modules) || currentRole === 'doctor') && isFacilityEnabled('OPD')) {
       items.push({ id: 'doctor', label: 'Consultation Desk', icon: <Stethoscope className="w-4 h-4" /> });
     }
 
     // 6. Front Desk Reception intake
-    if ((hasFrontDesk || currentRole === 'receptionist') && (isSuperAdmin || isFacilityEnabled('OPD'))) {
+    if ((hasFrontDesk || currentRole === 'receptionist') && isFacilityEnabled('OPD')) {
       items.push({ id: 'role_receptionist', label: 'Reception', icon: <UserCheck className="w-4 h-4" /> });
     }
 
-    // 6. Attendance (all staff)
+    // 7. Attendance (all staff)
     items.push({ id: 'attendance', label: 'Attendance', icon: <Clock className="w-4 h-4" /> });
 
-    // 7. Billing
-    if (canViewBilling(currentUser, modules) && (isSuperAdmin || isFacilityEnabled('Billing'))) {
+    // 8. Billing
+    if (canViewBilling(currentUser, modules) && isFacilityEnabled('Billing')) {
       items.push({ id: 'billing', label: 'Billing', icon: <CreditCard className="w-4 h-4" /> });
     }
 
-    // 8. Administrative
+    // 9. Administrative
     if (hasAdminAccess) {
       items.push({ id: 'access_control', label: 'Administrative', icon: <ShieldCheck className="w-4 h-4" /> });
     }
@@ -206,7 +208,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const navItems = getNavItems();
 
-  const roleTitle = isUserAdmin
+  const roleTitle = currentRole === 'platform_super_admin'
+    ? 'Super Admin'
+    : isUserAdmin
     ? 'Administrator'
     : currentRole === 'doctor'
     ? 'Doctor'

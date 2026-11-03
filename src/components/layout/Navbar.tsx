@@ -174,9 +174,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
           </button>
           <button
             type="button"
-            onClick={() => onNavigate?.(currentRole === 'patient' ? 'overview' : 'dashboard')}
+            onClick={() => onNavigate?.(currentRole === 'patient' ? 'overview' : (currentRole === 'platform_super_admin' ? 'organizations' : 'dashboard'))}
             className="flex items-center gap-2.5 text-left cursor-pointer outline-none focus:outline-none focus:ring-0 group p-0 m-0 border-0 bg-transparent"
-            title={currentRole === 'patient' ? 'Go to My Portal' : 'Go to Dashboard'}
+            title={currentRole === 'patient' ? 'Go to My Portal' : (currentRole === 'platform_super_admin' ? 'Go to Organizations' : 'Go to Dashboard')}
           >
             <img
               src={BRAND_CONFIG.logoAsset}

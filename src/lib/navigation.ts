@@ -51,7 +51,7 @@ export function hasDashboardAccess(
   user: User | null | undefined,
   modules?: AccessModule[]
 ): boolean {
-  if (role === 'patient') {
+  if (role === 'patient' || role === 'platform_super_admin') {
     return false;
   }
   if (isAdmin(user, modules)) {
@@ -75,17 +75,19 @@ export function getAllowedNavItems(
     ];
   }
 
+  // Platform Super Admin: strictly enterprise organizations (all clinic child modules removed)
+  if (role === 'platform_super_admin') {
+    return [
+      { id: 'organizations', label: 'Organizations' },
+    ];
+  }
+
   const items: AllowedNavItem[] = [];
-  const isSuperAdmin = role === 'platform_super_admin';
-  const isOpdEnabled = isSuperAdmin || !enabledFacilities || enabledFacilities.includes('OPD');
-  const isBillingEnabled = isSuperAdmin || !enabledFacilities || enabledFacilities.includes('Billing');
+  const isOpdEnabled = !enabledFacilities || enabledFacilities.includes('OPD');
+  const isBillingEnabled = !enabledFacilities || enabledFacilities.includes('Billing');
 
   if (hasDashboardAccess(role, user, modules)) {
     items.push({ id: 'dashboard', label: 'Dashboard' });
-  }
-
-  if (isSuperAdmin) {
-    items.push({ id: 'organizations', label: 'Organizations' });
   }
 
   // Clinic Staff module (All staff and administrators)
@@ -150,13 +152,9 @@ export function isTabAllowed(
     ].includes(cleanTab);
   }
 
-  if (cleanTab === 'organizations') {
-    return role === 'platform_super_admin';
-  }
-
-  // Platform super admin has global unrestricted access
+  // Platform super admin strictly accesses enterprise organizations
   if (role === 'platform_super_admin') {
-    return true;
+    return cleanTab === 'organizations';
   }
 
   const isOpdEnabled = !enabledFacilities || enabledFacilities.includes('OPD');
