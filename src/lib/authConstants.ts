@@ -27,3 +27,5 @@ export const SCHEMA_VERSION = 3;
 export const STORAGE_SETTINGS_KEY = 'cms_v1_settings';
 export const STORAGE_BACKUP_UNDO_KEY = 'cms_v1_backup_undo';
 export const SESSION_STORAGE_KEY = 'cms_v1_session';
+export const STORAGE_ACTIVE_CLINIC_KEY = 'cms_v1_active_clinic_id';
+export const DEFAULT_CLINIC_ID = 'CLN-001';

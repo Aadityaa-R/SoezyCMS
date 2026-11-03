@@ -3,6 +3,8 @@ import {
   STORAGE_KEY_PREFIX,
   STORAGE_SETTINGS_KEY,
   STORAGE_BACKUP_UNDO_KEY,
+  STORAGE_ACTIVE_CLINIC_KEY,
+  DEFAULT_CLINIC_ID,
 } from '../lib/authConstants';
 
 export { SCHEMA_VERSION };
@@ -43,13 +45,48 @@ export const INITIAL_NOTIFICATIONS: InAppNotification[] = [
 // Active in-memory registry of repositories per collection
 const repositories: Partial<Record<CollectionName, Repository<any>>> = {};
 
+export function getActiveClinicId(): string {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      const saved = window.localStorage.getItem(STORAGE_ACTIVE_CLINIC_KEY);
+      if (saved) return saved;
+    } catch {
+      // Fallback
+    }
+  }
+  return DEFAULT_CLINIC_ID;
+}
+
+export function setActiveClinicId(clinicId: string): void {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    try {
+      window.localStorage.setItem(STORAGE_ACTIVE_CLINIC_KEY, clinicId);
+    } catch {
+      // Fallback
+    }
+  }
+  for (const key of Object.keys(repositories) as CollectionName[]) {
+    const repo = repositories[key];
+    if (repo && typeof (repo as any).setClinicId === 'function') {
+      (repo as any).setClinicId(clinicId);
+    }
+    delete repositories[key];
+  }
+}
+
+export function clearRepositoriesCache(): void {
+  for (const key of Object.keys(repositories) as CollectionName[]) {
+    delete repositories[key];
+  }
+}
+
 export function getRepository<T extends { id: string }>(collection: CollectionName): Repository<T> {
   if (!repositories[collection]) {
     const settings = getStorageSettings();
     if (settings.mode === 'memory') {
       repositories[collection] = new MemoryRepository<T>();
     } else if (isSupabaseConfigured) {
-      repositories[collection] = new SupabaseRepository<T>(collection);
+      repositories[collection] = new SupabaseRepository<T>(collection, getActiveClinicId());
     } else {
       repositories[collection] = new BrowserRepository<T>(collection);
     }

@@ -10,6 +10,7 @@ import {
   InAppNotification,
   Medicine,
   Visit,
+  Clinic,
 } from './index';
 import { Invoice, Payment } from './billing';
 import { Shift, AttendanceRecord, LeaveRequest } from './attendance';
@@ -84,6 +85,7 @@ export interface BackupCollections {
   ledger: AccessAuditLogEntry[];
   notifications: InAppNotification[];
   formulary?: Medicine[];
+  clinics?: Clinic[];
   settings: StorageSettings;
 }
 

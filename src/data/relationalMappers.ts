@@ -1,5 +1,5 @@
 import { CollectionName } from '../types/storage';
-import { Patient, Appointment, Visit, InAppNotification, StaffAccessRecord, PatientAssignment } from '../types';
+import { Patient, Appointment, Visit, InAppNotification, StaffAccessRecord, PatientAssignment, Clinic } from '../types';
 import { Invoice, Payment } from '../types/billing';
 import { AttendanceRecord, LeaveRequest, Shift, DayOfWeek, LeaveType } from '../types/attendance';
 import { Medicine } from '../types/prescribing';
@@ -21,6 +21,7 @@ export const TABLE_MAP: Partial<Record<CollectionName, string>> = {
   formulary: 'formulary',
   ledger: 'access_audit_log',
   notifications: 'notifications',
+  clinics: 'clinics',
 };
 
 // Tables that are global (not scoped to clinic_id)
@@ -33,6 +34,29 @@ export function fromDatabaseRow<T>(collection: CollectionName, row: any): T {
   if (!row) return row;
 
   switch (collection) {
+    case 'clinics': {
+      const c: Clinic = {
+        id: row.id,
+        name: row.name || '',
+        code: row.code || '',
+        subTitle: row.sub_title || undefined,
+        phone: row.phone || undefined,
+        email: row.email || undefined,
+        address: row.address || undefined,
+        city: row.city || undefined,
+        state: row.state || undefined,
+        postalCode: row.postal_code || undefined,
+        country: row.country || 'India',
+        logoUrl: row.logo_url || '/soezy-logo.png',
+        accentColor: row.accent_color || '#00c060',
+        topBarBg: row.top_bar_bg || '#28465a',
+        status: row.status || 'active',
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      };
+      return c as unknown as T;
+    }
+
     case 'patients': {
       const p: Patient = {
         id: row.id,
@@ -289,6 +313,28 @@ export function toDatabaseRow(collection: CollectionName, item: any, clinicId = 
   const now = new Date().toISOString();
 
   switch (collection) {
+    case 'clinics': {
+      const c = item as Partial<Clinic>;
+      return {
+        id: c.id,
+        name: c.name,
+        code: c.code,
+        sub_title: c.subTitle || 'SOEZY Clinic Operations',
+        phone: c.phone || null,
+        email: c.email || null,
+        address: c.address || null,
+        city: c.city || null,
+        state: c.state || null,
+        postal_code: c.postalCode || null,
+        country: c.country || 'India',
+        logo_url: c.logoUrl || '/soezy-logo.png',
+        accent_color: c.accentColor || '#00c060',
+        top_bar_bg: c.topBarBg || '#28465a',
+        status: c.status || 'active',
+        updated_at: now,
+      };
+    }
+
     case 'patients': {
       const p = item as Patient;
       return {

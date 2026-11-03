@@ -98,6 +98,29 @@ export const ROLE_CREDENTIALS: RoleCredential[] = [
 ];
 
 export const DEMO_USERS: Record<string, User> = {
+  platform_super_admin: {
+    id: 'usr-platform-sa',
+    name: 'Platform Super Admin',
+    email: 'superadmin@soezy.io',
+    phone: '+91 90000 00001',
+    role: 'platform_super_admin',
+    title: 'Platform Architecture Super Admin',
+    department: 'Platform Architecture',
+    badgeNumber: 'PSA-001',
+    isOriginalAdmin: true,
+  },
+  clinic_super_admin: {
+    id: 'usr-clinic-sa',
+    name: 'Dr. R. Subiksham',
+    email: 'director@subiksham.local',
+    phone: '+91 95432 79999',
+    role: 'clinic_super_admin',
+    clinicId: 'CLN-001',
+    title: 'Clinic Super Admin & Managing Director',
+    department: 'Executive Board',
+    badgeNumber: 'CSA-001',
+    isOriginalAdmin: true,
+  },
   md: {
     id: 'usr-doc-1',
     name: 'Dr. Marcus Vance',

@@ -7,6 +7,26 @@ export type UserRole =
   | 'receptionist'
   | 'patient';
 
+export interface Clinic {
+  id: string;
+  name: string;
+  code: string;
+  subTitle?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  logoUrl?: string;
+  accentColor?: string;
+  topBarBg?: string;
+  status: 'active' | 'suspended' | 'trial' | 'inactive';
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface User {
   id: string;
   name: string;

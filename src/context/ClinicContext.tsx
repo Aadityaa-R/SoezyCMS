@@ -17,6 +17,7 @@ import {
   AppointmentSource,
   InAppNotification,
   Visit,
+  Clinic,
 } from '@/types';
 import { broadcastRealtimeEvent, subscribeRealtimeEvent } from '@/lib/realtime';
 import {
@@ -61,7 +62,8 @@ import {
 } from '@/data/mockData';
 import { INITIAL_FORMULARY } from '@/data/formularySeed';
 import { ACCESS_CATALOG, AccessItem, registerCustomAccess } from '@/data/accessCatalog';
-import { getRepository } from '@/data/storage';
+import { getRepository, getActiveClinicId, setActiveClinicId, clearRepositoriesCache } from '@/data/storage';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { STORAGE_KEY_PREFIX } from '@/lib/authConstants';
 import { useAuth } from '@/context/AuthContext';
 import { migrateExistingVisits } from '@/lib/visits';
@@ -98,7 +100,30 @@ export interface ModuleMutationResult {
   module?: AccessModule;
 }
 
+export const DEFAULT_CLINIC: Clinic = {
+  id: 'CLN-001',
+  name: 'Subiksham Speciality Hospital',
+  code: 'SUBIKSHAM',
+  subTitle: 'SOEZY Clinic Operations',
+  phone: '+91 95432 79999',
+  email: 'operations@subiksham.local',
+  address: '124 Health Avenue, Speciality Block',
+  city: 'Pune',
+  state: 'Maharashtra',
+  postalCode: '411001',
+  country: 'India',
+  logoUrl: '/soezy-logo.png',
+  accentColor: '#00c060',
+  topBarBg: '#28465a',
+  status: 'active',
+};
+
 interface ClinicContextType {
+  clinics: Clinic[];
+  currentClinic: Clinic;
+  activeClinicId: string;
+  switchClinic: (clinicId: string) => Promise<void>;
+  createClinic: (clinicData: Partial<Clinic>) => Promise<Clinic>;
   patients: Patient[];
   doctors: Doctor[];
   appointments: Appointment[];
@@ -279,6 +304,10 @@ export const ClinicContext = createContext<ClinicContextType | undefined>(undefi
 
 export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { currentUser: authUser, staffAccessList, addAuditLogEntry } = useAuth();
+  const [activeClinicId, setActiveClinicIdState] = useState<string>(getActiveClinicId());
+  const [clinics, setClinics] = useState<Clinic[]>([DEFAULT_CLINIC]);
+  const currentClinic = clinics.find((c) => c.id === activeClinicId) || clinics[0] || DEFAULT_CLINIC;
+
   const [patients, setPatients] = useState<Patient[]>(INITIAL_PATIENTS);
   const [doctors, setDoctors] = useState<Doctor[]>(INITIAL_DOCTORS);
   const [appointments, setAppointments] = useState<Appointment[]>(INITIAL_APPOINTMENTS);
@@ -291,30 +320,74 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [medicines, setMedicines] = useState<Medicine[]>(INITIAL_FORMULARY);
   const [visits, setVisits] = useState<Visit[]>([]);
 
-  // Load from repository on startup
+  // Fetch clinics list from database
   useEffect(() => {
-    const loadRepo = async () => {
-      try {
-        const repoPatients = getRepository<Patient>('patients');
-        const repoAppointments = getRepository<Appointment>('appointments');
-        const repoPrescriptions = getRepository<Prescription>('prescriptions');
-        const repoInvoices = getRepository<Invoice>('invoices');
-        const repoAssignments = getRepository<PatientAssignment>('assignments');
-        const repoRoles = getRepository<AccessModule>('roles');
-        const repoFormulary = getRepository<Medicine>('formulary');
-        const repoVisits = getRepository<Visit>('visits');
+    const fetchClinics = async () => {
+      if (isSupabaseConfigured && supabase) {
+        try {
+          const { data, error } = await supabase.from('clinics').select('*').order('name');
+          if (!error && data && data.length > 0) {
+            const mapped: Clinic[] = data.map((row: any) => ({
+              id: row.id,
+              name: row.name || '',
+              code: row.code || '',
+              subTitle: row.sub_title,
+              phone: row.phone,
+              email: row.email,
+              address: row.address,
+              city: row.city,
+              state: row.state,
+              postalCode: row.postal_code,
+              country: row.country || 'India',
+              logoUrl: row.logo_url || '/soezy-logo.png',
+              accentColor: row.accent_color || '#00c060',
+              topBarBg: row.top_bar_bg || '#28465a',
+              status: row.status || 'active',
+              createdAt: row.created_at,
+              updatedAt: row.updated_at,
+            }));
+            setClinics(mapped);
+          }
+        } catch {
+          // Fallback
+        }
+      }
+    };
+    fetchClinics();
+  }, []);
 
-        const [pats, apts, rxs, invs, asgns, rols, meds, vsts] = await Promise.all([
-          repoPatients.list(),
-          repoAppointments.list(),
-          repoPrescriptions.list(),
-          repoInvoices.list(),
-          repoAssignments.list(),
-          repoRoles.list(),
-          repoFormulary.list(),
-          repoVisits.list(),
-        ]);
+  const loadClinicData = async (targetClinicId = activeClinicId) => {
+    try {
+      const repoPatients = getRepository<Patient>('patients');
+      const repoAppointments = getRepository<Appointment>('appointments');
+      const repoPrescriptions = getRepository<Prescription>('prescriptions');
+      const repoInvoices = getRepository<Invoice>('invoices');
+      const repoAssignments = getRepository<PatientAssignment>('assignments');
+      const repoRoles = getRepository<AccessModule>('roles');
+      const repoFormulary = getRepository<Medicine>('formulary');
+      const repoVisits = getRepository<Visit>('visits');
 
+      (repoPatients as any).invalidateCache?.();
+      (repoAppointments as any).invalidateCache?.();
+      (repoPrescriptions as any).invalidateCache?.();
+      (repoInvoices as any).invalidateCache?.();
+      (repoAssignments as any).invalidateCache?.();
+      (repoRoles as any).invalidateCache?.();
+      (repoFormulary as any).invalidateCache?.();
+      (repoVisits as any).invalidateCache?.();
+
+      const [pats, apts, rxs, invs, asgns, rols, meds, vsts] = await Promise.all([
+        repoPatients.list(),
+        repoAppointments.list(),
+        repoPrescriptions.list(),
+        repoInvoices.list(),
+        repoAssignments.list(),
+        repoRoles.list(),
+        repoFormulary.list(),
+        repoVisits.list(),
+      ]);
+
+      if (targetClinicId === 'CLN-001') {
         if (pats.length > 0) setPatients(pats);
         if (apts.length > 0) setAppointments(apts);
         if (rxs.length > 0) setPrescriptions(rxs);
@@ -332,12 +405,102 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           setVisits(migrated);
           await repoVisits.replaceAll(migrated);
         }
-      } catch {
-        // Fallback
+      } else {
+        setPatients(pats || []);
+        setAppointments(apts || []);
+        setPrescriptions(rxs || []);
+        setInvoices(invs || []);
+        setPatientAssignments(asgns || []);
+        setModules(rols.length > 0 ? rols : INITIAL_MODULES);
+        setMedicines(meds.length > 0 ? meds : INITIAL_FORMULARY);
+        setVisits(vsts || []);
       }
+    } catch {
+      // Fallback
+    }
+  };
+
+  useEffect(() => {
+    loadClinicData(activeClinicId);
+  }, [activeClinicId]);
+
+  // Lock non-platform super admins to their assigned clinic
+  useEffect(() => {
+    if (authUser?.role && authUser.role !== 'platform_super_admin' && authUser.clinicId) {
+      if (activeClinicId !== authUser.clinicId) {
+        switchClinic(authUser.clinicId);
+      }
+    }
+  }, [authUser?.role, authUser?.clinicId]);
+
+  const switchClinic = async (clinicId: string) => {
+    setActiveClinicId(clinicId);
+    setActiveClinicIdState(clinicId);
+    clearRepositoriesCache();
+    await loadClinicData(clinicId);
+  };
+
+  const createClinic = async (clinicData: Partial<Clinic>): Promise<Clinic> => {
+    const nextNumber = clinics.length + 1;
+    const newId = clinicData.id || `CLN-${String(nextNumber).padStart(3, '0')}`;
+    const code = (clinicData.code || clinicData.name || `CLN${nextNumber}`).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+
+    const newClinic: Clinic = {
+      id: newId,
+      name: clinicData.name || `Clinic ${nextNumber}`,
+      code: clinicData.code || code,
+      subTitle: clinicData.subTitle || 'SOEZY Clinic Operations',
+      phone: clinicData.phone || '',
+      email: clinicData.email || '',
+      address: clinicData.address || '',
+      city: clinicData.city || '',
+      state: clinicData.state || '',
+      postalCode: clinicData.postalCode || '',
+      country: clinicData.country || 'India',
+      logoUrl: clinicData.logoUrl || '/soezy-logo.png',
+      accentColor: clinicData.accentColor || '#00c060',
+      topBarBg: clinicData.topBarBg || '#28465a',
+      status: clinicData.status || 'active',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
-    loadRepo();
-  }, []);
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase.from('clinics').insert({
+          id: newClinic.id,
+          name: newClinic.name,
+          code: newClinic.code,
+          sub_title: newClinic.subTitle,
+          phone: newClinic.phone,
+          email: newClinic.email,
+          address: newClinic.address,
+          city: newClinic.city,
+          state: newClinic.state,
+          postal_code: newClinic.postalCode,
+          country: newClinic.country,
+          logo_url: newClinic.logoUrl,
+          accent_color: newClinic.accentColor,
+          top_bar_bg: newClinic.topBarBg,
+          status: newClinic.status,
+          created_at: newClinic.createdAt,
+          updated_at: newClinic.updatedAt,
+        });
+        if (error) {
+          console.error('Supabase clinic insert error:', error.message);
+        }
+      } catch (err) {
+        console.error('Supabase clinic exception:', err);
+      }
+    }
+
+    setClinics((prev) => {
+      const exists = prev.some((c) => c.id === newClinic.id);
+      return exists ? prev : [...prev, newClinic];
+    });
+
+    return newClinic;
+  };
 
   // Cross-tab sync and realtime event listener
   useEffect(() => {
@@ -2113,6 +2276,11 @@ export const ClinicProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   return (
     <ClinicContext.Provider
       value={{
+        clinics,
+        currentClinic,
+        activeClinicId,
+        switchClinic,
+        createClinic,
         patients,
         doctors,
         appointments,
