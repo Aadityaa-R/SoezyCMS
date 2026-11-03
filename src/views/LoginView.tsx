@@ -11,6 +11,7 @@ import {
   Eye,
   EyeOff,
   ShieldCheck,
+  Building2,
 } from 'lucide-react';
 
 function getLastUsedAudience(): AuthAudience | null {
@@ -188,24 +189,30 @@ export const LoginView: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-700 flex flex-col justify-between font-sans select-none relative overflow-hidden">
       {/* 1. TOP HEADER LIKE PREVIOUS PART */}
-      <header className="bg-[#28465a] h-14 flex items-center justify-between px-4 sm:px-12 lg:px-24 relative shadow-sm shrink-0 w-full z-10">
-        {/* SOEZY Logo on top bar background */}
-        <div className="flex items-center">
-          <img
-            src="/soezy-logo.png"
-            alt="SOEZY - It's All Easy"
-            className="h-9 sm:h-10 w-auto object-contain select-none"
-          />
+      <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 h-14 flex items-center justify-between px-4 sm:px-12 lg:px-24 relative shadow-xs shrink-0 w-full z-10">
+        {/* Beacon Health Care Logo */}
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-white font-bold ring-2 ring-teal-500/20">
+            <Building2 className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-slate-100">
+              Beacon Health Care
+            </span>
+            <span className="block text-[10px] text-slate-500 font-medium -mt-0.5">
+              Clinic Operations Portal
+            </span>
+          </div>
         </div>
 
         {/* Support Phone on Right */}
         <div className="flex flex-col items-end text-white">
-          <span className="text-[10px] text-slate-300 leading-tight">For Support</span>
+          <span className="text-[10px] text-slate-400 leading-tight">For Support</span>
           <a
-            href="tel:+919543279999"
-            className="text-xs sm:text-sm font-bold tracking-wide flex items-center gap-1.5 text-white hover:text-slate-200 transition-colors"
+            href="tel:+15552322661"
+            className="text-xs sm:text-sm font-bold tracking-wide flex items-center gap-1.5 text-teal-700 hover:text-teal-800 transition-colors"
           >
-            <span>+ 91 9543279999</span>
+            <span>+1 (555) 232-2661</span>
           </a>
         </div>
       </header>
@@ -232,7 +239,7 @@ export const LoginView: React.FC = () => {
               onClick={() => handleSelectAudience('admin')}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                 audience === 'admin'
-                  ? 'bg-[#28465a] text-white shadow-sm'
+                  ? 'bg-teal-600 text-white shadow-sm'
                   : 'text-slate-500 hover:text-slate-700'
               }`}
             >
@@ -255,8 +262,8 @@ export const LoginView: React.FC = () => {
           <div className="text-center mb-5">
             {audience === 'admin' ? (
               <>
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#28465a]/10 text-[#28465a] text-[11px] font-semibold mb-2">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#28465a]" />
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-[11px] font-semibold mb-2">
+                  <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
                   <span>Clinic Administrator</span>
                 </div>
                 <h1 className="text-xl font-bold text-slate-800 tracking-tight">
@@ -374,7 +381,7 @@ export const LoginView: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 bg-[#00c060] hover:bg-[#00ab55] active:bg-[#00964b] text-white text-sm font-semibold tracking-wide rounded-xl transition-colors shadow-sm disabled:opacity-60 cursor-pointer"
+                className="w-full h-11 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white text-sm font-semibold tracking-wide rounded-xl transition-colors shadow-sm disabled:opacity-60 cursor-pointer"
               >
                 {isSubmitting
                   ? 'Signing in...'
@@ -390,7 +397,7 @@ export const LoginView: React.FC = () => {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-[#00c060] focus:ring-0 cursor-pointer"
+                    className="w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-0 cursor-pointer"
                   />
                   <span>Remember me</span>
                 </label>
@@ -398,7 +405,7 @@ export const LoginView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsForgotPasswordModalOpen(true)}
-                  className="text-[#00c060] hover:text-[#00ab55] hover:underline cursor-pointer font-medium"
+                  className="text-teal-600 hover:text-teal-700 hover:underline cursor-pointer font-medium"
                 >
                   Forgot password?
                 </button>
@@ -413,17 +420,17 @@ export const LoginView: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleFillDemoRole('superadmin', 'SuperAdmin@12345', 'admin')}
-                        className="px-3 py-1.5 text-xs rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-semibold transition-colors cursor-pointer flex items-center justify-between"
+                        className="px-3 py-1.5 text-xs rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-900 border border-teal-200 font-semibold transition-colors cursor-pointer flex items-center justify-between"
                       >
                         <span className="font-bold">Platform Super Admin (superadmin)</span>
-                        <span className="text-[11px] text-purple-700 font-normal">multi-clinic switcher, global network provisioning</span>
+                        <span className="text-[11px] text-teal-700 font-normal">multi-clinic switcher, global network provisioning</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => handleFillDemoRole('admin', 'Admin@12345', 'admin')}
-                        className="px-3 py-1.5 text-xs rounded-lg bg-[#00c060]/10 hover:bg-[#00c060]/20 text-[#28465a] font-semibold transition-colors cursor-pointer flex items-center justify-between"
+                        className="px-3 py-1.5 text-xs rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold transition-colors cursor-pointer flex items-center justify-between"
                       >
-                        <span className="font-bold">Clinic Administrator (Meera Krishnan)</span>
+                        <span className="font-bold">Clinic Administrator (Dr. Marcus Vance)</span>
                         <span className="text-[11px] text-slate-500 font-normal">approve staff, manage roles, billing corrections, ledger</span>
                       </button>
                       <button
@@ -448,7 +455,7 @@ export const LoginView: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleFillDemoRole('admin', 'Admin@12345', 'staff')}
-                        className="px-2.5 py-1 text-xs rounded-lg bg-[#00c060]/10 hover:bg-[#00c060]/20 text-[#28465a] font-semibold transition-colors cursor-pointer"
+                        className="px-2.5 py-1 text-xs rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 font-semibold transition-colors cursor-pointer"
                         title="approve staff, manage roles, billing corrections, ledger"
                       >
                         Administrator
@@ -482,7 +489,7 @@ export const LoginView: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setViewMode('signup')}
-                    className="text-[#00c060] hover:underline cursor-pointer font-medium"
+                    className="text-teal-600 hover:text-teal-700 hover:underline cursor-pointer font-medium"
                   >
                     Create account
                   </button>

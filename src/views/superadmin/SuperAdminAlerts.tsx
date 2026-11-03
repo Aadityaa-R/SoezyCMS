@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import {
   AlertTriangle,
   AlertCircle,
@@ -222,7 +222,7 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
                           </span>
                           {clinic && (
                             <span className="text-[11px] font-semibold text-stone-900">
-                              · {clinic.name} <span className="font-mono text-stone-400">[{clinic.code}]</span>
+                              Â· {clinic.name} <span className="font-mono text-stone-400">[{clinic.code}]</span>
                             </span>
                           )}
                         </div>
@@ -305,7 +305,7 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
                       <h3 className="text-sm font-semibold text-stone-900">{ann.title}</h3>
                     </div>
                     <span className="text-[11px] font-mono text-stone-400">
-                      {ann.createdAt} · By {ann.createdBy}
+                      {ann.createdAt} Â· By {ann.createdBy}
                     </span>
                   </div>
 

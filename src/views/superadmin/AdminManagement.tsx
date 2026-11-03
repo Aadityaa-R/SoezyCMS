@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
@@ -193,7 +193,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
               setFormError('');
               setIsAppointModalOpen(true);
             }}
-            className="text-xs rounded bg-[#28465a] hover:bg-[#1e3545] text-white flex items-center gap-1.5"
+            className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Appoint New Admin</span>
@@ -348,7 +348,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                       <td className="py-3 px-3">
                         <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
                           admin.status === 'active'
-                            ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                            ? 'border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300'
                             : admin.status === 'pending_invitation'
                             ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
                             : admin.status === 'reassigned'
@@ -426,7 +426,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                 size="sm"
                 onClick={handleAppointSubmit}
                 disabled={isSubmitting}
-                className="text-xs rounded bg-[#28465a] hover:bg-[#1e3545] text-white"
+                className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
               >
                 {isSubmitting ? 'Recording Appointment...' : 'Confirm Appointment'}
               </Button>
@@ -569,7 +569,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                   size="sm"
                   onClick={handleReassignSubmit}
                   disabled={isSubmitting}
-                  className="text-xs rounded bg-[#28465a] hover:bg-[#1e3545] text-white"
+                  className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
                 >
                   {isSubmitting ? 'Recording Reassignment...' : 'Confirm Reassignment'}
                 </Button>
@@ -690,7 +690,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                 size="sm"
                 onClick={handleStatusChangeSubmit}
                 disabled={isSubmitting}
-                className="text-xs rounded bg-[#28465a] hover:bg-[#1e3545] text-white"
+                className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
               >
                 {isSubmitting ? 'Updating...' : 'Confirm Account Action'}
               </Button>

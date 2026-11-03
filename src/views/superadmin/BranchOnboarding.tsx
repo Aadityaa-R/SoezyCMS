@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import {
   Check,
   X,
@@ -184,13 +184,13 @@ export const BranchOnboarding: React.FC = () => {
                         {clinic.name}
                       </div>
                       <div className="font-mono text-[10px] text-stone-500 mt-0.5">
-                        {clinic.code} · {clinic.branchType.toUpperCase()}
+                        {clinic.code} Â· {clinic.branchType.toUpperCase()}
                       </div>
                       <div className="mt-2 flex items-center gap-2">
                         <span
                           className={`inline-block px-1.5 py-0.5 text-[9px] font-mono border ${
                             clinic.onboardingStatus === 'completed'
-                              ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                              ? 'border-teal-200 bg-teal-50 text-teal-800'
                               : clinic.onboardingStatus === 'ready_for_review'
                               ? 'border-blue-200 bg-blue-50 text-blue-800'
                               : clinic.onboardingStatus === 'in_progress'
@@ -229,7 +229,7 @@ export const BranchOnboarding: React.FC = () => {
                       <span
                         className={`px-1.5 py-0.5 text-[10px] font-mono border ${
                           currentClinic.status === 'active'
-                            ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                            ? 'border-teal-200 bg-teal-50 text-teal-800'
                             : currentClinic.status === 'suspended'
                             ? 'border-red-200 bg-red-50 text-red-800'
                             : 'border-amber-200 bg-amber-50 text-amber-800'
@@ -302,7 +302,7 @@ export const BranchOnboarding: React.FC = () => {
                     </span>
                   )}
                   {allMandatorySatisfied && (
-                    <span className="text-emerald-700 text-xs flex items-center gap-1 font-medium">
+                    <span className="text-teal-700 text-xs flex items-center gap-1 font-medium">
                       <ShieldCheck className="w-4 h-4" />
                       All verification criteria satisfied
                     </span>
@@ -337,7 +337,7 @@ export const BranchOnboarding: React.FC = () => {
                             onClick={() => handleToggleChecklist(item.itemKey, item.completed)}
                             className={`mt-0.5 inline-flex items-center justify-center w-5 h-5 border transition-colors ${
                               item.completed
-                                ? 'border-emerald-600 bg-emerald-600 text-white'
+                                ? 'border-teal-600 bg-teal-600 text-white'
                                 : item.isOverridden
                                 ? 'border-amber-500 bg-amber-500 text-white'
                                 : 'border-stone-300 bg-white hover:border-stone-500 text-transparent'

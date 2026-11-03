@@ -267,3 +267,4 @@ export interface PlatformOrganizationSettings {
   requireAdminBeforeActivation: boolean;
   requireSignedAgreementBeforeActivation: boolean;
 }
+

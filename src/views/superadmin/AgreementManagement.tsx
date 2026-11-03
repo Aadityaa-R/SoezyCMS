@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
@@ -222,7 +222,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
               setFormError('');
               setIsAddModalOpen(true);
             }}
-            className="text-xs rounded bg-[#28465a] hover:bg-[#1e3545] text-white flex items-center gap-1.5"
+            className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Licence Agreement</span>
@@ -338,7 +338,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
                     <td className="py-3 px-3 font-mono text-[11px] text-slate-600 dark:text-slate-400">
                       {agr.secureDocumentName ? (
                         <div className="flex items-center gap-1 text-slate-800 dark:text-slate-200">
-                          <FileCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <FileCheck className="w-3.5 h-3.5 text-teal-600 shrink-0" />
                           <span className="truncate max-w-[120px]">{agr.secureDocumentName}</span>
                         </div>
                       ) : (
@@ -349,7 +349,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
                     <td className="py-3 px-3">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
                         agr.status === 'active'
-                          ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                          ? 'border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300'
                           : agr.status === 'expiring_soon'
                           ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
                           : agr.status === 'pending_signature'
@@ -425,7 +425,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
                 size="sm"
                 onClick={handleAddSubmit}
                 disabled={isSubmitting}
-                className="text-xs rounded bg-[#28465a] hover:bg-[#1e3545] text-white"
+                className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
               >
                 {isSubmitting ? 'Registering...' : 'Record Agreement'}
               </Button>
@@ -588,7 +588,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
                 size="sm"
                 onClick={handleRenewSubmit}
                 disabled={isSubmitting}
-                className="text-xs rounded bg-[#28465a] hover:bg-[#1e3545] text-white"
+                className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
               >
                 {isSubmitting ? 'Recording Renewal...' : 'Confirm Agreement Renewal'}
               </Button>

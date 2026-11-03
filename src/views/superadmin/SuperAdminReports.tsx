@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   Download,
   Printer,
@@ -241,15 +241,15 @@ export const SuperAdminReports: React.FC = () => {
                       <td className="py-2.5 px-3">
                         <span className={`inline-block px-1.5 py-0.5 text-[10px] font-mono border ${
                           c.status === 'active'
-                            ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                            ? 'border-teal-200 bg-teal-50 text-teal-800'
                             : 'border-amber-200 bg-amber-50 text-amber-800'
                         }`}>
                           {c.status.toUpperCase()}
                         </span>
                       </td>
                       <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{c.onboardingStatus.replace(/_/g, ' ')}</td>
-                      <td className="py-2.5 px-3 text-stone-600">{c.city ? `${c.city}, ${c.state}` : '—'}</td>
-                      <td className="py-2.5 px-3 text-stone-600 font-mono text-[11px]">{c.email || '—'}</td>
+                      <td className="py-2.5 px-3 text-stone-600">{c.city ? `${c.city}, ${c.state}` : 'â€”'}</td>
+                      <td className="py-2.5 px-3 text-stone-600 font-mono text-[11px]">{c.email || 'â€”'}</td>
                       <td className="py-2.5 px-3 font-mono text-[11px] text-stone-500">{c.createdAt.slice(0, 10)}</td>
                     </tr>
                   ))}
@@ -301,11 +301,11 @@ export const SuperAdminReports: React.FC = () => {
                         <td className="py-2.5 px-3 font-medium text-stone-900">{a.adminName}</td>
                         <td className="py-2.5 px-3 text-stone-600">{a.designation}</td>
                         <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{a.adminEmail}</td>
-                        <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{a.adminPhone || '—'}</td>
+                        <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{a.adminPhone || 'â€”'}</td>
                         <td className="py-2.5 px-3">
                           <span className={`inline-block px-1.5 py-0.5 text-[10px] font-mono border ${
                             a.status === 'active'
-                              ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                              ? 'border-teal-200 bg-teal-50 text-teal-800'
                               : 'border-stone-200 bg-stone-50 text-stone-600'
                           }`}>
                             {a.status.toUpperCase()}
@@ -363,7 +363,7 @@ export const SuperAdminReports: React.FC = () => {
                       <td className="py-2.5 px-3">
                         <span className={`inline-block px-1.5 py-0.5 text-[10px] font-mono border ${
                           a.status === 'active'
-                            ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                            ? 'border-teal-200 bg-teal-50 text-teal-800'
                             : a.status === 'expiring_soon'
                             ? 'border-amber-200 bg-amber-50 text-amber-800'
                             : 'border-stone-200 bg-stone-50 text-stone-600'
@@ -481,7 +481,7 @@ export const SuperAdminReports: React.FC = () => {
                         <td className="py-2 px-3 font-mono text-stone-500">{item.isMandatory ? 'YES' : 'NO'}</td>
                         <td className="py-2 px-3">
                           {item.completed ? (
-                            <span className="inline-block px-1.5 py-0.5 text-[10px] font-mono border border-emerald-200 bg-emerald-50 text-emerald-800">
+                            <span className="inline-block px-1.5 py-0.5 text-[10px] font-mono border border-teal-200 bg-teal-50 text-teal-800">
                               COMPLETED
                             </span>
                           ) : item.isOverridden ? (
@@ -495,7 +495,7 @@ export const SuperAdminReports: React.FC = () => {
                           )}
                         </td>
                         <td className="py-2 px-3 font-mono text-[11px] text-stone-600">
-                          {item.overrideReason || (item.completedAt ? `Completed on ${item.completedAt}` : '—')}
+                          {item.overrideReason || (item.completedAt ? `Completed on ${item.completedAt}` : 'â€”')}
                         </td>
                       </tr>
                     ));

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
 import {
@@ -77,7 +77,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
               size="sm"
               variant="primary"
               onClick={() => onNavigate('super_clinics', 'register')}
-              className="text-xs rounded bg-[#28465a] hover:bg-[#1e3545] text-white"
+              className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
             >
               Register Branch
             </Button>
@@ -98,7 +98,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{totalClinics}</span>
-            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">{activeClinics} active</span>
+            <span className="text-xs text-teal-600 dark:text-teal-400 font-medium">{activeClinics} active</span>
           </div>
           <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
             <span>Pending: {pendingClinics}</span>
@@ -159,7 +159,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               {clinics.filter((c) => c.onboardingStatus === 'completed').length} / {totalClinics}
             </span>
-            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">completed</span>
+            <span className="text-xs text-teal-600 dark:text-teal-400 font-medium">completed</span>
           </div>
           <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
             <span>In Progress: {clinics.filter((c) => c.onboardingStatus === 'in_progress').length}</span>
@@ -291,7 +291,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
                     <td className="py-2.5 px-3">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
                         clinic.agreementStatus === 'active'
-                          ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                          ? 'border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300'
                           : clinic.agreementStatus === 'expiring_soon'
                           ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
                           : 'border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
@@ -302,7 +302,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
                     <td className="py-2.5 pl-3">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
                         clinic.status === 'active'
-                          ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                          ? 'border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300'
                           : clinic.status === 'pending_onboarding'
                           ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
                           : 'border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'

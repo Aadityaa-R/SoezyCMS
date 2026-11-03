@@ -14,16 +14,16 @@ export interface BrandConfig {
 }
 
 export const BRAND_CONFIG: BrandConfig = {
-  hospitalName: 'Subiksham Speciality Hospital',
-  subTitle: 'SOEZY Clinic Operations',
-  logoAsset: '/soezy-logo.png',
-  accentColor: '#00c060',
-  accentColorHover: '#00ab55',
-  accentColorActive: '#00964b',
-  accentColorLight: '#e6f9f0',
-  accentColorDark: '#008542',
-  topBarBg: '#28465a',
-  topBarBorder: '#1e3545',
+  hospitalName: 'Beacon Health Care',
+  subTitle: 'Outpatient Clinic Operations',
+  logoAsset: '',
+  accentColor: '#0d9488',
+  accentColorHover: '#0f766e',
+  accentColorActive: '#115e59',
+  accentColorLight: '#f0fdfa',
+  accentColorDark: '#134e4a',
+  topBarBg: '#ffffff',
+  topBarBorder: '#e2e8f0',
   showHeaderUserBlock: true,
-  showHeaderHospitalTitle: false,
+  showHeaderHospitalTitle: true,
 };

@@ -253,21 +253,21 @@ export const ClinicSwitcher: React.FC = () => {
     const parentOrg = organizations.find((o) => o.id === currentClinic.organizationId);
     return (
       <div
-        className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded bg-white/10 text-white text-xs font-medium border border-white/15 select-none"
+        className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium border border-slate-200 dark:border-slate-700 select-none"
         title={`Active Clinic Tenant: ${currentClinic.name} (${currentClinic.code})${parentOrg ? ` • Organization: ${parentOrg.name}` : ''}`}
       >
-        <Building2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+        <Building2 className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 shrink-0" />
         <span className="max-w-[120px] sm:max-w-[180px] truncate">{currentClinic.name}</span>
-        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/20 text-emerald-200 uppercase font-bold tracking-wide font-mono">
+        <span className="text-[10px] px-1.5 py-0.5 rounded bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 uppercase font-bold tracking-wide font-mono border border-teal-200 dark:border-teal-800">
           {currentClinic.code}
         </span>
         {parentOrg && (
-          <span className="hidden md:inline-block text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-slate-200 tracking-wide">
+          <span className="hidden md:inline-block text-[10px] px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-700 text-slate-600 dark:text-slate-300 tracking-wide font-mono">
             {parentOrg.code}
           </span>
         )}
         <span title="Clinic Locked to User Assignment" className="flex items-center">
-          <Lock className="w-3 h-3 text-slate-300 ml-0.5 shrink-0" />
+          <Lock className="w-3 h-3 text-slate-400 ml-0.5 shrink-0" />
         </span>
       </div>
     );
@@ -280,18 +280,18 @@ export const ClinicSwitcher: React.FC = () => {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-lg bg-emerald-600/90 hover:bg-emerald-600 text-white text-xs font-medium shadow-sm transition-colors border border-emerald-500/40 cursor-pointer"
+          className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-xs font-medium shadow-sm transition-colors border border-teal-700 cursor-pointer"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           title="Switch Active Clinic Tenant"
         >
           <Building2 className="w-3.5 h-3.5 text-white shrink-0" />
           <span className="max-w-[120px] sm:max-w-[180px] truncate">{currentClinic.name}</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-800/80 text-emerald-100 uppercase font-bold tracking-wide">
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-teal-800/80 text-teal-100 uppercase font-bold tracking-wide">
             {currentClinic.code}
           </span>
           <ChevronDown
-            className={`w-3.5 h-3.5 text-emerald-100 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            className={`w-3.5 h-3.5 text-teal-100 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           />
         </button>
 
@@ -301,7 +301,7 @@ export const ClinicSwitcher: React.FC = () => {
               <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
                 Clinic Switcher
               </span>
-              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400">
+              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-teal-100 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400">
                 {clinics.length} {clinics.length === 1 ? 'Clinic' : 'Clinics'}
               </span>
             </div>
@@ -317,7 +317,7 @@ export const ClinicSwitcher: React.FC = () => {
                     onClick={() => handleSelectClinic(clinic.id)}
                     className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left transition-colors cursor-pointer ${
                       isActive
-                        ? 'bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60'
+                        ? 'bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800/60'
                         : 'hover:bg-slate-100 dark:hover:bg-slate-800 border border-transparent'
                     }`}
                   >
@@ -345,7 +345,7 @@ export const ClinicSwitcher: React.FC = () => {
                       </div>
                     </div>
                     {isActive && (
-                      <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                      <Check className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
                     )}
                   </button>
                 );
@@ -356,7 +356,7 @@ export const ClinicSwitcher: React.FC = () => {
               <button
                 type="button"
                 onClick={handleOpenModal}
-                className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors cursor-pointer"
+                className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/40 hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-colors cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Onboard New Clinic</span>
@@ -381,13 +381,13 @@ export const ClinicSwitcher: React.FC = () => {
         {provisionResult ? (
           /* Success Screen with Provisioned Credentials */
           <div className="space-y-5 animate-fadeIn">
-            <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-start gap-3">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+            <div className="p-4 rounded-xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 flex items-start gap-3">
+              <CheckCircle2 className="w-5 h-5 text-teal-600 dark:text-teal-400 shrink-0 mt-0.5" />
               <div className="text-xs space-y-1">
-                <p className="font-bold text-emerald-900 dark:text-emerald-100 text-sm">
+                <p className="font-bold text-teal-900 dark:text-teal-100 text-sm">
                   {provisionResult.clinic.name} is now active on the platform.
                 </p>
-                <p className="text-emerald-700 dark:text-emerald-300">
+                <p className="text-teal-700 dark:text-teal-300">
                   Tenant ID: <span className="font-mono font-bold">{provisionResult.clinic.id}</span> • Code: <span className="font-mono font-bold">{provisionResult.clinic.code}</span>
                 </p>
               </div>
@@ -398,7 +398,7 @@ export const ClinicSwitcher: React.FC = () => {
               <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
                   <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <Shield className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                       Initial Administrator Credentials
                     </span>
@@ -429,7 +429,7 @@ export const ClinicSwitcher: React.FC = () => {
                   </div>
                   <div className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-700">
                     <span className="text-slate-500 dark:text-slate-400 block text-[10px] uppercase font-bold">Temporary Password</span>
-                    <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                    <span className="font-mono font-bold text-teal-600 dark:text-teal-400 text-sm">
                       {provisionResult.adminAccount.temporaryPassword}
                     </span>
                   </div>
@@ -440,7 +440,7 @@ export const ClinicSwitcher: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleCopyCredentials}
-                    className="flex items-center gap-1 text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 font-medium cursor-pointer"
+                    className="flex items-center gap-1 text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 font-medium cursor-pointer"
                   >
                     {hasCopied ? (
                       <>
@@ -471,7 +471,7 @@ export const ClinicSwitcher: React.FC = () => {
                 type="button"
                 size="sm"
                 onClick={handleSwitchToProvisioned}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-teal-600 hover:bg-teal-700 text-white"
               >
                 Switch to {provisionResult.clinic.name} Now
               </Button>
@@ -489,7 +489,7 @@ export const ClinicSwitcher: React.FC = () => {
             {/* Section 1: Hospital Details */}
             <div className="space-y-3">
               <div className="flex items-center gap-2 pb-1 border-b border-slate-100 dark:border-slate-800">
-                <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <Building2 className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                   Hospital & Facility Details
                 </h4>
@@ -506,7 +506,7 @@ export const ClinicSwitcher: React.FC = () => {
                     value={newClinicName}
                     onChange={handleNameChange}
                     placeholder="e.g. Apex Specialty Hospital"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
 
@@ -520,7 +520,7 @@ export const ClinicSwitcher: React.FC = () => {
                     value={newClinicCode}
                     onChange={handleCodeChange}
                     placeholder="e.g. APEX"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono uppercase"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 font-mono uppercase"
                   />
                 </div>
               </div>
@@ -533,7 +533,7 @@ export const ClinicSwitcher: React.FC = () => {
                   <select
                     value={selectedOrgId}
                     onChange={(e) => setSelectedOrgId(e.target.value)}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
                   >
                     <option value="">None (Standalone Hospital)</option>
                     {organizations.map((org) => {
@@ -557,8 +557,8 @@ export const ClinicSwitcher: React.FC = () => {
                     type="text"
                     value={newClinicCity}
                     onChange={(e) => setNewClinicCity(e.target.value)}
-                    placeholder="e.g. Pune"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="e.g. Boston"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
 
@@ -570,8 +570,8 @@ export const ClinicSwitcher: React.FC = () => {
                     type="text"
                     value={newClinicPhone}
                     onChange={(e) => setNewClinicPhone(e.target.value)}
-                    placeholder="e.g. +91 98200 12345"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="e.g. +1 617-555-0199"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
               </div>
@@ -584,8 +584,8 @@ export const ClinicSwitcher: React.FC = () => {
                   type="text"
                   value={newClinicAddress}
                   onChange={(e) => setNewClinicAddress(e.target.value)}
-                  placeholder="e.g. Plot 42, Senapati Bapat Road"
-                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  placeholder="e.g. 750 Beacon Center Parkway"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
             </div>
@@ -594,7 +594,7 @@ export const ClinicSwitcher: React.FC = () => {
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between pb-1 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <Shield className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                     Initial Clinic Administrator Account
                   </h4>
@@ -619,7 +619,7 @@ export const ClinicSwitcher: React.FC = () => {
                       value={adminFullName}
                       onChange={(e) => setAdminFullName(e.target.value)}
                       placeholder="e.g. Dr. Sarah Jenkins"
-                      className="w-full px-3 pr-8 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-3 pr-8 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                     <User className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 pointer-events-none" />
                   </div>
@@ -636,7 +636,7 @@ export const ClinicSwitcher: React.FC = () => {
                       value={adminUsername}
                       onChange={(e) => setAdminUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
                       placeholder="e.g. apex_admin"
-                      className="w-full px-3 pr-8 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                      className="w-full px-3 pr-8 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 font-mono"
                     />
                     <KeyRound className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 pointer-events-none" />
                   </div>
@@ -654,7 +654,7 @@ export const ClinicSwitcher: React.FC = () => {
                     value={adminEmail}
                     onChange={(e) => setAdminEmail(e.target.value)}
                     placeholder="e.g. admin@apexcare.local"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 font-mono"
                   />
                 </div>
 
@@ -669,7 +669,7 @@ export const ClinicSwitcher: React.FC = () => {
                       value={adminPassword}
                       onChange={(e) => setAdminPassword(e.target.value)}
                       placeholder="Min 8 characters"
-                      className="w-full px-3 pr-8 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                      className="w-full px-3 pr-8 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 font-mono"
                     />
                     <button
                       type="button"
@@ -698,7 +698,7 @@ export const ClinicSwitcher: React.FC = () => {
                 type="submit"
                 size="sm"
                 disabled={isSubmitting}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="bg-teal-600 hover:bg-teal-700 text-white"
               >
                 {isSubmitting ? 'Provisioning Hospital...' : 'Provision Hospital & Administrator'}
               </Button>

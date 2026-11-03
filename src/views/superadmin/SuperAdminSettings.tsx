@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import {
   Search,
   Save,
@@ -270,7 +270,7 @@ export const SuperAdminSettings: React.FC = () => {
               Save Organization Settings
             </button>
             {isSaved && (
-              <span className="text-xs text-emerald-700 font-mono inline-flex items-center gap-1">
+              <span className="text-xs text-teal-700 font-mono inline-flex items-center gap-1">
                 <Check className="w-3.5 h-3.5" />
                 Settings saved successfully
               </span>
@@ -379,7 +379,7 @@ export const SuperAdminSettings: React.FC = () => {
                           <span className="block font-mono text-[10px] text-stone-400">[{log.targetId}]</span>
                         </td>
                         <td className="py-2.5 px-3 text-stone-700 leading-relaxed max-w-md">
-                          {log.reason || '—'}
+                          {log.reason || 'â€”'}
                           {log.beforeValue && log.afterValue && (
                             <div className="text-[10px] font-mono text-stone-500 mt-0.5">
                               {log.beforeValue} &rarr; {log.afterValue}

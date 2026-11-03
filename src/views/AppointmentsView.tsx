@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { useClinic } from '@/context/ClinicContext';
 import { useAuth } from '@/context/AuthContext';
 import { getScopedAppointments } from '@/lib/selectors';
@@ -156,7 +156,7 @@ export const AppointmentsView: React.FC = () => {
       priority: 1,
       render: (apt) => (
         <div className="flex items-center gap-1.5 font-semibold text-slate-800 dark:text-slate-200">
-          <Clock className="w-3.5 h-3.5 text-[#00c060] shrink-0" />
+          <Clock className="w-3.5 h-3.5 text-[#0d9488] shrink-0" />
           <span>{formatTime(apt.dateTime)}</span>
         </div>
       ),
@@ -168,7 +168,7 @@ export const AppointmentsView: React.FC = () => {
       priority: 4,
       render: (apt) => (
         <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-300">
-          #{apt.tokenNumber || '—'}
+          #{apt.tokenNumber || 'â€”'}
         </span>
       ),
     },
@@ -199,7 +199,7 @@ export const AppointmentsView: React.FC = () => {
       render: (apt) => (
         <div>
           <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-            <Stethoscope className="w-3.5 h-3.5 text-[#28465a] dark:text-slate-400 shrink-0" />
+            <Stethoscope className="w-3.5 h-3.5 text-[#0f766e] dark:text-slate-400 shrink-0" />
             <span>{apt.doctorName || 'Assigned Physician'}</span>
           </div>
           <div className="text-[11px] text-slate-500 dark:text-slate-400 pl-5">
@@ -229,7 +229,7 @@ export const AppointmentsView: React.FC = () => {
         let label = 'Scheduled';
 
         if (apt.status === 'completed') {
-          badgeClass = 'bg-[#00c060]/10 text-[#00964b] border-[#00c060]/30 font-semibold';
+          badgeClass = 'bg-[#0d9488]/10 text-[#0f766e] border-[#0d9488]/30 font-semibold';
           label = 'Completed';
         } else if (apt.status === 'in_consultation') {
           badgeClass = 'bg-[#20b2aa]/15 text-[#008080] border-[#20b2aa]/40 font-semibold';
@@ -257,7 +257,7 @@ export const AppointmentsView: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
         {/* Total Appointments */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#28465a]/10 flex items-center justify-center text-[#28465a] shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#0f766e]/10 flex items-center justify-center text-[#0f766e] shrink-0">
             <CalendarDays className="w-5 h-5" />
           </div>
           <div>
@@ -272,11 +272,11 @@ export const AppointmentsView: React.FC = () => {
 
         {/* Completed Visits */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#00c060]/10 flex items-center justify-center text-[#00964b] shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#0d9488]/10 flex items-center justify-center text-[#0f766e] shrink-0">
             <CalendarCheck className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-2xl font-bold text-[#00964b] tabular-nums">
+            <div className="text-2xl font-bold text-[#0f766e] tabular-nums">
               {metrics.completed}
             </div>
             <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
@@ -362,7 +362,7 @@ export const AppointmentsView: React.FC = () => {
                 onClick={handleToday}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 shrink-0 whitespace-nowrap ${
                   isToday
-                    ? 'bg-[#00c060] text-white border-[#00c060] shadow-xs'
+                    ? 'bg-[#0d9488] text-white border-[#0d9488] shadow-xs'
                     : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 hover:bg-slate-50'
                 }`}
                 title="Today"

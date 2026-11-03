@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
@@ -187,7 +187,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
               setFormError('');
               setIsRegisterModalOpen(true);
             }}
-            className="text-xs rounded bg-[#28465a] hover:bg-[#1e3545] text-white flex items-center gap-1.5"
+            className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Register New Clinic</span>
@@ -321,7 +321,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                     <td className="py-3 px-3">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
                         clinic.agreementStatus === 'active'
-                          ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                          ? 'border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300'
                           : clinic.agreementStatus === 'expiring_soon'
                           ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
                           : clinic.agreementStatus === 'pending_signature'
@@ -342,7 +342,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                     <td className="py-3 px-3">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
                         clinic.onboardingStatus === 'completed'
-                          ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                          ? 'border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300'
                           : clinic.onboardingStatus === 'in_progress'
                           ? 'border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
                           : 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
@@ -354,7 +354,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                     <td className="py-3 px-3">
                       <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
                         clinic.status === 'active'
-                          ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
+                          ? 'border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300'
                           : clinic.status === 'pending_onboarding'
                           ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
                           : clinic.status === 'suspended'
@@ -582,7 +582,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                   <span className="text-slate-500 block text-[11px] mb-1">Contractually Entitled:</span>
                   <div className="flex flex-wrap gap-1">
                     {activeProfile.entitledFacilities.map((f) => (
-                      <span key={f} className="px-1.5 py-0.5 rounded border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-[10px] font-mono">
+                      <span key={f} className="px-1.5 py-0.5 rounded border border-teal-300 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 text-[10px] font-mono">
                         {f}
                       </span>
                     ))}
@@ -672,7 +672,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                 size="sm"
                 onClick={handleRegisterSubmit}
                 disabled={isSubmitting}
-                className="text-xs rounded bg-[#28465a] hover:bg-[#1e3545] text-white"
+                className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
               >
                 {isSubmitting ? 'Registering...' : 'Register Clinic Branch'}
               </Button>
@@ -864,7 +864,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                 size="sm"
                 onClick={handleStatusChangeSubmit}
                 disabled={isSubmitting}
-                className="text-xs rounded bg-[#28465a] hover:bg-[#1e3545] text-white"
+                className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
               >
                 {isSubmitting ? 'Updating...' : 'Confirm Status Change'}
               </Button>

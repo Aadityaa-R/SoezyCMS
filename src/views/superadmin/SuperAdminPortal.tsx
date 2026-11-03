@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
   Building2,
@@ -80,20 +80,20 @@ const SuperAdminPortalContent: React.FC<{
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between py-3 gap-3 border-b border-stone-100">
             <div className="flex items-center gap-3">
-              <div className="w-7 h-7 bg-stone-900 text-white flex items-center justify-center font-bold text-xs">
-                SA
+              <div className="w-7 h-7 bg-teal-600 text-white flex items-center justify-center font-bold text-xs rounded-xs">
+                BH
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-sm text-stone-900 tracking-tight">
-                    Healthcare Enterprise Platform
+                    Beacon Health Care System
                   </span>
-                  <span className="border border-stone-300 bg-stone-100 px-1.5 py-0.2 text-[10px] font-mono text-stone-700">
+                  <span className="border border-teal-300 bg-teal-50 px-1.5 py-0.2 text-[10px] font-mono text-teal-800 rounded-xs">
                     ORGANIZATION SUPER ADMIN
                   </span>
                 </div>
                 <div className="text-[11px] text-stone-500 font-mono">
-                  Multi-Branch Oversight · Governance & Licencing Portal
+                  Multi-Branch Health System Oversight Â· Governance & Licencing Portal
                 </div>
               </div>
             </div>
@@ -101,7 +101,7 @@ const SuperAdminPortalContent: React.FC<{
             {/* Quick Administrative KPI Breadcrumb */}
             <div className="flex items-center gap-4 text-xs font-mono">
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 bg-emerald-500 rounded-none inline-block" />
+                <span className="w-2 h-2 bg-teal-600 rounded-none inline-block" />
                 <span className="text-stone-500">Live Branches:</span>
                 <span className="font-semibold text-stone-900">{activeClinicsCount} / {clinics.length}</span>
               </div>
@@ -116,9 +116,9 @@ const SuperAdminPortalContent: React.FC<{
 
               {expiringAgreementsCount > 0 && (
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 bg-red-500 rounded-none inline-block" />
+                  <span className="w-2 h-2 bg-rose-500 rounded-none inline-block" />
                   <span className="text-stone-500">Agreements Expiring:</span>
-                  <span className="font-semibold text-red-700">{expiringAgreementsCount}</span>
+                  <span className="font-semibold text-rose-700">{expiringAgreementsCount}</span>
                 </div>
               )}
             </div>
@@ -136,14 +136,14 @@ const SuperAdminPortalContent: React.FC<{
                   onClick={() => handleTabSelect(tab.id)}
                   className={`px-3 py-2 text-xs font-medium border-b-2 whitespace-nowrap inline-flex items-center gap-2 transition-colors ${
                     isActive
-                      ? 'border-stone-900 text-stone-900 font-semibold bg-stone-50'
+                      ? 'border-teal-600 text-teal-800 font-semibold bg-teal-50/40'
                       : 'border-transparent text-stone-600 hover:text-stone-900 hover:border-stone-300'
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
                   <span>{tab.label}</span>
                   {tab.badge !== undefined && tab.badge > 0 && (
-                    <span className="border border-red-300 bg-red-50 text-red-800 px-1 py-0.2 text-[9px] font-mono">
+                    <span className="border border-rose-300 bg-rose-50 text-rose-800 px-1 py-0.2 text-[9px] font-mono">
                       {tab.badge}
                     </span>
                   )}

@@ -62,17 +62,17 @@ select:active,
   --section-gap: 1.25rem;
   --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05);
   --shadow-modal: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
-  --chart-primary: #00c060;
+  --chart-primary: #0d9488;
   --chart-secondary: #475569;
   --chart-hatch-rect: #64748b;
   --chart-hatch-line: #334155;
   --chart-grid: #94a3b8;
   --chart-pattern: #64748b;
-  --focus-outline: #00c060;
+  --focus-outline: #0d9488;
   --text: #0f172a;
   --text-muted: #64748b;
   --text-grey-strong: #475569;
-  --brand-accent: #00c060;
+  --brand-accent: #0d9488;
 
   /* Spacing Tokens (Milestone M13) */
   --space-card: var(--card-pad);

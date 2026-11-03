@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import {
   Search,
   Check,
@@ -255,7 +255,7 @@ export const FacilityManagement: React.FC = () => {
                 <span className="font-medium text-stone-900 block">2. Contractually Entitled</span>
                 Formally covered in active verified Licence Agreement.
               </div>
-              <div className="border-l-2 border-emerald-500 pl-2">
+              <div className="border-l-2 border-teal-500 pl-2">
                 <span className="font-medium text-stone-900 block">3. CMS Module Enabled</span>
                 Active interface access granted to clinic staff by Super Admin.
               </div>
@@ -341,7 +341,7 @@ export const FacilityManagement: React.FC = () => {
                   Active Agreement: <span className="font-mono text-stone-900">{activeAgreement ? activeAgreement.agreementReference : 'None Found'}</span>
                 </span>
                 {activeAgreement && (
-                  <span className="border border-emerald-200 bg-emerald-50 text-emerald-800 px-1.5 py-0.5 text-[10px] font-mono">
+                  <span className="border border-teal-200 bg-teal-50 text-teal-800 px-1.5 py-0.5 text-[10px] font-mono">
                     Valid to {activeAgreement.endDate}
                   </span>
                 )}
@@ -413,7 +413,7 @@ export const FacilityManagement: React.FC = () => {
                               title="Click to toggle Entitlement status"
                               className={`inline-flex items-center justify-center w-6 h-6 border transition-colors ${
                                 e.entitlementStatus
-                                  ? 'border-emerald-600 bg-emerald-50 text-emerald-800'
+                                  ? 'border-teal-600 bg-teal-50 text-teal-800'
                                   : 'border-stone-200 text-stone-300 hover:border-stone-400 hover:text-stone-500'
                               }`}
                             >
@@ -463,7 +463,7 @@ export const FacilityManagement: React.FC = () => {
 
                           {/* Agreement Ref */}
                           <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">
-                            {e.agreementReference || '—'}
+                            {e.agreementReference || 'â€”'}
                           </td>
 
                           {/* Actions */}
@@ -539,7 +539,7 @@ export const FacilityManagement: React.FC = () => {
                         <span
                           className={`inline-block px-1.5 py-0.5 text-[10px] font-mono border ${
                             item.status === 'active'
-                              ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                              ? 'border-teal-200 bg-teal-50 text-teal-800'
                               : 'border-stone-200 bg-stone-50 text-stone-500'
                           }`}
                         >
