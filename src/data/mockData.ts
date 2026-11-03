@@ -12,7 +12,38 @@ import {
   AccessAuditLogEntry,
   PatientAssignment,
   AccessModule,
+  Organization,
 } from '@/types';
+
+export const INITIAL_ORGANIZATIONS: Organization[] = [
+  {
+    id: 'ORG-001',
+    name: 'Subiksham Healthcare Group',
+    code: 'SUBIKSHAM',
+    headquartersAddress: '124 Health Avenue, Speciality Block',
+    city: 'Pune',
+    state: 'Maharashtra',
+    postalCode: '411001',
+    country: 'India',
+    phone: '+91 95432 79999',
+    email: 'governance@subiksham.local',
+    website: 'https://subiksham.local',
+    logoUrl: '/soezy-logo.png',
+    licenseTier: 'enterprise',
+    licenseNumber: 'MED-LIC-MH-2026-001',
+    licenseValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+    licenseStatus: 'active',
+    maxBranches: 5,
+    maxDoctors: 50,
+    facilities: ['OPD', 'IPD', 'Pharmacy', 'Laboratory', 'Emergency', 'Billing'],
+    appointedAdminId: 'acc-adm-1',
+    appointedAdminName: 'Meera Krishnan',
+    appointedAdminEmail: 'admin@subiksham.local',
+    status: 'active',
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+  },
+];
 
 export const ROLE_CREDENTIALS: RoleCredential[] = [
   {

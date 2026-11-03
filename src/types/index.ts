@@ -7,8 +7,48 @@ export type UserRole =
   | 'receptionist'
   | 'patient';
 
+export type LicenseTier = 'starter' | 'professional' | 'enterprise' | 'custom';
+export type LicenseStatus = 'active' | 'expiring_soon' | 'expired' | 'suspended';
+export type FacilityModule = 'OPD' | 'IPD' | 'Pharmacy' | 'Laboratory' | 'Emergency' | 'Billing';
+
+export interface Organization {
+  id: string;
+  name: string;
+  code: string;
+  headquartersAddress?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  logoUrl?: string;
+
+  // Licensing & Subscription
+  licenseTier: LicenseTier;
+  licenseNumber: string;
+  licenseValidUntil: string;
+  licenseStatus: LicenseStatus;
+  maxBranches: number;
+  maxDoctors: number;
+
+  // Facilities
+  facilities: FacilityModule[];
+
+  // Appointed Primary Administrator
+  appointedAdminId?: string;
+  appointedAdminName?: string;
+  appointedAdminEmail?: string;
+
+  status: 'active' | 'suspended' | 'trial' | 'inactive';
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Clinic {
   id: string;
+  organizationId?: string;
   name: string;
   code: string;
   subTitle?: string;

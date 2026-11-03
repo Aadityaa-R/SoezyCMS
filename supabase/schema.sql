@@ -30,6 +30,7 @@ DROP TABLE IF EXISTS public.patients CASCADE;
 DROP TABLE IF EXISTS public.staff CASCADE;
 DROP TABLE IF EXISTS public.accounts CASCADE;
 DROP TABLE IF EXISTS public.clinics CASCADE;
+DROP TABLE IF EXISTS public.organizations CASCADE;
 DROP TABLE IF EXISTS public.ledger CASCADE;
 DROP TABLE IF EXISTS public.approvals CASCADE;
 DROP TABLE IF EXISTS public.claim_requests CASCADE;
@@ -39,10 +40,52 @@ DROP TABLE IF EXISTS public.roles CASCADE;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ------------------------------------------------------------------------------
--- 1. CLINICS (Tenant Table)
+-- 0. ORGANIZATIONS (Parent Healthcare Group / Multi-Branch Enterprise)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.organizations (
+    id TEXT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    headquarters_address TEXT,
+    city VARCHAR(100),
+    state VARCHAR(100),
+    postal_code VARCHAR(20),
+    country VARCHAR(100) DEFAULT 'India',
+    phone VARCHAR(30),
+    email VARCHAR(255),
+    website VARCHAR(255),
+    logo_url TEXT DEFAULT '/soezy-logo.png',
+    
+    -- Licensing & Subscription
+    license_tier VARCHAR(50) DEFAULT 'enterprise' CHECK (license_tier IN ('starter', 'professional', 'enterprise', 'custom')),
+    license_number VARCHAR(100) UNIQUE NOT NULL,
+    license_valid_until TIMESTAMPTZ NOT NULL,
+    license_status VARCHAR(20) DEFAULT 'active' CHECK (license_status IN ('active', 'expiring_soon', 'expired', 'suspended')),
+    max_branches INTEGER DEFAULT 5,
+    max_doctors INTEGER DEFAULT 50,
+    
+    -- Facility Modules Enabled (OPD, IPD, Pharmacy, Laboratory, Emergency, Billing)
+    facilities TEXT[] DEFAULT '{"OPD","IPD","Pharmacy","Laboratory","Emergency","Billing"}',
+    
+    -- Appointed Primary Administrator
+    appointed_admin_id TEXT,
+    appointed_admin_name VARCHAR(255),
+    appointed_admin_email VARCHAR(255),
+    
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'trial', 'inactive')),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_organizations_code ON public.organizations(code);
+CREATE INDEX IF NOT EXISTS idx_organizations_license_status ON public.organizations(license_status);
+
+-- ------------------------------------------------------------------------------
+-- 1. CLINICS (Tenant Table / Branches)
 -- ------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.clinics (
     id TEXT PRIMARY KEY,
+    organization_id TEXT REFERENCES public.organizations(id) ON DELETE SET NULL,
     name VARCHAR(255) NOT NULL,
     code VARCHAR(50) UNIQUE NOT NULL,
     sub_title VARCHAR(255) DEFAULT 'SOEZY Clinic Operations',
@@ -60,6 +103,8 @@ CREATE TABLE IF NOT EXISTS public.clinics (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE INDEX IF NOT EXISTS idx_clinics_organization ON public.clinics(organization_id);
 
 -- ------------------------------------------------------------------------------
 -- 2. ACCOUNTS (Authentication & Platform Users)
@@ -475,11 +520,43 @@ CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON public.notifications(r
 CREATE INDEX IF NOT EXISTS idx_notifications_read ON public.notifications(is_read);
 
 -- ------------------------------------------------------------------------------
+-- SEED INITIAL ORGANIZATION: Subiksham Healthcare Group
+-- ------------------------------------------------------------------------------
+INSERT INTO public.organizations (
+    id, name, code, headquarters_address, city, state, postal_code, country, phone, email,
+    license_tier, license_number, license_valid_until, license_status, max_branches, max_doctors,
+    facilities, appointed_admin_id, appointed_admin_name, appointed_admin_email, status
+) VALUES (
+    'ORG-001',
+    'Subiksham Healthcare Group',
+    'SUBIKSHAM',
+    '124 Health Avenue, Speciality Block',
+    'Pune',
+    'Maharashtra',
+    '411001',
+    'India',
+    '+91 95432 79999',
+    'governance@subiksham.local',
+    'enterprise',
+    'MED-LIC-MH-2026-001',
+    NOW() + INTERVAL '365 days',
+    'active',
+    5,
+    50,
+    ARRAY['OPD','IPD','Pharmacy','Laboratory','Emergency','Billing'],
+    'acc-adm-1',
+    'Meera Krishnan',
+    'admin@subiksham.local',
+    'active'
+) ON CONFLICT (id) DO NOTHING;
+
+-- ------------------------------------------------------------------------------
 -- SEED INITIAL CLINIC: Subiksham Speciality Hospital
 -- ------------------------------------------------------------------------------
-INSERT INTO public.clinics (id, name, code, sub_title, phone, email, address, city, state, postal_code, country, logo_url, status)
+INSERT INTO public.clinics (id, organization_id, name, code, sub_title, phone, email, address, city, state, postal_code, country, logo_url, status)
 VALUES (
     'CLN-001',
+    'ORG-001',
     'Subiksham Speciality Hospital',
     'SUBIKSHAM',
     'SOEZY Clinic Operations',
@@ -502,7 +579,7 @@ DO $$
 DECLARE
     tbl text;
     tables text[] := ARRAY[
-        'clinics', 'accounts', 'staff', 'patients', 'patient_assignments',
+        'organizations', 'clinics', 'accounts', 'staff', 'patients', 'patient_assignments',
         'appointments', 'visits', 'prescriptions', 'prescription_items',
         'invoices', 'invoice_items', 'payments', 'attendance', 'leave_requests',
         'shifts', 'formulary', 'access_audit_log', 'notifications'

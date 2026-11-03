@@ -11,6 +11,7 @@ import {
   Medicine,
   Visit,
   Clinic,
+  Organization,
 } from './index';
 import { Invoice, Payment } from './billing';
 import { Shift, AttendanceRecord, LeaveRequest } from './attendance';
@@ -86,6 +87,7 @@ export interface BackupCollections {
   notifications: InAppNotification[];
   formulary?: Medicine[];
   clinics?: Clinic[];
+  organizations?: Organization[];
   settings: StorageSettings;
 }
 

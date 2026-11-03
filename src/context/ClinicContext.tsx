@@ -106,6 +106,7 @@ export interface ModuleMutationResult {
 
 export const DEFAULT_CLINIC: Clinic = {
   id: 'CLN-001',
+  organizationId: 'ORG-001',
   name: 'Subiksham Speciality Hospital',
   code: 'SUBIKSHAM',
   subTitle: 'SOEZY Clinic Operations',

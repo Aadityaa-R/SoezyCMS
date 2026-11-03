@@ -1,5 +1,5 @@
 import { CollectionName } from '../types/storage';
-import { Patient, Appointment, Visit, InAppNotification, StaffAccessRecord, PatientAssignment, Clinic } from '../types';
+import { Patient, Appointment, Visit, InAppNotification, StaffAccessRecord, PatientAssignment, Clinic, Organization } from '../types';
 import { Invoice, Payment } from '../types/billing';
 import { AttendanceRecord, LeaveRequest, Shift, DayOfWeek, LeaveType } from '../types/attendance';
 import { Medicine } from '../types/prescribing';
@@ -22,10 +22,11 @@ export const TABLE_MAP: Partial<Record<CollectionName, string>> = {
   ledger: 'access_audit_log',
   notifications: 'notifications',
   clinics: 'clinics',
+  organizations: 'organizations',
 };
 
 // Tables that are global (not scoped to clinic_id)
-export const GLOBAL_TABLES = new Set<string>(['clinics']);
+export const GLOBAL_TABLES = new Set<string>(['clinics', 'organizations']);
 
 /**
  * Converts a database snake_case row to the application's domain model.
@@ -34,9 +35,41 @@ export function fromDatabaseRow<T>(collection: CollectionName, row: any): T {
   if (!row) return row;
 
   switch (collection) {
+    case 'organizations': {
+      const o: Organization = {
+        id: row.id,
+        name: row.name || '',
+        code: row.code || '',
+        headquartersAddress: row.headquarters_address || undefined,
+        city: row.city || undefined,
+        state: row.state || undefined,
+        postalCode: row.postal_code || undefined,
+        country: row.country || 'India',
+        phone: row.phone || undefined,
+        email: row.email || undefined,
+        website: row.website || undefined,
+        logoUrl: row.logo_url || '/soezy-logo.png',
+        licenseTier: row.license_tier || 'enterprise',
+        licenseNumber: row.license_number || '',
+        licenseValidUntil: row.license_valid_until || new Date().toISOString(),
+        licenseStatus: row.license_status || 'active',
+        maxBranches: Number(row.max_branches) || 5,
+        maxDoctors: Number(row.max_doctors) || 50,
+        facilities: Array.isArray(row.facilities) ? row.facilities : ['OPD', 'IPD', 'Pharmacy', 'Laboratory', 'Emergency', 'Billing'],
+        appointedAdminId: row.appointed_admin_id || undefined,
+        appointedAdminName: row.appointed_admin_name || undefined,
+        appointedAdminEmail: row.appointed_admin_email || undefined,
+        status: row.status || 'active',
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      };
+      return o as unknown as T;
+    }
+
     case 'clinics': {
       const c: Clinic = {
         id: row.id,
+        organizationId: row.organization_id || undefined,
         name: row.name || '',
         code: row.code || '',
         subTitle: row.sub_title || undefined,
@@ -313,10 +346,41 @@ export function toDatabaseRow(collection: CollectionName, item: any, clinicId = 
   const now = new Date().toISOString();
 
   switch (collection) {
+    case 'organizations': {
+      const o = item as Partial<Organization>;
+      return {
+        id: o.id,
+        name: o.name,
+        code: o.code,
+        headquarters_address: o.headquartersAddress || null,
+        city: o.city || null,
+        state: o.state || null,
+        postal_code: o.postalCode || null,
+        country: o.country || 'India',
+        phone: o.phone || null,
+        email: o.email || null,
+        website: o.website || null,
+        logo_url: o.logoUrl || '/soezy-logo.png',
+        license_tier: o.licenseTier || 'enterprise',
+        license_number: o.licenseNumber || `LIC-${o.code}`,
+        license_valid_until: o.licenseValidUntil || new Date(Date.now() + 365*24*60*60*1000).toISOString(),
+        license_status: o.licenseStatus || 'active',
+        max_branches: o.maxBranches || 5,
+        max_doctors: o.maxDoctors || 50,
+        facilities: o.facilities || ['OPD', 'IPD', 'Pharmacy', 'Laboratory', 'Emergency', 'Billing'],
+        appointed_admin_id: o.appointedAdminId || null,
+        appointed_admin_name: o.appointedAdminName || null,
+        appointed_admin_email: o.appointedAdminEmail || null,
+        status: o.status || 'active',
+        updated_at: now,
+      };
+    }
+
     case 'clinics': {
       const c = item as Partial<Clinic>;
       return {
         id: c.id,
+        organization_id: c.organizationId || null,
         name: c.name,
         code: c.code,
         sub_title: c.subTitle || 'SOEZY Clinic Operations',
