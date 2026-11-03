@@ -7,7 +7,6 @@ import {
   Check,
   Plus,
   Lock,
-  MapPin,
   Eye,
   EyeOff,
   Copy,
@@ -251,16 +250,22 @@ export const ClinicSwitcher: React.FC = () => {
 
   // For non-Platform Super Admins: read-only tenant badge locked to their clinic
   if (!isPlatformSuperAdmin) {
+    const parentOrg = organizations.find((o) => o.id === currentClinic.organizationId);
     return (
       <div
-        className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-lg bg-white/10 text-white text-xs font-medium border border-white/15 select-none"
-        title={`Active Clinic Tenant: ${currentClinic.name} (${currentClinic.code})`}
+        className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded bg-white/10 text-white text-xs font-medium border border-white/15 select-none"
+        title={`Active Clinic Tenant: ${currentClinic.name} (${currentClinic.code})${parentOrg ? ` • Organization: ${parentOrg.name}` : ''}`}
       >
         <Building2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
         <span className="max-w-[120px] sm:max-w-[180px] truncate">{currentClinic.name}</span>
-        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/20 text-emerald-200 uppercase font-bold tracking-wide">
+        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/20 text-emerald-200 uppercase font-bold tracking-wide font-mono">
           {currentClinic.code}
         </span>
+        {parentOrg && (
+          <span className="hidden md:inline-block text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-slate-200 tracking-wide">
+            {parentOrg.code}
+          </span>
+        )}
         <span title="Clinic Locked to User Assignment" className="flex items-center">
           <Lock className="w-3 h-3 text-slate-300 ml-0.5 shrink-0" />
         </span>
@@ -304,6 +309,7 @@ export const ClinicSwitcher: React.FC = () => {
             <div className="max-h-60 overflow-y-auto py-1 space-y-1">
               {clinics.map((clinic) => {
                 const isActive = clinic.id === activeClinicId;
+                const org = organizations.find((o) => o.id === clinic.organizationId);
                 return (
                   <button
                     key={clinic.id}
@@ -324,12 +330,19 @@ export const ClinicSwitcher: React.FC = () => {
                           {clinic.code}
                         </span>
                       </div>
-                      {clinic.city && (
-                        <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                          <MapPin className="w-3 h-3 shrink-0" />
-                          <span className="truncate">{clinic.city}{clinic.state ? `, ${clinic.state}` : ''}</span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                        {org ? (
+                          <span className="truncate">{org.name}</span>
+                        ) : (
+                          <span className="italic text-slate-400">Standalone Branch</span>
+                        )}
+                        {clinic.city && (
+                          <>
+                            <span>&bull;</span>
+                            <span className="truncate">{clinic.city}</span>
+                          </>
+                        )}
+                      </div>
                     </div>
                     {isActive && (
                       <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
@@ -523,11 +536,16 @@ export const ClinicSwitcher: React.FC = () => {
                     className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
                     <option value="">None (Standalone Hospital)</option>
-                    {organizations.map((org) => (
-                      <option key={org.id} value={org.id}>
-                        {org.name} ({org.code})
-                      </option>
-                    ))}
+                    {organizations.map((org) => {
+                      const branchCount = clinics.filter((c) => c.organizationId === org.id).length;
+                      const maxBranches = org.maxBranches ?? 5;
+                      const isFull = branchCount >= maxBranches;
+                      return (
+                        <option key={org.id} value={org.id} disabled={isFull}>
+                          {org.name} ({org.code}) - {branchCount} of {maxBranches} branches {isFull ? '(Quota Reached)' : ''}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
 

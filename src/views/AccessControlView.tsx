@@ -12,8 +12,24 @@ import { Pagination } from '@/components/ui/Pagination';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableTruncate } from '@/components/ui/Table';
 import { Tabs } from '@/components/ui/Tabs';
 import { RowActions } from '@/components/ui/RowActions';
-import { Filter, ArrowLeft, X } from 'lucide-react';
-import { User, UserRole, StaffAccessRecord, StaffPermission, AccessModule, StandardCapability } from '@/types';
+import {
+  Filter,
+  ArrowLeft,
+  X,
+  Building2,
+  ShieldCheck,
+  Hospital,
+  AlertCircle,
+} from 'lucide-react';
+import {
+  User,
+  UserRole,
+  StaffAccessRecord,
+  StaffPermission,
+  AccessModule,
+  StandardCapability,
+  FacilityModule,
+} from '@/types';
 import { PendingStaffApproval, INITIAL_PENDING_APPROVALS } from '@/data/mockData';
 import { getAccessItem } from '@/data/accessCatalog';
 import { formatDoctorName } from '@/lib/doctorNames';
@@ -38,9 +54,18 @@ import { DataManagementTab } from './DataManagementTab';
 import { FormularyTab } from './FormularyTab';
 
 interface AccessControlViewProps {
-  activeTab?: 'add_users' | 'edit_users' | 'modules' | 'ledger' | 'data' | 'formulary' | string;
+  activeTab?: 'add_users' | 'edit_users' | 'modules' | 'ledger' | 'data' | 'formulary' | 'organization' | string;
   onNavigate?: (tab: string, subTab?: string) => void;
 }
+
+const STANDARD_FACILITIES: { id: FacilityModule; label: string; description: string }[] = [
+  { id: 'OPD', label: 'OPD (Outpatient Department)', description: 'Patient registration, queue management, outpatient consultations, and token intake' },
+  { id: 'IPD', label: 'IPD (Inpatient Department)', description: 'Ward management, bed allocation, patient admissions, and nursing stations' },
+  { id: 'Pharmacy', label: 'Pharmacy & Dispensary', description: 'Drug formulary catalog, e-prescription fulfillment, and medicine inventory' },
+  { id: 'Laboratory', label: 'Diagnostic Laboratory', description: 'Lab order management, pathology tests, specimen tracking, and result reporting' },
+  { id: 'Emergency', label: 'Emergency & Casualty', description: 'Immediate trauma triage, critical care intake, and emergency observation' },
+  { id: 'Billing', label: 'Billing & Invoicing', description: 'Fee billing, payment receipts, accounts receivable, and insurance reconciliation' },
+];
 
 const getInitials = (name: string): string => {
   const clean = name.replace(/^Dr\.\s+/i, '').trim();
@@ -97,8 +122,8 @@ const getFocusableElements = (container: HTMLElement | null): HTMLElement[] => {
 };
 
 export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab = 'modules' }) => {
-  const [selectedSubTab, setSelectedSubTab] = useState<'add_users' | 'edit_users' | 'modules' | 'ledger' | 'data' | 'formulary'>(() => {
-    if (activeTab === 'edit_users' || activeTab === 'add_users' || activeTab === 'ledger' || activeTab === 'data' || activeTab === 'formulary') return activeTab;
+  const [selectedSubTab, setSelectedSubTab] = useState<'add_users' | 'edit_users' | 'modules' | 'ledger' | 'data' | 'formulary' | 'organization'>(() => {
+    if (activeTab === 'edit_users' || activeTab === 'add_users' || activeTab === 'ledger' || activeTab === 'data' || activeTab === 'formulary' || activeTab === 'organization') return activeTab;
     return 'modules';
   });
 
@@ -110,7 +135,8 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
       activeTab === 'roles' ||
       activeTab === 'ledger' ||
       activeTab === 'data' ||
-      activeTab === 'formulary'
+      activeTab === 'formulary' ||
+      activeTab === 'organization'
     ) {
       setSelectedSubTab(activeTab === 'roles' ? 'modules' : (activeTab as any));
     }
@@ -142,6 +168,9 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
     medicines = [],
     patients: rawPatients = [],
     registerPatient,
+    currentOrganization,
+    currentClinic,
+    clinics = [],
   } = useClinic();
 
   const patients = React.useMemo(() => {
@@ -1342,6 +1371,10 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
           {
             id: 'ledger',
             label: `Security Ledger (${accessAuditLog.length})`,
+          },
+          {
+            id: 'organization',
+            label: currentOrganization ? `Organization (${currentOrganization.code})` : 'Organization',
           },
           ...(hasCapability(currentUser, 'administrativeAccess')
             ? [
@@ -2662,6 +2695,216 @@ export const AccessControlView: React.FC<AccessControlViewProps> = ({ activeTab 
 
       {selectedSubTab === 'data' && currentUser && hasCapability(currentUser, 'administrativeAccess') && (
         <DataManagementTab currentUser={currentUser} />
+      )}
+
+      {/* SUB-MODULE 7: ORGANIZATION & LICENSING */}
+      {selectedSubTab === 'organization' && (
+        <div className="space-y-6 animate-fadeIn">
+          {currentOrganization ? (
+            <>
+              {/* Header Card */}
+              <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs uppercase tracking-wider font-mono text-slate-500 dark:text-slate-400">
+                        Enterprise Network
+                      </span>
+                      <span className="text-[11px] px-2 py-0.5 rounded font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                        {currentOrganization.code}
+                      </span>
+                      <span
+                        className={`text-[11px] px-2 py-0.5 rounded font-medium border ${
+                          currentOrganization.licenseStatus === 'active'
+                            ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400'
+                            : currentOrganization.licenseStatus === 'expiring_soon'
+                            ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400'
+                            : 'border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400'
+                        }`}
+                      >
+                        {currentOrganization.licenseStatus === 'active'
+                          ? 'License Active'
+                          : currentOrganization.licenseStatus === 'expiring_soon'
+                          ? 'License Expiring Soon'
+                          : 'License Expired'}
+                      </span>
+                    </div>
+                    <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mt-1">
+                      {currentOrganization.name}
+                    </h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      Parent organization overseeing active multi-branch healthcare operations, licensing quotas, and facility module clearance.
+                    </p>
+                  </div>
+
+                  <div className="flex sm:flex-col items-start sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100 dark:border-slate-800">
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400">Subscription Tier</span>
+                    <span className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wide">
+                      {currentOrganization.licenseTier} Plan
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Identity & Licensing 2-column grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Organization Details */}
+                <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded space-y-3">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+                    <Building2 className="w-4 h-4 text-slate-700 dark:text-slate-300" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                      Organization Headquarters
+                    </h3>
+                  </div>
+
+                  <div className="space-y-2 text-xs">
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Headquarters Address</span>
+                      <span className="text-slate-900 dark:text-slate-100 font-medium">
+                        {currentOrganization.headquartersAddress || 'Main Administrative Campus'}
+                        {currentOrganization.city ? `, ${currentOrganization.city}` : ''}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Contact Phone</span>
+                        <span className="text-slate-900 dark:text-slate-100 font-medium">
+                          {currentOrganization.phone || 'N/A'}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Support Email</span>
+                        <span className="text-slate-900 dark:text-slate-100 font-medium truncate block">
+                          {currentOrganization.email || 'N/A'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                      <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Appointed Lead Administrator</span>
+                      <span className="text-slate-900 dark:text-slate-100 font-semibold">
+                        {currentOrganization.appointedAdminName || 'Not Assigned'}
+                      </span>
+                      {currentOrganization.appointedAdminEmail && (
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-mono">
+                          {currentOrganization.appointedAdminEmail}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* License & Quotas */}
+                <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded space-y-3">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+                    <ShieldCheck className="w-4 h-4 text-slate-700 dark:text-slate-300" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                      License Accreditation & Quotas
+                    </h3>
+                  </div>
+
+                  <div className="space-y-2 text-xs">
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400 block text-[11px]">License Certificate Number</span>
+                      <span className="text-slate-900 dark:text-slate-100 font-mono font-bold">
+                        {currentOrganization.licenseNumber || 'LIC-STANDARD'}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Validity</span>
+                      <span className="text-slate-900 dark:text-slate-100 font-medium">
+                        Valid until {currentOrganization.licenseValidUntil}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Licensed Branches</span>
+                        <span className="text-slate-900 dark:text-slate-100 font-bold">
+                          {clinics.filter((c) => c.organizationId === currentOrganization.id).length} of {currentOrganization.maxBranches ?? 5} branches
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400 block text-[11px]">Doctor Capacity</span>
+                        <span className="text-slate-900 dark:text-slate-100 font-bold">
+                          {doctors.length} of {currentOrganization.maxDoctors ?? 50} physician seats
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Licensed Facilities Grid */}
+              <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center gap-2">
+                    <Hospital className="w-4 h-4 text-slate-700 dark:text-slate-300" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                      Licensed Facility Wings & Clinical Modules
+                    </h3>
+                  </div>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {currentOrganization.facilities.length} of {STANDARD_FACILITIES.length} Modules Licensed
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {STANDARD_FACILITIES.map((fac) => {
+                    const isLicensed = currentOrganization.facilities.includes(fac.id);
+                    return (
+                      <div
+                        key={fac.id}
+                        className={`p-3 rounded border text-xs transition-colors ${
+                          isLicensed
+                            ? 'border-emerald-200 dark:border-emerald-800/80 bg-emerald-50/40 dark:bg-emerald-950/20'
+                            : 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 opacity-70'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-bold text-slate-900 dark:text-slate-100">
+                            {fac.label}
+                          </span>
+                          <span
+                            className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
+                              isLicensed
+                                ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200'
+                                : 'border-slate-300 dark:border-slate-700 bg-slate-200/60 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                            }`}
+                          >
+                            {isLicensed ? 'Active' : 'Not Licensed'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
+                          {fac.description}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Central Governance Notice */}
+              <div className="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-4 rounded text-xs text-slate-600 dark:text-slate-400 flex items-start gap-2.5">
+                <AlertCircle className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-slate-800 dark:text-slate-200 block mb-0.5">Enterprise SaaS Governance:</strong>
+                  Multi-branch organization licensing, facility module enablement, and capacity quotas are governed centrally by the Platform Super Admin. If you need to add clinical wings (e.g. Inpatient Ward, Diagnostics Lab, or Dispensary) or expand branch seats, contact your Platform Super Admin.
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 rounded text-center space-y-3">
+              <Building2 className="w-8 h-8 text-slate-400 mx-auto" />
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                Standalone Clinic Branch
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                Current clinic &quot;{currentClinic.name}&quot; is currently not linked to a parent healthcare organization network. Contact Platform Super Admin to attach this clinic to an Enterprise Network.
+              </p>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Delete Account Confirmation Modal */}
