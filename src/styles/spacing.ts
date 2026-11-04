@@ -12,7 +12,7 @@
  */
 
 export const SPACING = {
-  radius: '0.5rem',
+  radius: '0.75rem',
   cardPadding: '1.5rem',
   sectionGap: '1.25rem',
   cardGap: '1.5rem',

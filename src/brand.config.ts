@@ -25,5 +25,5 @@ export const BRAND_CONFIG: BrandConfig = {
   topBarBg: '#ffffff',
   topBarBorder: '#e2e8f0',
   showHeaderUserBlock: true,
-  showHeaderHospitalTitle: true,
+  showHeaderHospitalTitle: false,
 };

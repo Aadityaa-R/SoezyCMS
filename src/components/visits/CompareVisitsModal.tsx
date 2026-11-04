@@ -131,8 +131,9 @@ export const CompareVisitsModal: React.FC<CompareVisitsModalProps> = ({
 
         {/* Comparison Table */}
         {chosenVisitsInDateOrder.length > 0 ? (
-          <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-x-auto">
-            <table className="w-full text-xs text-left border-collapse" aria-label="Visit comparison table">
+          <div className="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left border-collapse" aria-label="Visit comparison table">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800">
                   <th scope="col" className="p-2.5 font-bold text-slate-700 dark:text-slate-300 w-32 border-r border-slate-200 dark:border-slate-800">
@@ -303,6 +304,7 @@ export const CompareVisitsModal: React.FC<CompareVisitsModalProps> = ({
               </tbody>
             </table>
           </div>
+        </div>
         ) : (
           <div className="text-center py-8 text-xs text-slate-500 dark:text-slate-400">
             No visits selected. Check at least one visit above to view details.

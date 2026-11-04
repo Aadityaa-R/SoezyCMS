@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   AlertTriangle,
   AlertCircle,
@@ -132,7 +132,7 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
       {activeSubTab === 'alerts' ? (
         <div className="space-y-4">
           {/* Filter Bar */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white border border-stone-200 p-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white border border-stone-200 rounded-xl overflow-hidden shadow-xs p-3">
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-medium text-stone-500">Severity:</span>
@@ -170,7 +170,7 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
           </div>
 
           {/* Alerts List */}
-          <div className="border border-stone-200 bg-white divide-y divide-stone-100">
+          <div className="border border-stone-200 bg-white rounded-xl overflow-hidden shadow-xs divide-y divide-stone-100">
             {filteredAlerts.length === 0 ? (
               <div className="p-8 text-center text-xs text-stone-500">
                 <CheckCircle2 className="w-8 h-8 text-stone-300 mx-auto mb-2" />
@@ -270,20 +270,20 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
       ) : (
         /* Organization Announcements Tab */
         <div className="space-y-4">
-          <div className="flex items-center justify-between bg-white border border-stone-200 p-3">
+          <div className="flex items-center justify-between bg-white border border-stone-200 rounded-xl overflow-hidden shadow-xs p-3">
             <span className="text-xs text-stone-600">
               Platform-wide administrative bulletins transmitted to clinic administrators.
             </span>
             <button
               onClick={() => setShowAnnouncementModal(true)}
-              className="px-3 py-1.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5 rounded"
             >
               <Plus className="w-3.5 h-3.5" />
               New Announcement
             </button>
           </div>
 
-          <div className="border border-stone-200 bg-white divide-y divide-stone-100">
+          <div className="border border-stone-200 bg-white rounded-xl overflow-hidden shadow-xs divide-y divide-stone-100">
             {announcements.length === 0 ? (
               <div className="p-8 text-center text-xs text-stone-500">
                 No active announcements published.

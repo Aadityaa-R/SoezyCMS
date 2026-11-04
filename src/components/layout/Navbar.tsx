@@ -186,16 +186,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
                 target.style.display = 'none';
               }}
             />
-            {BRAND_CONFIG.showHeaderHospitalTitle && (
-              <div className="hidden sm:flex flex-col justify-center min-w-0">
-                <span className="font-bold text-xs tracking-tight text-slate-900 dark:text-slate-100 truncate leading-tight">
-                  SOEZY CMS
-                </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-tight truncate leading-tight">
-                  Service Provider
-                </span>
-              </div>
-            )}
           </button>
         </div>
 

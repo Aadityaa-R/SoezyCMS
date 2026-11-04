@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
 import {
@@ -90,7 +90,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
         {/* Metric 1: Clinics */}
         <div
           onClick={() => onNavigate('super_clinics')}
-          className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
+          className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Registered Clinics</span>
@@ -109,7 +109,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
         {/* Metric 2: Clinic Admins */}
         <div
           onClick={() => onNavigate('super_admins')}
-          className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
+          className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Clinic Admins</span>
@@ -130,7 +130,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
         {/* Metric 3: Agreements */}
         <div
           onClick={() => onNavigate('super_agreements')}
-          className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
+          className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Licence Agreements</span>
@@ -149,7 +149,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
         {/* Metric 4: Onboarding */}
         <div
           onClick={() => onNavigate('super_onboarding')}
-          className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
+          className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Branch Onboarding</span>
@@ -222,7 +222,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
       {/* 2-Column Section: Compact Clinic Status Table & Facility Adoption Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Compact Clinic Status Table */}
-        <div className="lg:col-span-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded space-y-4">
+        <div className="lg:col-span-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded-xl shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
@@ -242,7 +242,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
             </Button>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 uppercase font-mono">
@@ -318,7 +318,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
         </div>
 
         {/* Right 1 Col: Facility Entitlement Overview */}
-        <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded space-y-4">
+        <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded-xl shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
@@ -363,7 +363,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
       </div>
 
       {/* Recent Administrative Activity Audit Log */}
-      <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded space-y-3">
+      <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded-xl shadow-xs space-y-3">
         <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-slate-700 dark:text-slate-300" />

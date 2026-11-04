@@ -968,7 +968,7 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({ activeTab }) => 
               </div>
 
               {/* Grid table */}
-              <div className="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded">
+              <div className="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800">

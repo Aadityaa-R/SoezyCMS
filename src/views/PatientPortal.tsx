@@ -1680,7 +1680,7 @@ export const PatientPortal: React.FC<PatientPortalProps> = ({ activeTab: initial
               <div className="font-bold text-slate-900 dark:text-slate-100 mb-2 uppercase tracking-wider text-[0.6875rem]">
                 Billed Items
               </div>
-              <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+              <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-xs">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                     <tr>
@@ -1707,7 +1707,7 @@ export const PatientPortal: React.FC<PatientPortalProps> = ({ activeTab: initial
                 Receipts & Settlement History
               </div>
               {billingPayments.filter((p) => p.invoiceId === patientViewingInvoice.id).length > 0 ? (
-                <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-xs">
                   <table className="w-full text-left text-xs">
                     <thead className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                       <tr>

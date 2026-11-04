@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Search,
   Save,
@@ -340,7 +340,7 @@ export const SuperAdminSettings: React.FC = () => {
           </div>
 
           {/* Audit Trail Table */}
-          <div className="border border-stone-200 bg-white overflow-hidden">
+          <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>

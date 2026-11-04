@@ -192,7 +192,7 @@ export const Table = <T = any,>({
 
   if (columns && data) {
     return (
-      <div ref={containerRef} className={`${containerShrinkClass} overflow-x-auto`}>
+      <div ref={containerRef} className={`${containerShrinkClass} overflow-x-auto rounded-xl`}>
         <TableContext.Provider value={{ stackBelow: effectiveStackBelow, isStacked }}>
           <table className={`w-full table-auto text-left text-xs ${className}`} {...props}>
             <TableHeader>
@@ -282,7 +282,7 @@ export const Table = <T = any,>({
   }
 
   return (
-    <div ref={containerRef} className={`${containerShrinkClass} overflow-x-auto`}>
+    <div ref={containerRef} className={`${containerShrinkClass} overflow-x-auto rounded-xl`}>
       <TableContext.Provider value={{ stackBelow, isStacked: containerWidth < 768 }}>
         <table className={`w-full table-auto text-left text-xs ${className}`} {...props}>
           {children}

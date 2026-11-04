@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Check,
   X,
@@ -154,7 +154,7 @@ export const BranchOnboarding: React.FC = () => {
             Select Clinic Branch
           </div>
 
-          <div className="border border-stone-200 bg-white divide-y divide-stone-100 max-h-[720px] overflow-y-auto">
+          <div className="border border-stone-200 bg-white rounded-xl overflow-hidden shadow-xs divide-y divide-stone-100 max-h-[720px] overflow-y-auto">
             {filteredClinics.length === 0 ? (
               <div className="p-4 text-center text-xs text-stone-500">
                 No clinics found under &apos;{activeStatusFilter}&apos;.
@@ -218,7 +218,7 @@ export const BranchOnboarding: React.FC = () => {
           {currentClinic ? (
             <>
               {/* Header Card for Selected Branch */}
-              <div className="border border-stone-200 bg-white p-4">
+              <div className="border border-stone-200 bg-white rounded-xl overflow-hidden shadow-xs p-4">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
@@ -311,7 +311,7 @@ export const BranchOnboarding: React.FC = () => {
               </div>
 
               {/* 10-Point Checklist */}
-              <div className="border border-stone-200 bg-white">
+              <div className="border border-stone-200 bg-white rounded-xl overflow-hidden shadow-xs">
                 <div className="p-3 border-b border-stone-200 bg-stone-50 flex items-center justify-between">
                   <span className="text-xs font-mono uppercase tracking-wider text-stone-600 font-medium">
                     10-Point Onboarding Checklist

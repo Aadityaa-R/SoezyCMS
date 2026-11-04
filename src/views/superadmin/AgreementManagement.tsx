@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
@@ -269,7 +269,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
       </div>
 
       {/* Main Agreements Table */}
-      <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded overflow-hidden">
+      <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
