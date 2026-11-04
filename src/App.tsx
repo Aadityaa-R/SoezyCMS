@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { AttendanceProvider } from '@/context/AttendanceContext';
 import { BillingProvider } from '@/context/BillingContext';
 import { NotificationProvider } from '@/context/NotificationContext';
+import { SuperAdminProvider } from '@/context/SuperAdminContext';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { seedInitialData, isStorageCorrupted, resetDemoData } from '@/data/storage';
 import { Button } from '@/components/ui/Button';
@@ -69,7 +70,9 @@ export const App: React.FC = () => {
           <AttendanceProvider>
             <BillingProvider>
               <NotificationProvider>
-                <AppLayout />
+                <SuperAdminProvider>
+                  <AppLayout />
+                </SuperAdminProvider>
               </NotificationProvider>
             </BillingProvider>
           </AttendanceProvider>

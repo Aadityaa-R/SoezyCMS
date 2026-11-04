@@ -7,8 +7,6 @@ import {
   FileText,
   Hospital,
   CheckSquare,
-  AlertCircle,
-  ArrowRight,
   ShieldCheck,
 } from 'lucide-react';
 
@@ -23,7 +21,6 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
     agreements,
     facilities,
     auditLogs,
-    alerts,
     setSelectedClinicId,
   } = useSuperAdmin();
 
@@ -39,8 +36,6 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
   const activeAgreements = agreements.filter((a) => a.status === 'active').length;
   const expiringAgreements = agreements.filter((a) => a.status === 'expiring_soon').length;
   const expiredAgreements = agreements.filter((a) => a.status === 'expired').length;
-
-  const activeAlerts = alerts.filter((a) => !a.acknowledged);
 
   return (
     <div className="space-y-6">
@@ -167,57 +162,6 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           </div>
         </div>
       </div>
-
-      {/* Actionable Alerts Section */}
-      {activeAlerts.length > 0 && (
-        <div className="border border-amber-200 dark:border-amber-900/60 bg-amber-50/40 dark:bg-amber-950/20 p-4 rounded space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200">
-                Actionable Administrative Alerts ({activeAlerts.length})
-              </h3>
-            </div>
-            <button
-              type="button"
-              onClick={() => onNavigate('super_alerts')}
-              className="text-xs text-amber-800 dark:text-amber-300 hover:underline font-medium cursor-pointer"
-            >
-              View All Alerts &rarr;
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {activeAlerts.slice(0, 4).map((alert) => (
-              <div
-                key={alert.id}
-                onClick={() => {
-                  if (alert.targetId) setSelectedClinicId(alert.targetId);
-                  onNavigate(alert.targetTab);
-                }}
-                className="bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-800/80 p-3 rounded text-xs hover:border-amber-400 transition-colors cursor-pointer flex items-start justify-between gap-3"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-[10px] px-1.5 py-0.2 rounded font-mono uppercase font-bold border ${
-                      alert.severity === 'critical'
-                        ? 'border-rose-300 dark:border-rose-800 bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-300'
-                        : 'border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300'
-                    }`}>
-                      {alert.severity}
-                    </span>
-                    <span className="font-semibold text-slate-900 dark:text-slate-100">{alert.title}</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-normal">
-                    {alert.description}
-                  </p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-slate-400 shrink-0 mt-1" />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* 2-Column Section: Compact Clinic Status Table & Facility Adoption Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

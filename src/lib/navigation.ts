@@ -85,7 +85,6 @@ export function getAllowedNavItems(
       { id: 'super_facilities', label: 'Facility Entitlements' },
       { id: 'super_onboarding', label: 'Branch Onboarding' },
       { id: 'super_reports', label: 'Administrative Reports' },
-      { id: 'super_alerts', label: 'Actionable Alerts' },
       { id: 'super_settings', label: 'Platform Settings' },
     ];
   }

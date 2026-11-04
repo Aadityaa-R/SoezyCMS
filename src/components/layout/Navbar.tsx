@@ -17,6 +17,7 @@ import {
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { useNotifications } from '@/context/NotificationContext';
+import { useOptionalSuperAdmin } from '@/context/SuperAdminContext';
 
 interface NavbarProps {
   onToggleSidebar?: () => void;
@@ -29,6 +30,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
   const { theme, toggleTheme } = useTheme();
   const { isOpen: isSidebarOpen, toggle: toggleSidebar } = useSidebar();
   const { userNotifications, unreadCount, markAllAsRead } = useNotifications();
+  const superAdmin = useOptionalSuperAdmin();
+  const isSuperAdmin = currentRole === 'platform_super_admin';
+  const superAdminAlerts = superAdmin?.alerts || [];
+  const unacknowledgedSuperAdminAlerts = superAdminAlerts.filter((a) => !a.acknowledged);
+  const totalUnreadCount = isSuperAdmin ? unacknowledgedSuperAdminAlerts.length : unreadCount;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -197,10 +203,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
               type="button"
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
               className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors cursor-pointer relative outline-none focus:outline-none focus:ring-0"
-              aria-label={`Notifications (${unreadCount} unread)`}
+              aria-label={`Notifications (${totalUnreadCount} unread)`}
             >
               <Bell className="w-4 h-4" />
-              {unreadCount > 0 && (
+              {totalUnreadCount > 0 && (
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-teal-500 rounded-full ring-2 ring-white dark:ring-slate-900" />
               )}
             </button>
@@ -210,32 +216,117 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
               <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 z-50 animate-fadeIn text-slate-800 dark:text-slate-200">
                 <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
                   <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
-                    Notifications ({unreadCount})
+                    Notifications ({totalUnreadCount})
                   </span>
-                  {unreadCount > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => markAllAsRead()}
-                      className="text-[11px] text-teal-600 dark:text-teal-400 font-medium hover:underline cursor-pointer"
-                    >
-                      Mark all as read
-                    </button>
+                  {isSuperAdmin ? (
+                    unacknowledgedSuperAdminAlerts.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          unacknowledgedSuperAdminAlerts.forEach((a) => superAdmin?.dismissAlert(a.id));
+                        }}
+                        className="text-[11px] text-teal-600 dark:text-teal-400 font-medium hover:underline cursor-pointer"
+                      >
+                        Acknowledge all
+                      </button>
+                    )
+                  ) : (
+                    unreadCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => markAllAsRead()}
+                        className="text-[11px] text-teal-600 dark:text-teal-400 font-medium hover:underline cursor-pointer"
+                      >
+                        Mark all as read
+                      </button>
+                    )
                   )}
                 </div>
-                {userNotifications.length === 0 ? (
+
+                {/* Notifications List (Max 4 items displayed directly) */}
+                {isSuperAdmin ? (
+                  superAdminAlerts.length === 0 ? (
+                    <div className="py-6 text-center text-xs text-slate-500">
+                      No administrative alerts or notifications
+                    </div>
+                  ) : (
+                    <div className="py-1 divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+                      {superAdminAlerts.slice(0, 4).map((alert) => (
+                        <div
+                          key={alert.id}
+                          onClick={() => {
+                            setIsNotificationsOpen(false);
+                            if (alert.targetId && superAdmin?.setSelectedClinicId) {
+                              superAdmin.setSelectedClinicId(alert.targetId);
+                            }
+                            onNavigate?.(alert.targetTab);
+                          }}
+                          className="py-2.5 px-2 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-lg transition-colors cursor-pointer group"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span
+                              className={`text-[9px] px-1.5 py-0.2 rounded font-mono uppercase font-bold border ${
+                                alert.severity === 'critical'
+                                  ? 'border-rose-300 dark:border-rose-800 bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-300'
+                                  : alert.severity === 'warning'
+                                  ? 'border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300'
+                                  : 'border-blue-300 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
+                              }`}
+                            >
+                              {alert.severity}
+                            </span>
+                            {alert.createdAt && (
+                              <span className="text-[10px] text-slate-400 font-mono">
+                                {alert.createdAt.slice(0, 10)}
+                              </span>
+                            )}
+                          </div>
+                          <p className="font-semibold text-slate-900 dark:text-slate-100 mt-1 leading-snug">
+                            {alert.title}
+                          </p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5 leading-normal">
+                            {alert.description}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                ) : userNotifications.length === 0 ? (
                   <div className="py-6 text-center text-xs text-slate-500">
                     No notifications
                   </div>
                 ) : (
-                  <div className="py-2 max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 text-xs">
-                    {userNotifications.map((notif) => (
-                      <div key={notif.id} className="p-2">
+                  <div className="py-1 divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+                    {userNotifications.slice(0, 4).map((notif) => (
+                      <div key={notif.id} className="py-2.5 px-2">
                         <p className="font-semibold text-slate-800 dark:text-slate-200">{notif.title}</p>
                         <p className="text-[11px] text-slate-500 mt-0.5">{notif.message}</p>
                       </div>
                     ))}
                   </div>
                 )}
+
+                {/* View All Notifications Link - Navigates directly to full module */}
+                <div className="pt-2.5 mt-1 border-t border-slate-100 dark:border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsNotificationsOpen(false);
+                      if (isSuperAdmin) {
+                        onNavigate?.('super_alerts');
+                      }
+                    }}
+                    className="w-full py-2 px-3 text-center text-xs font-semibold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <span>View all notifications</span>
+                    {isSuperAdmin && superAdminAlerts.length > 4 && (
+                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-700 dark:text-teal-300 font-mono">
+                        +{superAdminAlerts.length - 4} more
+                      </span>
+                    )}
+                    <span>&rarr;</span>
+                  </button>
+                </div>
               </div>
             )}
           </div>

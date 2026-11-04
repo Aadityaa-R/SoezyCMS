@@ -108,7 +108,7 @@ interface SuperAdminContextType {
   updateSettings: (updates: Partial<PlatformOrganizationSettings>) => Promise<void>;
 }
 
-const SuperAdminContext = createContext<SuperAdminContextType | undefined>(undefined);
+export const SuperAdminContext = createContext<SuperAdminContextType | undefined>(undefined);
 
 export const SuperAdminProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<SuperAdminState>(loadSuperAdminState);
@@ -841,5 +841,9 @@ export const useSuperAdmin = (): SuperAdminContextType => {
     throw new Error('useSuperAdmin must be used within a SuperAdminProvider');
   }
   return context;
+};
+
+export const useOptionalSuperAdmin = (): SuperAdminContextType | undefined => {
+  return useContext(SuperAdminContext);
 };
 

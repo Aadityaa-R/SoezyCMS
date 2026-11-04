@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SuperAdminProvider, useSuperAdmin } from '../../context/SuperAdminContext';
+import { SuperAdminProvider, useSuperAdmin, useOptionalSuperAdmin } from '../../context/SuperAdminContext';
 import { SuperAdminDashboard } from './SuperAdminDashboard';
 import { ClinicBranchManagement } from './ClinicBranchManagement';
 import { AdminManagement } from './AdminManagement';
@@ -82,6 +82,10 @@ const SuperAdminPortalContent: React.FC<{
 };
 
 export const SuperAdminPortal: React.FC<SuperAdminPortalProps> = (props) => {
+  const existing = useOptionalSuperAdmin();
+  if (existing) {
+    return <SuperAdminPortalContent {...props} />;
+  }
   return (
     <SuperAdminProvider>
       <SuperAdminPortalContent {...props} />
