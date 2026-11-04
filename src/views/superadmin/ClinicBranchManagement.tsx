@@ -251,26 +251,22 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
     setStatusReason('');
   };
 
-  // Helper status color badges
+  // Helper status renderer: small dot in color with status text displayed in black/dark without box
   const renderStatusBadge = (status: string) => {
     const s = status.toLowerCase();
+    let dotColor = 'bg-slate-400';
     if (s === 'active' || s === 'completed') {
-      return (
-        <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-          {status.replace(/_/g, ' ')}
-        </span>
-      );
+      dotColor = 'bg-emerald-500';
+    } else if (s.includes('pending') || s.includes('progress') || s.includes('soon')) {
+      dotColor = 'bg-amber-500';
+    } else if (s.includes('suspend') || s.includes('inactive') || s.includes('expired')) {
+      dotColor = 'bg-rose-500';
     }
-    if (s.includes('pending') || s.includes('progress') || s.includes('soon')) {
-      return (
-        <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
-          {status.replace(/_/g, ' ')}
-        </span>
-      );
-    }
+
     return (
-      <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-        {status.replace(/_/g, ' ')}
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-900 dark:text-slate-100 capitalize">
+        <span className={`w-1.5 h-1.5 rounded-full ${dotColor} shrink-0`} />
+        <span>{status.replace(/_/g, ' ')}</span>
       </span>
     );
   };
@@ -341,7 +337,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
           </div>
           <div className="flex items-center gap-2">
             <span className="text-[11px] uppercase tracking-wider text-slate-500 font-mono">Branch Hierarchy:</span>
-            <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
+            <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
               Side Branch
             </span>
           </div>
@@ -480,45 +476,39 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs pt-1">
             <div className="p-3 bg-slate-50 dark:bg-slate-950/40 rounded-lg border border-slate-200 dark:border-slate-800">
               <span className="text-slate-500 block text-[11px] font-medium mb-1.5 uppercase">Contractually Opted Facilities:</span>
-              <div className="flex flex-wrap gap-1.5">
+              <div>
                 {viewingSideBranch.optedFacilities.length === 0 ? (
                   <span className="text-slate-400 italic">None recorded</span>
                 ) : (
-                  viewingSideBranch.optedFacilities.map((f) => (
-                    <span key={f} className="px-2 py-0.5 rounded text-[11px] font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
-                      {f}
-                    </span>
-                  ))
+                  <span className="text-xs font-mono text-slate-800 dark:text-slate-200">
+                    {viewingSideBranch.optedFacilities.join(', ')}
+                  </span>
                 )}
               </div>
             </div>
 
             <div className="p-3 bg-slate-50 dark:bg-slate-950/40 rounded-lg border border-slate-200 dark:border-slate-800">
               <span className="text-slate-500 block text-[11px] font-medium mb-1.5 uppercase">Legally Entitled Facilities:</span>
-              <div className="flex flex-wrap gap-1.5">
+              <div>
                 {viewingSideBranch.entitledFacilities.length === 0 ? (
                   <span className="text-slate-400 italic">None verified</span>
                 ) : (
-                  viewingSideBranch.entitledFacilities.map((f) => (
-                    <span key={f} className="px-2 py-0.5 rounded text-[11px] font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
-                      {f}
-                    </span>
-                  ))
+                  <span className="text-xs font-mono text-slate-800 dark:text-slate-200">
+                    {viewingSideBranch.entitledFacilities.join(', ')}
+                  </span>
                 )}
               </div>
             </div>
 
             <div className="p-3 bg-slate-50 dark:bg-slate-950/40 rounded-lg border border-slate-200 dark:border-slate-800">
               <span className="text-slate-500 block text-[11px] font-medium mb-1.5 uppercase">Clinical CMS Modules Enabled:</span>
-              <div className="flex flex-wrap gap-1.5">
+              <div>
                 {viewingSideBranch.enabledModules.length === 0 ? (
                   <span className="text-slate-400 italic">No modules active</span>
                 ) : (
-                  viewingSideBranch.enabledModules.map((f) => (
-                    <span key={f} className="px-2 py-0.5 rounded text-[11px] font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
-                      {f}
-                    </span>
-                  ))
+                  <span className="text-xs font-mono text-slate-800 dark:text-slate-200">
+                    {viewingSideBranch.enabledModules.join(', ')}
+                  </span>
                 )}
               </div>
             </div>
@@ -676,8 +666,8 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                 Section A: Main Branch Overview
               </h2>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
                 Main Branch
               </span>
               {renderStatusBadge(viewingMainBranch.status)}
@@ -747,8 +737,8 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                 Hierarchy: {viewingMainBranch.name} (Main Branch) &rarr; {linkedSideBranches.length} Linked Side {linkedSideBranches.length === 1 ? 'Branch' : 'Branches'}
               </p>
             </div>
-            <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-              {linkedSideBranches.length} total
+            <span className="text-xs font-mono font-medium text-slate-600 dark:text-slate-400">
+              ({linkedSideBranches.length} total)
             </span>
           </div>
 
@@ -908,37 +898,31 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs pt-1">
             <div className="p-3 bg-slate-50 dark:bg-slate-950/40 rounded-lg border border-slate-200 dark:border-slate-800">
               <span className="text-slate-500 block text-[11px] font-medium mb-1.5 uppercase">Contractually Opted Facilities:</span>
-              <div className="flex flex-wrap gap-1.5">
-                {viewingMainBranch.optedFacilities.map((f) => (
-                  <span key={f} className="px-2 py-0.5 rounded text-[11px] font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
-                    {f}
-                  </span>
-                ))}
+              <div>
+                <span className="text-xs font-mono text-slate-800 dark:text-slate-200">
+                  {viewingMainBranch.optedFacilities.join(', ')}
+                </span>
               </div>
             </div>
 
             <div className="p-3 bg-slate-50 dark:bg-slate-950/40 rounded-lg border border-slate-200 dark:border-slate-800">
               <span className="text-slate-500 block text-[11px] font-medium mb-1.5 uppercase">Contractually Entitled Facilities:</span>
-              <div className="flex flex-wrap gap-1.5">
-                {viewingMainBranch.entitledFacilities.map((f) => (
-                  <span key={f} className="px-2 py-0.5 rounded text-[11px] font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
-                    {f}
-                  </span>
-                ))}
+              <div>
+                <span className="text-xs font-mono text-slate-800 dark:text-slate-200">
+                  {viewingMainBranch.entitledFacilities.join(', ')}
+                </span>
               </div>
             </div>
 
             <div className="p-3 bg-slate-50 dark:bg-slate-950/40 rounded-lg border border-slate-200 dark:border-slate-800">
               <span className="text-slate-500 block text-[11px] font-medium mb-1.5 uppercase">Clinical CMS Modules Enabled:</span>
-              <div className="flex flex-wrap gap-1.5">
+              <div>
                 {viewingMainBranch.enabledModules.length === 0 ? (
                   <span className="text-slate-400 italic">None active</span>
                 ) : (
-                  viewingMainBranch.enabledModules.map((f) => (
-                    <span key={f} className="px-2 py-0.5 rounded text-[11px] font-mono bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200">
-                      {f}
-                    </span>
-                  ))
+                  <span className="text-xs font-mono text-slate-800 dark:text-slate-200">
+                    {viewingMainBranch.enabledModules.join(', ')}
+                  </span>
                 )}
               </div>
             </div>
@@ -1172,7 +1156,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                   </div>
 
                   {/* Dynamic Linked Side Branches Count */}
-                  <div className="mb-3 p-2 bg-slate-50 dark:bg-slate-950/40 rounded border border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between text-xs">
+                  <div className="mb-3 flex items-center justify-between text-xs py-1.5 border-t border-slate-100 dark:border-slate-800/60">
                     <span className="text-slate-600 dark:text-slate-400 font-medium">
                       Linked Side Branches:
                     </span>

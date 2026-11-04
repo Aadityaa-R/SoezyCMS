@@ -333,7 +333,10 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
                     </td>
 
                     <td className="py-3 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
-                      {agr.status.replace(/_/g, ' ')}
+                      <span className="inline-flex items-center gap-1.5 text-slate-900 dark:text-slate-100 font-medium">
+                        <span className={`w-1.5 h-1.5 rounded-full ${agr.status === 'active' ? 'bg-emerald-500' : agr.status === 'expiring_soon' || agr.status === 'pending_signature' ? 'bg-amber-500' : 'bg-rose-500'} shrink-0`} />
+                        {agr.status.replace(/_/g, ' ')}
+                      </span>
                     </td>
 
                     <td className="py-3 px-3 text-right space-x-3 whitespace-nowrap">

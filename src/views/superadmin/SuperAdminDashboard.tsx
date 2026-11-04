@@ -180,10 +180,20 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
                       <span className="text-[11px] text-slate-400">wings</span>
                     </td>
                     <td className="py-2.5 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
-                      {clinic.agreementStatus ? clinic.agreementStatus.replace(/_/g, ' ') : 'None'}
+                      {clinic.agreementStatus ? (
+                        <span className="inline-flex items-center gap-1.5 text-slate-900 dark:text-slate-100 font-medium">
+                          <span className={`w-1.5 h-1.5 rounded-full ${clinic.agreementStatus === 'active' ? 'bg-emerald-500' : clinic.agreementStatus.includes('soon') || clinic.agreementStatus.includes('pending') ? 'bg-amber-500' : 'bg-slate-400'} shrink-0`} />
+                          {clinic.agreementStatus.replace(/_/g, ' ')}
+                        </span>
+                      ) : (
+                        'None'
+                      )}
                     </td>
                     <td className="py-2.5 pl-3 text-xs capitalize text-slate-700 dark:text-slate-300">
-                      {clinic.status.replace(/_/g, ' ')}
+                      <span className="inline-flex items-center gap-1.5 text-slate-900 dark:text-slate-100 font-medium">
+                        <span className={`w-1.5 h-1.5 rounded-full ${clinic.status === 'active' ? 'bg-emerald-500' : clinic.status.includes('pending') ? 'bg-amber-500' : 'bg-rose-500'} shrink-0`} />
+                        {clinic.status.replace(/_/g, ' ')}
+                      </span>
                     </td>
                   </tr>
                 ))}

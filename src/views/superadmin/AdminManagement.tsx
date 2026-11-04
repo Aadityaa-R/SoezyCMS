@@ -334,7 +334,10 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                       </td>
 
                       <td className="py-3 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
-                        {admin.status.replace(/_/g, ' ')}
+                        <span className="inline-flex items-center gap-1.5 text-slate-900 dark:text-slate-100 font-medium">
+                          <span className={`w-1.5 h-1.5 rounded-full ${admin.status === 'active' ? 'bg-emerald-500' : admin.status === 'pending_invitation' ? 'bg-amber-500' : 'bg-rose-500'} shrink-0`} />
+                          {admin.status.replace(/_/g, ' ')}
+                        </span>
                       </td>
 
                       <td className="py-3 px-3 text-right space-x-3 whitespace-nowrap">
