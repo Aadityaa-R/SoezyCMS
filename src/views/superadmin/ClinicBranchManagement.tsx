@@ -162,33 +162,8 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
-        <div>
-          <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-            Clinic / Branch Management
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Central registry of all branches, administrative profiles, licensing records, and facility entitlements.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={() => {
-              setFormError('');
-              setIsRegisterModalOpen(true);
-            }}
-            className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Register New Clinic</span>
-          </Button>
-        </div>
-      </div>
+    <div className="space-y-4">
+      <h1 className="sr-only">Clinic / Branch Management</h1>
 
       {/* Directory Tabs & Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -239,6 +214,19 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
             <option value="outpatient_clinic">Outpatient Clinic</option>
             <option value="satellite_branch">Satellite Branch</option>
           </select>
+
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => {
+              setFormError('');
+              setIsRegisterModalOpen(true);
+            }}
+            className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5 shrink-0"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Register Clinic</span>
+          </Button>
         </div>
       </div>
 

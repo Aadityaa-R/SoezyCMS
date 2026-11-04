@@ -106,43 +106,30 @@ export const BranchOnboarding: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-5">
-        <div>
-          <div className="text-xs font-mono uppercase tracking-wider text-stone-500 mb-1">
-            Verification & Lifecycle Gate
-          </div>
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">
-            Branch Onboarding & Activation
-          </h1>
-          <p className="text-sm text-stone-600 mt-1">
-            Strict 10-point compliance verification engine. Branches cannot be activated until all conditions are satisfied or formally overridden with audit logging.
-          </p>
-        </div>
+    <div className="space-y-4">
+      <h1 className="sr-only">Branch Onboarding & Activation</h1>
 
-        {/* Global Pipeline Counts */}
-        <div className="flex items-center gap-1.5 border border-stone-200 bg-stone-50 p-1 text-xs">
-          {(['all', 'pending', 'in_progress', 'ready_for_review', 'completed'] as const).map(tab => {
-            const count = tab === 'all'
-              ? clinics.length
-              : clinics.filter(c => c.onboardingStatus === tab).length;
+      {/* Global Pipeline Counts */}
+      <div className="flex items-center gap-1.5 border border-stone-200 bg-stone-50 p-1 text-xs overflow-x-auto">
+        {(['all', 'pending', 'in_progress', 'ready_for_review', 'completed'] as const).map(tab => {
+          const count = tab === 'all'
+            ? clinics.length
+            : clinics.filter(c => c.onboardingStatus === tab).length;
 
-            return (
-              <button
-                key={tab}
-                onClick={() => setActiveStatusFilter(tab)}
-                className={`px-2.5 py-1 text-xs transition-colors ${
-                  activeStatusFilter === tab
-                    ? 'bg-white text-stone-900 font-medium shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900'
-                }`}
-              >
-                {tab.replace(/_/g, ' ').toUpperCase()} ({count})
-              </button>
-            );
-          })}
-        </div>
+          return (
+            <button
+              key={tab}
+              onClick={() => setActiveStatusFilter(tab)}
+              className={`px-2.5 py-1 text-xs transition-colors whitespace-nowrap ${
+                activeStatusFilter === tab
+                  ? 'bg-white text-stone-900 font-medium shadow-xs'
+                  : 'text-stone-600 hover:text-stone-900'
+              }`}
+            >
+              {tab.replace(/_/g, ' ').toUpperCase()} ({count})
+            </button>
+          );
+        })}
       </div>
 
       {/* Main Two-Column Layout: Left Branch Picker, Right Detailed Checklist & Activation Gateway */}

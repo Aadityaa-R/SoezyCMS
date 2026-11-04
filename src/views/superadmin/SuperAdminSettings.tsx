@@ -48,44 +48,32 @@ export const SuperAdminSettings: React.FC = () => {
   }, [auditLogs, actionFilter, clinicFilter, auditSearch]);
 
   return (
-    <div className="space-y-6">
-      {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-5">
-        <div>
-          <div className="text-xs font-mono uppercase tracking-wider text-stone-500 mb-1">
-            System Policies & Governance Records
-          </div>
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">
-            Platform Settings & Immutable Audit Logs
-          </h1>
-          <p className="text-sm text-stone-600 mt-1">
-            Configure organization-wide operational defaults and review the non-repudiable audit trail of all Super Admin interventions.
-          </p>
-        </div>
+    <div className="space-y-4">
+      <h1 className="sr-only">Platform Settings & Immutable Audit Logs</h1>
 
-        <div className="flex items-center gap-2">
-          <div className="inline-flex border border-stone-200 p-0.5 bg-stone-100">
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                activeTab === 'settings'
-                  ? 'bg-white text-stone-900 shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              Organization Settings
-            </button>
-            <button
-              onClick={() => setActiveTab('audit_logs')}
-              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                activeTab === 'audit_logs'
-                  ? 'bg-white text-stone-900 shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              Immutable Audit Logs ({auditLogs.length})
-            </button>
-          </div>
+      {/* Settings / Audit Logs Switcher */}
+      <div className="flex items-center gap-2">
+        <div className="inline-flex border border-stone-200 p-0.5 bg-stone-100">
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+              activeTab === 'settings'
+                ? 'bg-white text-stone-900 shadow-xs'
+                : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            Organization Settings
+          </button>
+          <button
+            onClick={() => setActiveTab('audit_logs')}
+            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+              activeTab === 'audit_logs'
+                ? 'bg-white text-stone-900 shadow-xs'
+                : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            Immutable Audit Logs ({auditLogs.length})
+          </button>
         </div>
       </div>
 

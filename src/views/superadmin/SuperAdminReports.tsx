@@ -140,58 +140,44 @@ export const SuperAdminReports: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-5">
-        <div>
-          <div className="text-xs font-mono uppercase tracking-wider text-stone-500 mb-1">
-            Governance & Executive Intelligence
-          </div>
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">
-            Administrative Reports & Overview
-          </h1>
-          <p className="text-sm text-stone-600 mt-1">
-            Standardized operational data exports. Strictly administrative oversight with zero patient or financial data.
-          </p>
+    <div className="space-y-4">
+      <h1 className="sr-only">Administrative Reports & Overview</h1>
+
+      {/* Report Switcher Tabs & Print */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200 pb-px">
+        <div className="flex flex-wrap gap-1">
+          {[
+            { key: 'branch_directory', label: '1. Branch Directory' },
+            { key: 'admin_assignment', label: '2. Admin Assignments' },
+            { key: 'agreement_expiry', label: '3. Agreement Expiry & Renewals' },
+            { key: 'facility_adoption', label: '4. Facility Adoption Matrix' },
+            { key: 'onboarding_audit', label: '5. Onboarding Audit Trail' },
+          ].map(tab => {
+            const isActive = activeReport === tab.key;
+
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveReport(tab.key as ReportType)}
+                className={`px-3.5 py-2 text-xs font-medium border-b-2 inline-flex items-center gap-2 transition-colors ${
+                  isActive
+                    ? 'border-stone-900 text-stone-900 bg-white'
+                    : 'border-transparent text-stone-500 hover:text-stone-900 hover:border-stone-300'
+                }`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Global Print & Export Control */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => window.print()}
-            className="px-3 py-1.5 text-xs border border-stone-200 text-stone-700 bg-white hover:bg-stone-50 transition-colors inline-flex items-center gap-1.5"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            Print Report
-          </button>
-        </div>
-      </div>
-
-      {/* Report Switcher Tabs */}
-      <div className="flex flex-wrap gap-1 border-b border-stone-200 pb-px">
-        {[
-          { key: 'branch_directory', label: '1. Branch Directory' },
-          { key: 'admin_assignment', label: '2. Admin Assignments' },
-          { key: 'agreement_expiry', label: '3. Agreement Expiry & Renewals' },
-          { key: 'facility_adoption', label: '4. Facility Adoption Matrix' },
-          { key: 'onboarding_audit', label: '5. Onboarding Audit Trail' },
-        ].map(tab => {
-          const isActive = activeReport === tab.key;
-
-          return (
-            <button
-              key={tab.key}
-              onClick={() => setActiveReport(tab.key as ReportType)}
-              className={`px-3.5 py-2 text-xs font-medium border-b-2 inline-flex items-center gap-2 transition-colors ${
-                isActive
-                  ? 'border-stone-900 text-stone-900 bg-white'
-                  : 'border-transparent text-stone-500 hover:text-stone-900 hover:border-stone-300'
-              }`}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
+        <button
+          onClick={() => window.print()}
+          className="px-3 py-1.5 text-xs border border-stone-200 text-stone-700 bg-white hover:bg-stone-50 transition-colors inline-flex items-center gap-1.5 self-end sm:self-auto shrink-0 mb-1"
+        >
+          <Printer className="w-3.5 h-3.5" />
+          Print Report
+        </button>
       </div>
 
       {/* REPORT CONTENT 1: Branch Directory */}

@@ -183,55 +183,43 @@ export const FacilityManagement: React.FC = () => {
   const activeAgreement = agreements.find(a => a.clinicId === filterClinicId && a.status === 'active');
 
   return (
-    <div className="space-y-6">
-      {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-5">
-        <div>
-          <div className="text-xs font-mono uppercase tracking-wider text-stone-500 mb-1">
-            Governance & Scope Control
-          </div>
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">
-            Facility Entitlement Management
-          </h1>
-          <p className="text-sm text-stone-600 mt-1">
-            Maintain the standardized platform facility catalogue and enforce strict 4-state entitlement separation for each branch.
-          </p>
+    <div className="space-y-4">
+      <h1 className="sr-only">Facility Entitlement Management</h1>
+
+      {/* View Switcher Bar */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="inline-flex border border-stone-200 p-0.5 bg-stone-100">
+          <button
+            onClick={() => setActiveTab('matrix')}
+            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+              activeTab === 'matrix'
+                ? 'bg-white text-stone-900 shadow-xs'
+                : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            Assignment Matrix
+          </button>
+          <button
+            onClick={() => setActiveTab('catalogue')}
+            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+              activeTab === 'catalogue'
+                ? 'bg-white text-stone-900 shadow-xs'
+                : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            Platform Catalogue ({facilities.length})
+          </button>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="inline-flex border border-stone-200 p-0.5 bg-stone-100">
-            <button
-              onClick={() => setActiveTab('matrix')}
-              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                activeTab === 'matrix'
-                  ? 'bg-white text-stone-900 shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              Assignment Matrix
-            </button>
-            <button
-              onClick={() => setActiveTab('catalogue')}
-              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                activeTab === 'catalogue'
-                  ? 'bg-white text-stone-900 shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              Platform Catalogue ({facilities.length})
-            </button>
-          </div>
-
-          {activeTab === 'catalogue' && (
-            <button
-              onClick={handleOpenAddCatalogue}
-              className="px-3.5 py-1.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5 border border-stone-900"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Add Facility
-            </button>
-          )}
-        </div>
+        {activeTab === 'catalogue' && (
+          <button
+            onClick={handleOpenAddCatalogue}
+            className="px-3.5 py-1.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5 border border-stone-900"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Add Facility
+          </button>
+        )}
       </div>
 
       {/* Explanatory 4-State Architectural Callout */}

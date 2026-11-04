@@ -172,33 +172,8 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
-        <div>
-          <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-            Clinic Administrator Governance
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Appoint, view, reassign, and audit Clinic Admin accounts across all branches. Super Admin manages assignments only; internal staff permissions are managed by the Clinic Admin.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={() => {
-              setFormError('');
-              setIsAppointModalOpen(true);
-            }}
-            className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Appoint New Admin</span>
-          </Button>
-        </div>
-      </div>
+    <div className="space-y-4">
+      <h1 className="sr-only">Clinic Administrator Governance</h1>
 
       {/* Directory Tabs & Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -225,15 +200,30 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
           ))}
         </div>
 
-        <div className="relative">
-          <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400 pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Search by admin name, email, clinic..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 pr-3 py-1.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 w-64 focus:outline-none focus:ring-1 focus:ring-slate-500"
-          />
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search by admin name, email, clinic..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 pr-3 py-1.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 w-56 sm:w-64 focus:outline-none focus:ring-1 focus:ring-slate-500"
+            />
+          </div>
+
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => {
+              setFormError('');
+              setIsAppointModalOpen(true);
+            }}
+            className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5 shrink-0"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Appoint Admin</span>
+          </Button>
         </div>
       </div>
 

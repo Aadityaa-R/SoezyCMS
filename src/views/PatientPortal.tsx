@@ -581,11 +581,9 @@ export const PatientPortal: React.FC<PatientPortalProps> = ({ activeTab: initial
   if (isUnlinked) {
     return (
       <div className="space-y-[var(--card-gap)]">
-        <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
-          <h1 id="portal-heading" className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
-            My Health Portal
-          </h1>
-        </div>
+        <h1 id="portal-heading" className="sr-only">
+          My Health Portal
+        </h1>
 
         {/* Action Row */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">

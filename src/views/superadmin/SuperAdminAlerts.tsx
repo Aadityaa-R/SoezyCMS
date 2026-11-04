@@ -75,55 +75,43 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-5">
-        <div>
-          <div className="text-xs font-mono uppercase tracking-wider text-stone-500 mb-1">
-            Governance Communications & Action Center
-          </div>
-          <h1 className="text-2xl font-semibold text-stone-900 tracking-tight">
-            Notifications & Actionable Alerts
-          </h1>
-          <p className="text-sm text-stone-600 mt-1">
-            Real-time compliance triggers, licence expiration warnings, unassigned branch alerts, and organization broadcasts.
-          </p>
+    <div className="space-y-4">
+      <h1 className="sr-only">Notifications & Actionable Alerts</h1>
+
+      {/* Subtabs Switcher */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="inline-flex border border-stone-200 p-0.5 bg-stone-100">
+          <button
+            onClick={() => setActiveSubTab('alerts')}
+            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+              activeSubTab === 'alerts'
+                ? 'bg-white text-stone-900 shadow-xs'
+                : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            Actionable Alerts ({alerts.filter(a => !a.acknowledged).length})
+          </button>
+          <button
+            onClick={() => setActiveSubTab('announcements')}
+            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+              activeSubTab === 'announcements'
+                ? 'bg-white text-stone-900 shadow-xs'
+                : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            Announcements ({announcements.length})
+          </button>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="inline-flex border border-stone-200 p-0.5 bg-stone-100">
-            <button
-              onClick={() => setActiveSubTab('alerts')}
-              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                activeSubTab === 'alerts'
-                  ? 'bg-white text-stone-900 shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              Actionable Alerts ({alerts.filter(a => !a.acknowledged).length})
-            </button>
-            <button
-              onClick={() => setActiveSubTab('announcements')}
-              className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-                activeSubTab === 'announcements'
-                  ? 'bg-white text-stone-900 shadow-xs'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              Announcements ({announcements.length})
-            </button>
-          </div>
-
-          {activeSubTab === 'announcements' && (
-            <button
-              onClick={() => setShowAnnouncementModal(true)}
-              className="px-3.5 py-1.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5 border border-stone-900"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Publish Broadcast
-            </button>
-          )}
-        </div>
+        {activeSubTab === 'announcements' && (
+          <button
+            onClick={() => setShowAnnouncementModal(true)}
+            className="px-3.5 py-1.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5 border border-stone-900"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Publish Broadcast
+          </button>
+        )}
       </div>
 
       {activeSubTab === 'alerts' ? (

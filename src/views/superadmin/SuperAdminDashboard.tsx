@@ -31,46 +31,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
 
   return (
     <div className="space-y-6">
-      {/* Top Banner / Heading */}
-      <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs uppercase tracking-wider font-mono text-slate-500 dark:text-slate-400">
-                Central Organisation Governance
-              </span>
-              <span className="text-[11px] px-2 py-0.5 rounded font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                SaaS Super Admin
-              </span>
-            </div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 mt-1">
-              Organisation Overview & Administrative Operations
-            </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Multi-branch registry, Clinic Administrator appointments, licence agreements, facility entitlements, and onboarding governance.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => onNavigate('super_reports')}
-              className="text-xs rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300"
-            >
-              Export Reports
-            </Button>
-            <Button
-              size="sm"
-              variant="primary"
-              onClick={() => onNavigate('super_clinics', 'register')}
-              className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
-            >
-              Register Branch
-            </Button>
-          </div>
-        </div>
-      </div>
+      <h1 className="sr-only">Organisation Overview & Administrative Operations</h1>
 
       {/* Primary 4 Key Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

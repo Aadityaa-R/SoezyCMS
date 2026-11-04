@@ -356,20 +356,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onNavigate, onDirtyCha
       <div className="space-y-[var(--card-gap)]">
 
       {/* Page Header */}
-      <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
-        <h1
-          id="profile-heading"
-          tabIndex={-1}
-          className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 outline-none"
-        >
-          My Profile
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-          {currentRole === 'patient'
-            ? 'Manage your personal contact information and access credentials.'
-            : 'Authorized station credentials and personnel contact details.'}
-        </p>
-      </div>
+      <h1
+        id="profile-heading"
+        tabIndex={-1}
+        className="sr-only"
+      >
+        My Profile
+      </h1>
 
       {/* Grid: 2 columns on desktop (>= 1024px), 1 column below */}
       <DetailGrid className={isUnlinkedPatient ? 'max-w-xl mx-auto' : ''}>

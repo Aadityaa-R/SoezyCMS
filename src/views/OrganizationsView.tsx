@@ -469,27 +469,7 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
 
   return (
     <div className="space-y-5">
-      {/* Minimalist Top Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Organizations
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Enterprise healthcare networks, software licensing quotas, facility modules, and branch governance.
-          </p>
-        </div>
-
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={openCreateModal}
-          className="flex items-center gap-1.5 self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Organization</span>
-        </Button>
-      </div>
+      <h1 className="sr-only">Organizations</h1>
 
       {/* KPI Metric Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
@@ -579,6 +559,16 @@ export const OrganizationsView: React.FC<OrganizationsViewProps> = ({ onNavigate
             <option value="expired">Expired</option>
             <option value="suspended">Suspended</option>
           </select>
+
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={openCreateModal}
+            className="flex items-center gap-1.5 shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Organization</span>
+          </Button>
         </div>
       </div>
 

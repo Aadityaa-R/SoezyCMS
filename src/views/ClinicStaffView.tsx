@@ -198,16 +198,9 @@ export const ClinicStaffView: React.FC<ClinicStaffViewProps> = ({ onNavigate: _o
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Page Title & Navigation Tabs */}
+      {/* Navigation Tabs */}
       <div className="space-y-4">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Clinic Staff & Roster
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Real-time on-duty doctor presence, healthcare workstation staffing, shift schedules, and clinician directory.
-          </p>
-        </div>
+        <h1 className="sr-only">Clinic Staff & Roster</h1>
 
         <Tabs
           tabs={tabs}
