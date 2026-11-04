@@ -8,7 +8,6 @@ import {
   Menu,
   X,
   Bell,
-  Building2,
   User,
   Settings,
   LogOut,
@@ -177,18 +176,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
             type="button"
             onClick={() => onNavigate?.(currentRole === 'patient' ? 'overview' : (currentRole === 'platform_super_admin' ? 'super_dashboard' : 'dashboard'))}
             className="flex items-center gap-2.5 text-left cursor-pointer outline-none focus:outline-none focus:ring-0 group p-0 m-0 border-0 bg-transparent"
-            title="Beacon Health Care Dashboard"
+            title="SOEZY CMS Platform"
           >
-            <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-white font-bold ring-2 ring-teal-500/20 group-hover:bg-teal-700 transition-colors shrink-0">
-              <Building2 className="w-4 h-4 text-white" />
-            </div>
+            <img
+              src="/soezy-logo.png"
+              alt="SOEZY CMS"
+              className="h-8 w-auto object-contain shrink-0"
+              onError={(e) => {
+                const target = e.currentTarget as HTMLElement;
+                target.style.display = 'none';
+              }}
+            />
             {BRAND_CONFIG.showHeaderHospitalTitle && (
               <div className="hidden sm:flex flex-col justify-center min-w-0">
                 <span className="font-bold text-xs tracking-tight text-slate-900 dark:text-slate-100 truncate leading-tight">
-                  {BRAND_CONFIG.hospitalName}
+                  SOEZY CMS
                 </span>
                 <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-tight truncate leading-tight">
-                  {BRAND_CONFIG.subTitle}
+                  Service Provider
                 </span>
               </div>
             )}

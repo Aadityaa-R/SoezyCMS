@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
   Building2,
@@ -80,20 +80,26 @@ const SuperAdminPortalContent: React.FC<{
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between py-3 gap-3 border-b border-stone-100">
             <div className="flex items-center gap-3">
-              <div className="w-7 h-7 bg-teal-600 text-white flex items-center justify-center font-bold text-xs rounded-xs">
-                BH
-              </div>
+              <img
+                src="/soezy-logo.png"
+                alt="SOEZY"
+                className="h-8 w-auto object-contain shrink-0"
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLElement;
+                  target.style.display = 'none';
+                }}
+              />
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-sm text-stone-900 tracking-tight">
-                    Beacon Health Care System
+                    SOEZY CMS Platform
                   </span>
-                  <span className="border border-teal-300 bg-teal-50 px-1.5 py-0.2 text-[10px] font-mono text-teal-800 rounded-xs">
-                    ORGANIZATION SUPER ADMIN
+                  <span className="border border-teal-300 bg-teal-50 px-1.5 py-0.5 text-[10px] font-mono text-teal-800 rounded-xs">
+                    PLATFORM SUPER ADMIN
                   </span>
                 </div>
                 <div className="text-[11px] text-stone-500 font-mono">
-                  Multi-Branch Health System Oversight Â· Governance & Licencing Portal
+                  SaaS Healthcare Service Provider • Multi-Tenant Client Licencing & Governance
                 </div>
               </div>
             </div>
@@ -102,7 +108,7 @@ const SuperAdminPortalContent: React.FC<{
             <div className="flex items-center gap-4 text-xs font-mono">
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 bg-teal-600 rounded-none inline-block" />
-                <span className="text-stone-500">Live Branches:</span>
+                <span className="text-stone-500">Live Client Branches:</span>
                 <span className="font-semibold text-stone-900">{activeClinicsCount} / {clinics.length}</span>
               </div>
 

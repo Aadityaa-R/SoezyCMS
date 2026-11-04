@@ -11,7 +11,6 @@ import {
   Eye,
   EyeOff,
   ShieldCheck,
-  Building2,
 } from 'lucide-react';
 
 function getLastUsedAudience(): AuthAudience | null {
@@ -190,17 +189,23 @@ export const LoginView: React.FC = () => {
     <div className="min-h-screen bg-slate-50 text-slate-700 flex flex-col justify-between font-sans select-none relative overflow-hidden">
       {/* 1. TOP HEADER LIKE PREVIOUS PART */}
       <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 h-14 flex items-center justify-between px-4 sm:px-12 lg:px-24 relative shadow-xs shrink-0 w-full z-10">
-        {/* Beacon Health Care Logo */}
+        {/* SOEZY CMS Platform Logo */}
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center text-white font-bold ring-2 ring-teal-500/20">
-            <Building2 className="w-4 h-4 text-white" />
-          </div>
+          <img
+            src="/soezy-logo.png"
+            alt="SOEZY"
+            className="h-8 w-auto object-contain shrink-0"
+            onError={(e) => {
+              const target = e.currentTarget as HTMLElement;
+              target.style.display = 'none';
+            }}
+          />
           <div>
             <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-slate-100">
-              Beacon Health Care
+              SOEZY CMS
             </span>
             <span className="block text-[10px] text-slate-500 font-medium -mt-0.5">
-              Clinic Operations Portal
+              Healthcare Practice Management Platform
             </span>
           </div>
         </div>
@@ -209,10 +214,10 @@ export const LoginView: React.FC = () => {
         <div className="flex flex-col items-end text-white">
           <span className="text-[10px] text-slate-400 leading-tight">For Support</span>
           <a
-            href="tel:+15552322661"
+            href="tel:+919543279999"
             className="text-xs sm:text-sm font-bold tracking-wide flex items-center gap-1.5 text-teal-700 hover:text-teal-800 transition-colors"
           >
-            <span>+1 (555) 232-2661</span>
+            <span>+91 95432 79999</span>
           </a>
         </div>
       </header>

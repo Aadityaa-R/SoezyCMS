@@ -14,9 +14,9 @@ export interface BrandConfig {
 }
 
 export const BRAND_CONFIG: BrandConfig = {
-  hospitalName: 'Beacon Health Care',
-  subTitle: 'Outpatient Clinic Operations',
-  logoAsset: '',
+  hospitalName: 'SOEZY CMS',
+  subTitle: 'Clinic Management Platform',
+  logoAsset: '/soezy-logo.png',
   accentColor: '#0d9488',
   accentColorHover: '#0f766e',
   accentColorActive: '#115e59',
