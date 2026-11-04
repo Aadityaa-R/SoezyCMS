@@ -33,6 +33,8 @@ export interface ClinicRegistrationParams {
   postalCode: string;
   registrationNumber?: string;
   supportingDocument?: string;
+  parentClinicId?: string;
+  isMainBranch?: boolean;
 }
 
 export interface ClinicAdministrativeProfile {
@@ -52,6 +54,10 @@ export interface ClinicAdministrativeProfile {
   country: string;
   registrationNumber: string;
   supportingDocument?: string;
+
+  // Hierarchy
+  parentClinicId?: string;
+  isMainBranch?: boolean;
 
   // Appointed Admin
   appointedAdminId?: string;

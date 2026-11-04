@@ -156,6 +156,8 @@ export const SuperAdminProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       country: 'India',
       registrationNumber: params.registrationNumber?.trim() || `MED-REG-${code}-${Date.now().toString().slice(-4)}`,
       supportingDocument: params.supportingDocument,
+      parentClinicId: params.parentClinicId || undefined,
+      isMainBranch: params.parentClinicId ? false : (params.isMainBranch ?? true),
       optedFacilities: ['OPD', 'Billing'],
       entitledFacilities: [],
       enabledModules: [],
