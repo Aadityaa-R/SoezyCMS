@@ -17,7 +17,6 @@ import {
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { useNotifications } from '@/context/NotificationContext';
-import { ClinicSwitcher } from './ClinicSwitcher';
 
 interface NavbarProps {
   onToggleSidebar?: () => void;
@@ -198,8 +197,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
               </div>
             )}
           </button>
-          <div className="hidden sm:block h-5 w-px bg-slate-200 dark:bg-slate-700" />
-          <ClinicSwitcher />
         </div>
 
         {/* Right Section: Notifications, then User Block Trigger */}
