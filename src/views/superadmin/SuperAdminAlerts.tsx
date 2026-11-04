@@ -1,8 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import {
-  AlertTriangle,
-  AlertCircle,
-  Info,
   CheckCircle2,
   Send,
   Plus,
@@ -187,42 +184,18 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
                       alert.acknowledged ? 'opacity-50 bg-stone-50' : 'hover:bg-stone-50/50'
                     }`}
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5">
-                        {alert.severity === 'critical' ? (
-                          <div className="p-1 border border-red-200 bg-red-50 text-red-700">
-                            <AlertCircle className="w-4 h-4" />
-                          </div>
-                        ) : alert.severity === 'warning' ? (
-                          <div className="p-1 border border-amber-200 bg-amber-50 text-amber-700">
-                            <AlertTriangle className="w-4 h-4" />
-                          </div>
-                        ) : (
-                          <div className="p-1 border border-stone-200 bg-stone-100 text-stone-700">
-                            <Info className="w-4 h-4" />
-                          </div>
-                        )}
-                      </div>
-
+                    <div>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span
-                            className={`px-1.5 py-0.5 text-[9px] font-mono border ${
-                              alert.severity === 'critical'
-                                ? 'border-red-300 bg-red-50 text-red-800'
-                                : alert.severity === 'warning'
-                                ? 'border-amber-300 bg-amber-50 text-amber-800'
-                                : 'border-stone-200 bg-stone-50 text-stone-600'
-                            }`}
-                          >
-                            {alert.severity.toUpperCase()}
+                          <span className="text-[10px] uppercase font-mono text-slate-700 dark:text-slate-300">
+                            {alert.severity}
                           </span>
                           <span className="font-mono text-[10px] text-stone-400">
                             {alert.type.replace(/_/g, ' ').toUpperCase()}
                           </span>
                           {clinic && (
                             <span className="text-[11px] font-semibold text-stone-900">
-                              Â· {clinic.name} <span className="font-mono text-stone-400">[{clinic.code}]</span>
+                              · {clinic.name} <span className="font-mono text-stone-400">[{clinic.code}]</span>
                             </span>
                           )}
                         </div>
@@ -254,7 +227,7 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
                       {!alert.acknowledged && (
                         <button
                           onClick={() => dismissAlert(alert.id)}
-                          className="px-2.5 py-1.5 text-xs border border-stone-200 text-stone-600 hover:text-stone-900 hover:border-stone-400"
+                          className="text-xs text-slate-600 hover:text-slate-900 hover:underline"
                           title="Acknowledge and dismiss alert"
                         >
                           Dismiss
@@ -293,14 +266,8 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
                 <div key={ann.id} className="p-4 space-y-2 hover:bg-stone-50/50 transition-colors">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span
-                        className={`px-1.5 py-0.5 text-[9px] font-mono border ${
-                          ann.priority === 'urgent'
-                            ? 'border-red-300 bg-red-50 text-red-800'
-                            : 'border-stone-200 bg-stone-50 text-stone-600'
-                        }`}
-                      >
-                        {ann.priority.toUpperCase()}
+                      <span className="text-[10px] uppercase font-mono text-slate-700 dark:text-slate-300">
+                        {ann.priority}
                       </span>
                       <h3 className="text-sm font-semibold text-stone-900">{ann.title}</h3>
                     </div>

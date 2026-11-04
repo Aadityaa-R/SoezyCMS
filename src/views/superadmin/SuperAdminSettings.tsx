@@ -3,7 +3,6 @@ import {
   Search,
   Save,
   Check,
-  ShieldCheck,
 } from 'lucide-react';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
 import { SuperAdminAuditAction, PlatformOrganizationSettings } from '../../types/superAdmin';
@@ -280,8 +279,7 @@ export const SuperAdminSettings: React.FC = () => {
       ) : (
         /* IMMUTABLE AUDIT LOGS TAB */
         <div className="space-y-4">
-          <div className="border border-stone-200 bg-stone-50 p-3.5 text-xs text-stone-700 flex items-start gap-2.5">
-            <ShieldCheck className="w-4 h-4 text-stone-900 shrink-0 mt-0.5" />
+          <div className="border border-stone-200 bg-stone-50 p-3.5 text-xs text-stone-700">
             <div>
               <span className="font-semibold text-stone-900 block">Immutable Security Audit Trail</span>
               Every Super Admin action (branch registration, admin appointment, agreement modification, entitlement change, override, activation) is permanently logged with actor credentials, timestamp, and justification. Records cannot be altered or deleted.

@@ -1,13 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import {
   Search,
-  Check,
   X,
   AlertTriangle,
-  Plus,
-  Edit2,
-  Building2,
-  Info
+  Plus
 } from 'lucide-react';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
 import { FacilityCatalogueRecord, ClinicFacilityEntitlementRecord } from '../../types/superAdmin';
@@ -240,8 +236,7 @@ export const FacilityManagement: React.FC = () => {
 
       {/* Explanatory 4-State Architectural Callout */}
       <div className="border border-stone-200 bg-stone-50 p-4">
-        <div className="flex items-start gap-3">
-          <Info className="w-4 h-4 text-stone-600 shrink-0 mt-0.5" />
+        <div>
           <div className="text-xs text-stone-700 leading-relaxed">
             <span className="font-semibold text-stone-900 block mb-1">
               Strict 4-State Healthcare Governance Model:
@@ -328,20 +323,17 @@ export const FacilityManagement: React.FC = () => {
           {/* Active Clinic Info Banner if single clinic is selected */}
           {activeClinic && (
             <div className="border border-stone-200 bg-white p-3 flex flex-col md:flex-row md:items-center justify-between text-xs gap-2">
-              <div className="flex items-center gap-3">
-                <Building2 className="w-4 h-4 text-stone-600" />
-                <div>
-                  <span className="font-semibold text-stone-900">{activeClinic.name}</span>
-                  <span className="text-stone-500 font-mono ml-2">[{activeClinic.code}]</span>
-                  <span className="text-stone-500 ml-2">Type: {activeClinic.branchType.toUpperCase()}</span>
-                </div>
+              <div>
+                <span className="font-semibold text-stone-900">{activeClinic.name}</span>
+                <span className="text-stone-500 font-mono ml-2">[{activeClinic.code}]</span>
+                <span className="text-stone-500 ml-2">Type: {activeClinic.branchType.toUpperCase()}</span>
               </div>
               <div className="flex items-center gap-3 text-stone-600">
                 <span>
                   Active Agreement: <span className="font-mono text-stone-900">{activeAgreement ? activeAgreement.agreementReference : 'None Found'}</span>
                 </span>
                 {activeAgreement && (
-                  <span className="border border-teal-200 bg-teal-50 text-teal-800 px-1.5 py-0.5 text-[10px] font-mono">
+                  <span className="text-xs font-mono text-slate-600 dark:text-slate-400">
                     Valid to {activeAgreement.endDate}
                   </span>
                 )}
@@ -396,13 +388,9 @@ export const FacilityManagement: React.FC = () => {
                             <button
                               onClick={() => handleInitiateToggle(e, 'optedStatus')}
                               title="Click to toggle Opted status"
-                              className={`inline-flex items-center justify-center w-6 h-6 border transition-colors ${
-                                e.optedStatus
-                                  ? 'border-stone-400 bg-stone-100 text-stone-900'
-                                  : 'border-stone-200 text-stone-300 hover:border-stone-400 hover:text-stone-500'
-                              }`}
+                              className="text-xs text-slate-700 dark:text-slate-300 hover:underline"
                             >
-                              {e.optedStatus ? <Check className="w-3.5 h-3.5" /> : <X className="w-3 h-3" />}
+                              {e.optedStatus ? 'Yes' : 'No'}
                             </button>
                           </td>
 
@@ -411,13 +399,9 @@ export const FacilityManagement: React.FC = () => {
                             <button
                               onClick={() => handleInitiateToggle(e, 'entitlementStatus')}
                               title="Click to toggle Entitlement status"
-                              className={`inline-flex items-center justify-center w-6 h-6 border transition-colors ${
-                                e.entitlementStatus
-                                  ? 'border-teal-600 bg-teal-50 text-teal-800'
-                                  : 'border-stone-200 text-stone-300 hover:border-stone-400 hover:text-stone-500'
-                              }`}
+                              className="text-xs text-slate-700 dark:text-slate-300 hover:underline"
                             >
-                              {e.entitlementStatus ? <Check className="w-3.5 h-3.5" /> : <X className="w-3 h-3" />}
+                              {e.entitlementStatus ? 'Yes' : 'No'}
                             </button>
                           </td>
 
@@ -427,38 +411,21 @@ export const FacilityManagement: React.FC = () => {
                               <button
                                 onClick={() => handleInitiateToggle(e, 'moduleEnabledStatus')}
                                 title="Click to toggle CMS module access"
-                                className={`inline-flex items-center justify-center w-6 h-6 border transition-colors ${
-                                  e.moduleEnabledStatus
-                                    ? isUnentitledEnabled
-                                      ? 'border-amber-500 bg-amber-50 text-amber-800'
-                                      : 'border-stone-900 bg-stone-900 text-white'
-                                    : 'border-stone-200 text-stone-300 hover:border-stone-400 hover:text-stone-500'
-                                }`}
+                                className="text-xs text-slate-700 dark:text-slate-300 hover:underline"
                               >
-                                {e.moduleEnabledStatus ? <Check className="w-3.5 h-3.5" /> : <X className="w-3 h-3" />}
+                                {e.moduleEnabledStatus ? 'Yes' : 'No'}
                               </button>
                               {isUnentitledEnabled && (
-                                <span title="Warning: Enabled without contractual entitlement!" className="text-amber-600">
-                                  <AlertTriangle className="w-3.5 h-3.5" />
+                                <span title="Warning: Enabled without contractual entitlement!" className="text-slate-500 text-[10px] italic">
+                                  (unentitled)
                                 </span>
                               )}
                             </div>
                           </td>
 
                           {/* 4. Operationally Configured */}
-                          <td className="py-2.5 px-3 text-center">
-                            <span
-                              className={`inline-block w-2.5 h-2.5 border ${
-                                e.operationallyConfigured
-                                  ? 'border-blue-600 bg-blue-600'
-                                  : 'border-stone-300 bg-transparent'
-                              }`}
-                              title={
-                                e.operationallyConfigured
-                                  ? 'Configured locally by Clinic Admin'
-                                  : 'Pending local configuration by Clinic Admin'
-                              }
-                            />
+                          <td className="py-2.5 px-3 text-center text-xs text-slate-700 dark:text-slate-300">
+                            {e.operationallyConfigured ? 'Yes' : 'No'}
                           </td>
 
                           {/* Agreement Ref */}
@@ -535,24 +502,16 @@ export const FacilityManagement: React.FC = () => {
                       <td className="py-2.5 px-3 text-stone-600 max-w-xs truncate" title={item.description}>
                         {item.description}
                       </td>
-                      <td className="py-2.5 px-3">
-                        <span
-                          className={`inline-block px-1.5 py-0.5 text-[10px] font-mono border ${
-                            item.status === 'active'
-                              ? 'border-teal-200 bg-teal-50 text-teal-800'
-                              : 'border-stone-200 bg-stone-50 text-stone-500'
-                          }`}
-                        >
-                          {item.status.toUpperCase()}
-                        </span>
+                      <td className="py-2.5 px-3 text-xs font-mono uppercase text-slate-700 dark:text-slate-300">
+                        {item.status}
                       </td>
                       <td className="py-2.5 px-3 text-right">
                         <button
                           onClick={() => handleOpenEditCatalogue(item)}
-                          className="p-1 text-stone-500 hover:text-stone-900"
+                          className="text-xs text-slate-600 hover:text-slate-900 hover:underline"
                           title="Edit facility catalogue definition"
                         >
-                          <Edit2 className="w-3.5 h-3.5" />
+                          Edit
                         </button>
                       </td>
                     </tr>

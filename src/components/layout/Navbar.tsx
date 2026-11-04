@@ -264,15 +264,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
                           className="py-2.5 px-2 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-lg transition-colors cursor-pointer group"
                         >
                           <div className="flex items-center justify-between gap-2">
-                            <span
-                              className={`text-[9px] px-1.5 py-0.2 rounded font-mono uppercase font-bold border ${
-                                alert.severity === 'critical'
-                                  ? 'border-rose-300 dark:border-rose-800 bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-300'
-                                  : alert.severity === 'warning'
-                                  ? 'border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300'
-                                  : 'border-blue-300 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300'
-                              }`}
-                            >
+                            <span className="text-[10px] font-mono uppercase font-semibold text-slate-700 dark:text-slate-300">
                               {alert.severity}
                             </span>
                             {alert.createdAt && (

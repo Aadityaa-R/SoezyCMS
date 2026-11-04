@@ -5,7 +5,6 @@ import { Modal } from '@/components/ui/Modal';
 import {
   Plus,
   Search,
-  AlertCircle,
 } from 'lucide-react';
 import {
   AdminAssignmentRecord,
@@ -241,8 +240,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
       {/* Unassigned Clinics Notice Card (If tabFilter is unassigned) */}
       {tabFilter === 'unassigned' ? (
         <div className="border border-amber-200 dark:border-amber-900/60 bg-amber-50/30 dark:bg-amber-950/20 p-5 rounded space-y-4">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+          <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200">
               Clinics Without Appointed Administrator ({unassignedClinics.length})
             </h3>
@@ -345,25 +343,15 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                         )}
                       </td>
 
-                      <td className="py-3 px-3">
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
-                          admin.status === 'active'
-                            ? 'border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300'
-                            : admin.status === 'pending_invitation'
-                            ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
-                            : admin.status === 'reassigned'
-                            ? 'border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
-                            : 'border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
-                        }`}>
-                          {admin.status.replace(/_/g, ' ')}
-                        </span>
+                      <td className="py-3 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
+                        {admin.status.replace(/_/g, ' ')}
                       </td>
 
-                      <td className="py-3 px-3 text-right space-x-1.5 whitespace-nowrap">
+                      <td className="py-3 px-3 text-right space-x-3 whitespace-nowrap">
                         <button
                           type="button"
                           onClick={() => setSelectedAdminDetail(admin)}
-                          className="px-2 py-1 text-[11px] rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer"
+                          className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
                         >
                           Profile
                         </button>
@@ -375,7 +363,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                               setReassignReason('');
                               setFormError('');
                             }}
-                            className="px-2 py-1 text-[11px] rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer"
+                            className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
                           >
                             Reassign
                           </button>
@@ -388,9 +376,9 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                             setStatusReason('');
                             setFormError('');
                           }}
-                          className="px-2 py-1 text-[11px] rounded border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer"
+                          className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
                         >
-                          Access
+                          {admin.status === 'active' ? 'Deactivate' : 'Activate'}
                         </button>
                       </td>
                     </tr>

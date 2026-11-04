@@ -1,14 +1,6 @@
 import React from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
-import {
-  Building2,
-  UserCheck,
-  FileText,
-  Hospital,
-  CheckSquare,
-  ShieldCheck,
-} from 'lucide-react';
 
 interface SuperAdminDashboardProps {
   onNavigate: (tab: string, subTab?: string) => void;
@@ -87,13 +79,12 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           onClick={() => onNavigate('super_clinics')}
           className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
         >
-          <div className="flex items-center justify-between">
+          <div>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Registered Clinics</span>
-            <Building2 className="w-4 h-4 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{totalClinics}</span>
-            <span className="text-xs text-teal-600 dark:text-teal-400 font-medium">{activeClinics} active</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{activeClinics} active</span>
           </div>
           <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
             <span>Pending: {pendingClinics}</span>
@@ -106,9 +97,8 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           onClick={() => onNavigate('super_admins')}
           className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
         >
-          <div className="flex items-center justify-between">
+          <div>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Clinic Admins</span>
-            <UserCheck className="w-4 h-4 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{activeAdmins}</span>
@@ -116,9 +106,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           </div>
           <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
             <span>Missing Admin:</span>
-            <span className={clinicsWithoutAdmin.length > 0 ? 'text-amber-600 font-bold' : 'text-slate-500'}>
-              {clinicsWithoutAdmin.length} clinics
-            </span>
+            <span className="text-slate-500 font-medium">{clinicsWithoutAdmin.length} clinics</span>
           </div>
         </div>
 
@@ -127,9 +115,8 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           onClick={() => onNavigate('super_agreements')}
           className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
         >
-          <div className="flex items-center justify-between">
+          <div>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Licence Agreements</span>
-            <FileText className="w-4 h-4 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{activeAgreements}</span>
@@ -146,15 +133,14 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           onClick={() => onNavigate('super_onboarding')}
           className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
         >
-          <div className="flex items-center justify-between">
+          <div>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Branch Onboarding</span>
-            <CheckSquare className="w-4 h-4 text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               {clinics.filter((c) => c.onboardingStatus === 'completed').length} / {totalClinics}
             </span>
-            <span className="text-xs text-teal-600 dark:text-teal-400 font-medium">completed</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">completed</span>
           </div>
           <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
             <span>In Progress: {clinics.filter((c) => c.onboardingStatus === 'in_progress').length}</span>
@@ -221,7 +207,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
                           {clinic.appointedAdminName}
                         </div>
                       ) : (
-                        <span className="text-amber-600 dark:text-amber-400 italic text-[11px]">
+                        <span className="text-slate-500 dark:text-slate-400 italic text-[11px]">
                           Unassigned
                         </span>
                       )}
@@ -232,27 +218,11 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
                       </span>{' '}
                       <span className="text-[11px] text-slate-400">wings</span>
                     </td>
-                    <td className="py-2.5 px-3">
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
-                        clinic.agreementStatus === 'active'
-                          ? 'border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300'
-                          : clinic.agreementStatus === 'expiring_soon'
-                          ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
-                          : 'border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
-                      }`}>
-                        {clinic.agreementStatus ? clinic.agreementStatus.replace('_', ' ') : 'None'}
-                      </span>
+                    <td className="py-2.5 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
+                      {clinic.agreementStatus ? clinic.agreementStatus.replace(/_/g, ' ') : 'None'}
                     </td>
-                    <td className="py-2.5 pl-3">
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${
-                        clinic.status === 'active'
-                          ? 'border-teal-200 dark:border-teal-800 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300'
-                          : clinic.status === 'pending_onboarding'
-                          ? 'border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'
-                          : 'border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
-                      }`}>
-                        {clinic.status.replace('_', ' ')}
-                      </span>
+                    <td className="py-2.5 pl-3 text-xs capitalize text-slate-700 dark:text-slate-300">
+                      {clinic.status.replace(/_/g, ' ')}
                     </td>
                   </tr>
                 ))}
@@ -272,7 +242,6 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
                 Clinics contractually entitled per module
               </p>
             </div>
-            <Hospital className="w-4 h-4 text-slate-400" />
           </div>
 
           <div className="space-y-3">
@@ -309,8 +278,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
       {/* Recent Administrative Activity Audit Log */}
       <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded-xl shadow-xs space-y-3">
         <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-slate-700 dark:text-slate-300" />
+          <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
               Recent Administrative Audit Trail
             </h3>
@@ -328,7 +296,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           {auditLogs.slice(0, 5).map((log) => (
             <div key={log.id} className="py-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                <span className="text-[11px] font-mono text-slate-600 dark:text-slate-400 uppercase">
                   {log.action.replace(/_/g, ' ')}
                 </span>
                 <span className="font-semibold text-slate-900 dark:text-slate-100">{log.targetName}</span>

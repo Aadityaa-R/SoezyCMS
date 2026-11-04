@@ -3,7 +3,6 @@ import {
   Check,
   X,
   AlertTriangle,
-  ShieldCheck,
   PauseCircle,
   PlayCircle,
   ChevronRight,
@@ -187,18 +186,8 @@ export const BranchOnboarding: React.FC = () => {
                         {clinic.code} Â· {clinic.branchType.toUpperCase()}
                       </div>
                       <div className="mt-2 flex items-center gap-2">
-                        <span
-                          className={`inline-block px-1.5 py-0.5 text-[9px] font-mono border ${
-                            clinic.onboardingStatus === 'completed'
-                              ? 'border-teal-200 bg-teal-50 text-teal-800'
-                              : clinic.onboardingStatus === 'ready_for_review'
-                              ? 'border-blue-200 bg-blue-50 text-blue-800'
-                              : clinic.onboardingStatus === 'in_progress'
-                              ? 'border-amber-200 bg-amber-50 text-amber-800'
-                              : 'border-stone-200 bg-stone-50 text-stone-600'
-                          }`}
-                        >
-                          {clinic.onboardingStatus.replace(/_/g, ' ').toUpperCase()}
+                        <span className="text-[10px] capitalize text-slate-700 dark:text-slate-300">
+                          {clinic.onboardingStatus.replace(/_/g, ' ')}
                         </span>
                         <span className="text-[10px] text-stone-500 font-mono">
                           {done}/10 ({pct}%)
@@ -226,16 +215,8 @@ export const BranchOnboarding: React.FC = () => {
                         {currentClinic.name}
                       </h2>
                       <span className="font-mono text-xs text-stone-500">[{currentClinic.code}]</span>
-                      <span
-                        className={`px-1.5 py-0.5 text-[10px] font-mono border ${
-                          currentClinic.status === 'active'
-                            ? 'border-teal-200 bg-teal-50 text-teal-800'
-                            : currentClinic.status === 'suspended'
-                            ? 'border-red-200 bg-red-50 text-red-800'
-                            : 'border-amber-200 bg-amber-50 text-amber-800'
-                        }`}
-                      >
-                        {currentClinic.status.replace(/_/g, ' ').toUpperCase()}
+                      <span className="text-xs capitalize text-slate-700 dark:text-slate-300">
+                        {currentClinic.status.replace(/_/g, ' ')}
                       </span>
                     </div>
                     <div className="text-xs text-stone-600 mt-1 flex flex-wrap gap-x-4 gap-y-1">
@@ -302,8 +283,7 @@ export const BranchOnboarding: React.FC = () => {
                     </span>
                   )}
                   {allMandatorySatisfied && (
-                    <span className="text-teal-700 text-xs flex items-center gap-1 font-medium">
-                      <ShieldCheck className="w-4 h-4" />
+                    <span className="text-teal-700 text-xs font-medium">
                       All verification criteria satisfied
                     </span>
                   )}
@@ -360,14 +340,14 @@ export const BranchOnboarding: React.FC = () => {
                                 </span>
                               )}
                               {item.isOverridden && (
-                                <span className="border border-amber-300 bg-amber-50 text-amber-800 px-1.5 py-0.2 text-[9px] font-mono font-medium">
+                                <span className="text-[10px] uppercase font-mono text-slate-600 dark:text-slate-400">
                                   OVERRIDDEN
                                 </span>
                               )}
                             </div>
 
                             {item.isOverridden && item.overrideReason && (
-                              <div className="text-[11px] text-amber-900 mt-1 pl-2 border-l-2 border-amber-300 font-mono">
+                              <div className="text-[11px] text-stone-600 mt-1 pl-2 border-l-2 border-stone-300 font-mono">
                                 Justification: {item.overrideReason}
                               </div>
                             )}
@@ -381,10 +361,10 @@ export const BranchOnboarding: React.FC = () => {
                         </div>
 
                         {/* Checklist Action Buttons */}
-                        <div className="flex items-center gap-2 self-end md:self-auto">
+                        <div className="flex items-center gap-3 self-end md:self-auto">
                           <button
                             onClick={() => handleToggleChecklist(item.itemKey, item.completed)}
-                            className="px-2.5 py-1 text-[11px] border border-stone-200 text-stone-700 hover:bg-stone-50"
+                            className="text-xs text-slate-600 hover:text-slate-900 hover:underline"
                           >
                             {item.completed ? 'Mark Incomplete' : 'Mark Completed'}
                           </button>
@@ -392,7 +372,7 @@ export const BranchOnboarding: React.FC = () => {
                           {!item.completed && (
                             <button
                               onClick={() => handleOpenOverride(item.itemKey, item.title)}
-                              className="px-2.5 py-1 text-[11px] border border-stone-200 text-stone-600 hover:text-stone-900 hover:border-stone-400"
+                              className="text-xs text-slate-600 hover:text-slate-900 hover:underline"
                             >
                               {item.isOverridden ? 'Edit Override' : 'Issue Override'}
                             </button>

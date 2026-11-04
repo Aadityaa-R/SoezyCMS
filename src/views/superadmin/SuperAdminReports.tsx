@@ -2,11 +2,6 @@ import React, { useState } from 'react';
 import {
   Download,
   Printer,
-  Building2,
-  Users,
-  ShieldCheck,
-  Layers,
-  ClipboardList,
 } from 'lucide-react';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
 
@@ -175,13 +170,12 @@ export const SuperAdminReports: React.FC = () => {
       {/* Report Switcher Tabs */}
       <div className="flex flex-wrap gap-1 border-b border-stone-200 pb-px">
         {[
-          { key: 'branch_directory', label: '1. Branch Directory', icon: Building2 },
-          { key: 'admin_assignment', label: '2. Admin Assignments', icon: Users },
-          { key: 'agreement_expiry', label: '3. Agreement Expiry & Renewals', icon: ShieldCheck },
-          { key: 'facility_adoption', label: '4. Facility Adoption Matrix', icon: Layers },
-          { key: 'onboarding_audit', label: '5. Onboarding Audit Trail', icon: ClipboardList },
+          { key: 'branch_directory', label: '1. Branch Directory' },
+          { key: 'admin_assignment', label: '2. Admin Assignments' },
+          { key: 'agreement_expiry', label: '3. Agreement Expiry & Renewals' },
+          { key: 'facility_adoption', label: '4. Facility Adoption Matrix' },
+          { key: 'onboarding_audit', label: '5. Onboarding Audit Trail' },
         ].map(tab => {
-          const Icon = tab.icon;
           const isActive = activeReport === tab.key;
 
           return (
@@ -194,7 +188,6 @@ export const SuperAdminReports: React.FC = () => {
                   : 'border-transparent text-stone-500 hover:text-stone-900 hover:border-stone-300'
               }`}
             >
-              <Icon className="w-3.5 h-3.5" />
               {tab.label}
             </button>
           );
@@ -238,14 +231,8 @@ export const SuperAdminReports: React.FC = () => {
                       <td className="py-2.5 px-3 font-mono font-medium text-stone-900">{c.code}</td>
                       <td className="py-2.5 px-3 font-medium text-stone-900">{c.name}</td>
                       <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{c.branchType.toUpperCase()}</td>
-                      <td className="py-2.5 px-3">
-                        <span className={`inline-block px-1.5 py-0.5 text-[10px] font-mono border ${
-                          c.status === 'active'
-                            ? 'border-teal-200 bg-teal-50 text-teal-800'
-                            : 'border-amber-200 bg-amber-50 text-amber-800'
-                        }`}>
-                          {c.status.toUpperCase()}
-                        </span>
+                      <td className="py-2.5 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
+                        {c.status}
                       </td>
                       <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{c.onboardingStatus.replace(/_/g, ' ')}</td>
                       <td className="py-2.5 px-3 text-stone-600">{c.city ? `${c.city}, ${c.state}` : 'â€”'}</td>
@@ -302,14 +289,8 @@ export const SuperAdminReports: React.FC = () => {
                         <td className="py-2.5 px-3 text-stone-600">{a.designation}</td>
                         <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{a.adminEmail}</td>
                         <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{a.adminPhone || 'â€”'}</td>
-                        <td className="py-2.5 px-3">
-                          <span className={`inline-block px-1.5 py-0.5 text-[10px] font-mono border ${
-                            a.status === 'active'
-                              ? 'border-teal-200 bg-teal-50 text-teal-800'
-                              : 'border-stone-200 bg-stone-50 text-stone-600'
-                          }`}>
-                            {a.status.toUpperCase()}
-                          </span>
+                        <td className="py-2.5 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
+                          {a.status}
                         </td>
                         <td className="py-2.5 px-3 font-mono text-[11px] text-stone-500">{a.effectiveFrom}</td>
                       </tr>
@@ -360,16 +341,8 @@ export const SuperAdminReports: React.FC = () => {
                       <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{a.agreementType.replace(/_/g, ' ').toUpperCase()}</td>
                       <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{a.startDate}</td>
                       <td className="py-2.5 px-3 font-mono text-[11px] text-stone-900 font-medium">{a.endDate}</td>
-                      <td className="py-2.5 px-3">
-                        <span className={`inline-block px-1.5 py-0.5 text-[10px] font-mono border ${
-                          a.status === 'active'
-                            ? 'border-teal-200 bg-teal-50 text-teal-800'
-                            : a.status === 'expiring_soon'
-                            ? 'border-amber-200 bg-amber-50 text-amber-800'
-                            : 'border-stone-200 bg-stone-50 text-stone-600'
-                        }`}>
-                          {a.status.toUpperCase()}
-                        </span>
+                      <td className="py-2.5 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
+                        {a.status.replace(/_/g, ' ')}
                       </td>
                       <td className="py-2.5 px-3 text-stone-600 text-[11px]">
                         {a.coveredFacilities.slice(0, 4).join(', ')}
@@ -479,20 +452,8 @@ export const SuperAdminReports: React.FC = () => {
                         </td>
                         <td className="py-2 px-3 font-medium text-stone-900">{item.title}</td>
                         <td className="py-2 px-3 font-mono text-stone-500">{item.isMandatory ? 'YES' : 'NO'}</td>
-                        <td className="py-2 px-3">
-                          {item.completed ? (
-                            <span className="inline-block px-1.5 py-0.5 text-[10px] font-mono border border-teal-200 bg-teal-50 text-teal-800">
-                              COMPLETED
-                            </span>
-                          ) : item.isOverridden ? (
-                            <span className="inline-block px-1.5 py-0.5 text-[10px] font-mono border border-amber-300 bg-amber-50 text-amber-800">
-                              OVERRIDDEN
-                            </span>
-                          ) : (
-                            <span className="inline-block px-1.5 py-0.5 text-[10px] font-mono border border-stone-200 bg-stone-50 text-stone-600">
-                              PENDING
-                            </span>
-                          )}
+                        <td className="py-2 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
+                          {item.completed ? 'Completed' : item.isOverridden ? 'Overridden' : 'Pending'}
                         </td>
                         <td className="py-2 px-3 font-mono text-[11px] text-stone-600">
                           {item.overrideReason || (item.completedAt ? `Completed on ${item.completedAt}` : 'â€”')}
