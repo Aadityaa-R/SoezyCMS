@@ -20,6 +20,11 @@ import {
   saveSuperAdminState,
   SuperAdminState,
 } from '@/data/superAdminData';
+import {
+  calculateModulesForClassifications,
+  normalizeClassifications,
+  FacilityClassification,
+} from '@/lib/facilityClassifications';
 
 interface SuperAdminContextType {
   clinics: ClinicAdministrativeProfile[];
@@ -90,6 +95,11 @@ interface SuperAdminContextType {
     stateUpdate: { optedStatus?: boolean; entitlementStatus?: boolean; moduleEnabledStatus?: boolean },
     reason: string
   ) => Promise<void>;
+  updateClinicFacilityClassification: (
+    clinicId: string,
+    classifications: FacilityClassification[],
+    reason?: string
+  ) => Promise<void>;
   updateOnboardingChecklist: (
     clinicId: string,
     itemKey: OnboardingChecklistItemKey,
@@ -138,6 +148,8 @@ export const SuperAdminProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const nextNumber = state.clinics.length + 1;
     const newId = `CLN-${String(nextNumber).padStart(3, '0')}`;
     const code = (params.code || `CLN${nextNumber}`).toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    const classifications = normalizeClassifications(params.facilityClassifications || ['OPD']);
+    const automatedModules = calculateModulesForClassifications(classifications);
 
     const newClinic: ClinicAdministrativeProfile = {
       id: newId,
@@ -158,9 +170,10 @@ export const SuperAdminProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       supportingDocument: params.supportingDocument,
       parentClinicId: params.parentClinicId || undefined,
       isMainBranch: params.parentClinicId ? false : (params.isMainBranch ?? true),
-      optedFacilities: ['OPD', 'Billing'],
-      entitledFacilities: [],
-      enabledModules: [],
+      facilityClassifications: classifications,
+      optedFacilities: classifications,
+      entitledFacilities: classifications,
+      enabledModules: automatedModules,
       onboardingStatus: 'pending',
       status: 'pending_onboarding',
       statusReason: 'Initial clinic registration completed. Awaiting admin appointment and licence agreement upload.',
@@ -681,6 +694,44 @@ export const SuperAdminProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     });
   };
 
+  const updateClinicFacilityClassification = async (
+    clinicId: string,
+    classifications: FacilityClassification[],
+    reason?: string
+  ): Promise<void> => {
+    const target = state.clinics.find((c) => c.id === clinicId);
+    if (!target) return;
+
+    const normalized = normalizeClassifications(classifications);
+    const newModules = calculateModulesForClassifications(normalized);
+
+    setState((prev) => ({
+      ...prev,
+      clinics: prev.clinics.map((c) =>
+        c.id === clinicId
+          ? {
+              ...c,
+              facilityClassifications: normalized,
+              optedFacilities: normalized,
+              entitledFacilities: normalized,
+              enabledModules: c.status === 'active' ? newModules : (c.enabledModules && c.enabledModules.length > 0 ? newModules : []),
+              updatedAt: new Date().toISOString(),
+            }
+          : c
+      ),
+    }));
+
+    addAuditEntry({
+      action: 'facility_entitlement_changed',
+      targetType: 'facility',
+      targetId: clinicId,
+      targetName: `${target.name} Facility Classification`,
+      beforeValue: (target.facilityClassifications || []).join(', ') || 'None',
+      afterValue: normalized.join(', '),
+      reason: reason?.trim() || `Updated facility classification to ${normalized.join(', ')} (${newModules.length} automated modules assigned).`,
+    });
+  };
+
   const updateOnboardingChecklist = async (
     clinicId: string,
     itemKey: OnboardingChecklistItemKey,
@@ -823,6 +874,7 @@ export const SuperAdminProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         addFacilityToCatalogue,
         updateFacilityCatalogue,
         updateClinicFacilityEntitlement,
+        updateClinicFacilityClassification,
         updateOnboardingChecklist,
         overrideOnboardingItem,
         activateClinicBranch,

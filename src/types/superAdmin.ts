@@ -19,6 +19,8 @@ export type OnboardingProgressStatus =
   | 'completed'
   | 'on_hold';
 
+export type FacilityClassification = 'OPD' | 'IPD' | 'Lab';
+
 export interface ClinicRegistrationParams {
   name: string;
   code: string;
@@ -35,6 +37,7 @@ export interface ClinicRegistrationParams {
   supportingDocument?: string;
   parentClinicId?: string;
   isMainBranch?: boolean;
+  facilityClassifications?: FacilityClassification[];
 }
 
 export interface ClinicAdministrativeProfile {
@@ -73,7 +76,8 @@ export interface ClinicAdministrativeProfile {
   agreementStartDate?: string;
   agreementEndDate?: string;
 
-  // Facility Entitlements
+  // Facility Classification & Entitlements
+  facilityClassifications?: FacilityClassification[];
   optedFacilities: string[];
   entitledFacilities: string[];
   enabledModules: string[];

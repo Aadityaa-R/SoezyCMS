@@ -88,8 +88,8 @@ describe('ClinicBranchManagement - Card-Based Hierarchy & Pagination', () => {
     expect(screen.getByText(/Section C: Licence Agreement Details/i)).toBeTruthy();
     expect(screen.getByText('AGR-2025-SOEZY-SUB01')).toBeTruthy();
 
-    // Section D: Facility Details
-    expect(screen.getByText(/Section D: Facility Details/i)).toBeTruthy();
+    // Section D: Facility Classification & Automated Module Entitlements
+    expect(screen.getByText(/Section D: Facility Classification/i)).toBeTruthy();
 
     // Section E: Onboarding Details
     expect(screen.getByText(/Section E: Branch Onboarding Details/i)).toBeTruthy();
@@ -151,5 +151,42 @@ describe('ClinicBranchManagement - Card-Based Hierarchy & Pagination', () => {
     // Shows parent main branch selection
     expect(screen.getByText(/Select Parent Main Branch/i)).toBeTruthy();
     expect(screen.getByText('-- Choose Parent Main Branch --')).toBeTruthy();
+
+    // Verify facility classification checkboxes (OPD, IPD, Lab) in registration form
+    expect(screen.getAllByText(/Facility Classification/i).length).toBeGreaterThan(0);
+    expect(screen.getByRole('checkbox', { name: /OPD/i })).toBeTruthy();
+    expect(screen.getByRole('checkbox', { name: /IPD/i })).toBeTruthy();
+    expect(screen.getByRole('checkbox', { name: /Lab/i })).toBeTruthy();
+  });
+
+  it('displays facility classifications on main branch cards', () => {
+    renderComponent();
+
+    // Cards display facility classifications
+    expect(screen.getAllByText(/Facility Classification/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Automated Modules/i).length).toBeGreaterThan(0);
+    // Subiksham has OPD, IPD, Lab
+    expect(screen.getAllByText('OPD, IPD, Lab').length).toBeGreaterThan(0);
+  });
+
+  it('displays side branch independent classification and allows updating classification', async () => {
+    renderComponent();
+
+    // Open Subiksham details
+    const viewButtons = screen.getAllByRole('button', { name: /View Details/i });
+    fireEvent.click(viewButtons[0]);
+
+    // Section B shows side branch independent classifications
+    expect(screen.getByText('OPD, IPD')).toBeTruthy(); // Subiksham Oncology Center
+    expect(screen.getByText('Lab')).toBeTruthy(); // Subiksham Diagnostics & Day Care
+
+    // Open Section D update modal on main branch
+    const updateButtons = screen.getAllByRole('button', { name: /Update Facility Classification/i });
+    expect(updateButtons.length).toBeGreaterThan(0);
+    fireEvent.click(updateButtons[0]);
+
+    // Modal opens with 3 allowed facility types
+    expect(screen.getByText(/Select Approved Facility Types/i)).toBeTruthy();
+    expect(screen.getByText(/Automated Module Bundle Preview/i)).toBeTruthy();
   });
 });
