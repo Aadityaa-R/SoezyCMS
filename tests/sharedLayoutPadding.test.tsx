@@ -2,23 +2,21 @@ import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { PageContainer } from '../src/components/layout/PageContainer';
 import { SuperAdminPortal } from '../src/views/superadmin/SuperAdminPortal';
+// @ts-ignore
+import fs from 'node:fs';
+// @ts-ignore
+import path from 'node:path';
+
+declare const process: any;
 
 describe('Shared CMS Layout - 12px Outer Padding Specification', () => {
-  const cssFiles = import.meta.glob<string>('../src/index.css', {
-    query: '?raw',
-    import: 'default',
-    eager: true,
-  });
+  const cssPath = path.resolve(process.cwd(), 'src/index.css');
+  const cssContent = fs.readFileSync(cssPath, 'utf8');
 
-  const appLayoutFiles = import.meta.glob<string>('../src/components/layout/AppLayout.tsx', {
-    query: '?raw',
-    import: 'default',
-    eager: true,
-  });
+  const appLayoutPath = path.resolve(process.cwd(), 'src/components/layout/AppLayout.tsx');
+  const appLayoutContent = fs.readFileSync(appLayoutPath, 'utf8');
 
   it('defines --page-pad as 12px across all screen sizes in src/index.css', () => {
-    const cssContent = Object.values(cssFiles)[0] || '';
-
     // Check :root definition
     expect(cssContent).toMatch(/--page-pad:\s*12px;/);
 
@@ -32,21 +30,18 @@ describe('Shared CMS Layout - 12px Outer Padding Specification', () => {
   });
 
   it('sets --page-max to 100% in src/index.css so content fills available width', () => {
-    const cssContent = Object.values(cssFiles)[0] || '';
     expect(cssContent).toMatch(/--page-max:\s*100%;/);
   });
 
   it('configures AppLayout main container with exact 12px outer padding without tab offset', () => {
-    const content = Object.values(appLayoutFiles)[0] || '';
-
     // Ensure main container uses var(--page-pad) for all sides
-    expect(content).toContain("paddingLeft: 'var(--page-pad)'");
-    expect(content).toContain("paddingRight: 'var(--page-pad)'");
-    expect(content).toContain("paddingTop: 'var(--page-pad)'");
-    expect(content).toContain("paddingBottom: 'var(--page-pad)'");
+    expect(appLayoutContent).toContain("paddingLeft: 'var(--page-pad)'");
+    expect(appLayoutContent).toContain("paddingRight: 'var(--page-pad)'");
+    expect(appLayoutContent).toContain("paddingTop: 'var(--page-pad)'");
+    expect(appLayoutContent).toContain("paddingBottom: 'var(--page-pad)'");
 
     // Ensure no subtraction/addition of --tab-top-space
-    expect(content).not.toContain("paddingTop: 'calc(var(--page-pad) - var(--tab-top-space");
+    expect(appLayoutContent).not.toContain("paddingTop: 'calc(var(--page-pad) - var(--tab-top-space");
   });
 
   it('renders PageContainer with full width and standard class contract', () => {

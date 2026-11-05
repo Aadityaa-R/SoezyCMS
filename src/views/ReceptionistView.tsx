@@ -1597,7 +1597,7 @@ export const ReceptionistView: React.FC<ReceptionistViewProps> = ({ activeTab = 
             </div>
           </div>
 
-          <Card className="w-fit max-w-full min-w-[40rem]">
+          <Card className="w-full">
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle>Today's Intake Log ({intakeLogs.length})</CardTitle>
             </CardHeader>

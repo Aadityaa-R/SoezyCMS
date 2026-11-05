@@ -5,6 +5,7 @@ import {
   AlertTriangle,
   Plus
 } from 'lucide-react';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, StatusDot } from '@/components/ui/Table';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
 import { FacilityCatalogueRecord, ClinicFacilityEntitlementRecord } from '../../types/superAdmin';
 
@@ -330,125 +331,121 @@ export const FacilityManagement: React.FC = () => {
           )}
 
           {/* Entitlement Matrix Table */}
-          <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-stone-200 bg-stone-50 text-stone-600 font-mono text-[11px]">
-                    {filterClinicId === 'all' && <th className="py-2.5 px-3 font-medium">Clinic</th>}
-                    <th className="py-2.5 px-3 font-medium">Facility</th>
-                    <th className="py-2.5 px-3 font-medium text-center">1. Opted For</th>
-                    <th className="py-2.5 px-3 font-medium text-center">2. Contractually Entitled</th>
-                    <th className="py-2.5 px-3 font-medium text-center">3. CMS Module Enabled</th>
-                    <th className="py-2.5 px-3 font-medium text-center">4. Op. Configured</th>
-                    <th className="py-2.5 px-3 font-medium">Agreement Ref</th>
-                    <th className="py-2.5 px-3 font-medium text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100">
-                  {displayedEntitlements.length === 0 ? (
-                    <tr>
-                      <td colSpan={filterClinicId === 'all' ? 8 : 7} className="py-8 text-center text-stone-500 text-xs">
-                        No facility entitlements matching current criteria.
-                      </td>
-                    </tr>
-                  ) : (
-                    displayedEntitlements.map(e => {
-                      const clinic = clinics.find(c => c.id === e.clinicId);
-                      const isUnentitledEnabled = e.moduleEnabledStatus && !e.entitlementStatus;
+          <Table pinLeading={true}>
+            <TableHeader>
+              <TableRow>
+                {filterClinicId === 'all' && <TableHead pinned>Clinic</TableHead>}
+                <TableHead pinned={filterClinicId !== 'all'}>Facility</TableHead>
+                <TableHead className="text-center">1. Opted For</TableHead>
+                <TableHead className="text-center">2. Contractually Entitled</TableHead>
+                <TableHead className="text-center">3. CMS Module Enabled</TableHead>
+                <TableHead className="text-center">4. Op. Configured</TableHead>
+                <TableHead>Agreement Ref</TableHead>
+                <TableHead isActions className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {displayedEntitlements.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={filterClinicId === 'all' ? 8 : 7} className="py-8 text-center text-slate-500 text-xs">
+                    No facility entitlements matching current criteria.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                displayedEntitlements.map(e => {
+                  const clinic = clinics.find(c => c.id === e.clinicId);
+                  const isUnentitledEnabled = e.moduleEnabledStatus && !e.entitlementStatus;
 
-                      return (
-                        <tr key={e.id} className="hover:bg-stone-50/70 transition-colors">
-                          {filterClinicId === 'all' && (
-                            <td className="py-2.5 px-3">
-                              <div className="font-medium text-stone-900">{clinic?.name}</div>
-                              <div className="font-mono text-[10px] text-stone-500">{clinic?.code}</div>
-                            </td>
+                  return (
+                    <TableRow key={e.id}>
+                      {filterClinicId === 'all' && (
+                        <TableCell pinned isPrimary>
+                          <div className="font-medium text-slate-900 dark:text-slate-100">{clinic?.name}</div>
+                          <div className="font-mono text-[10px] text-slate-500">{clinic?.code}</div>
+                        </TableCell>
+                      )}
+
+                      <TableCell pinned={filterClinicId !== 'all'} isPrimary={filterClinicId !== 'all'}>
+                        <div className="font-medium text-slate-900 dark:text-slate-100">{e.facilityName}</div>
+                        <div className="font-mono text-[10px] text-slate-500">{e.facilityCode}</div>
+                      </TableCell>
+
+                      {/* 1. Opted */}
+                      <TableCell className="text-center">
+                        <button
+                          onClick={() => handleInitiateToggle(e, 'optedStatus')}
+                          title="Click to toggle Opted status"
+                          className="text-xs text-slate-700 dark:text-slate-300 hover:underline cursor-pointer"
+                        >
+                          {e.optedStatus ? 'Yes' : 'No'}
+                        </button>
+                      </TableCell>
+
+                      {/* 2. Contractually Entitled */}
+                      <TableCell className="text-center">
+                        <button
+                          onClick={() => handleInitiateToggle(e, 'entitlementStatus')}
+                          title="Click to toggle Entitlement status"
+                          className="text-xs text-slate-700 dark:text-slate-300 hover:underline cursor-pointer"
+                        >
+                          {e.entitlementStatus ? 'Yes' : 'No'}
+                        </button>
+                      </TableCell>
+
+                      {/* 3. Module Enabled */}
+                      <TableCell className="text-center">
+                        <div className="inline-flex items-center gap-1.5 justify-center">
+                          <button
+                            onClick={() => handleInitiateToggle(e, 'moduleEnabledStatus')}
+                            title="Click to toggle CMS module access"
+                            className="text-xs text-slate-700 dark:text-slate-300 hover:underline cursor-pointer"
+                          >
+                            {e.moduleEnabledStatus ? 'Yes' : 'No'}
+                          </button>
+                          {isUnentitledEnabled && (
+                            <span title="Warning: Enabled without contractual entitlement!" className="text-slate-500 text-[10px] italic">
+                              (unentitled)
+                            </span>
                           )}
+                        </div>
+                      </TableCell>
 
-                          <td className="py-2.5 px-3">
-                            <div className="font-medium text-stone-900">{e.facilityName}</div>
-                            <div className="font-mono text-[10px] text-stone-500">{e.facilityCode}</div>
-                          </td>
+                      {/* 4. Operationally Configured */}
+                      <TableCell className="text-center text-xs text-slate-700 dark:text-slate-300">
+                        {e.operationallyConfigured ? 'Yes' : 'No'}
+                      </TableCell>
 
-                          {/* 1. Opted */}
-                          <td className="py-2.5 px-3 text-center">
+                      {/* Agreement Ref */}
+                      <TableCell className="font-mono text-[11px] text-slate-600 dark:text-slate-400">
+                        {e.agreementReference || '—'}
+                      </TableCell>
+
+                      {/* Actions */}
+                      <TableCell isActions className="text-right">
+                        <div className="inline-flex items-center gap-2">
+                          {e.moduleEnabledStatus ? (
                             <button
-                              onClick={() => handleInitiateToggle(e, 'optedStatus')}
-                              title="Click to toggle Opted status"
-                              className="text-xs text-slate-700 dark:text-slate-300 hover:underline"
+                              onClick={() => handleInitiateToggle(e, 'moduleEnabledStatus')}
+                              className="text-[11px] font-mono text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 underline cursor-pointer"
                             >
-                              {e.optedStatus ? 'Yes' : 'No'}
+                              Disable Module
                             </button>
-                          </td>
-
-                          {/* 2. Contractually Entitled */}
-                          <td className="py-2.5 px-3 text-center">
+                          ) : (
                             <button
-                              onClick={() => handleInitiateToggle(e, 'entitlementStatus')}
-                              title="Click to toggle Entitlement status"
-                              className="text-xs text-slate-700 dark:text-slate-300 hover:underline"
+                              onClick={() => handleInitiateToggle(e, 'moduleEnabledStatus')}
+                              className="text-[11px] font-mono text-slate-900 dark:text-slate-100 hover:underline cursor-pointer"
                             >
-                              {e.entitlementStatus ? 'Yes' : 'No'}
+                              Enable Module
                             </button>
-                          </td>
-
-                          {/* 3. Module Enabled */}
-                          <td className="py-2.5 px-3 text-center">
-                            <div className="inline-flex items-center gap-1.5 justify-center">
-                              <button
-                                onClick={() => handleInitiateToggle(e, 'moduleEnabledStatus')}
-                                title="Click to toggle CMS module access"
-                                className="text-xs text-slate-700 dark:text-slate-300 hover:underline"
-                              >
-                                {e.moduleEnabledStatus ? 'Yes' : 'No'}
-                              </button>
-                              {isUnentitledEnabled && (
-                                <span title="Warning: Enabled without contractual entitlement!" className="text-slate-500 text-[10px] italic">
-                                  (unentitled)
-                                </span>
-                              )}
-                            </div>
-                          </td>
-
-                          {/* 4. Operationally Configured */}
-                          <td className="py-2.5 px-3 text-center text-xs text-slate-700 dark:text-slate-300">
-                            {e.operationallyConfigured ? 'Yes' : 'No'}
-                          </td>
-
-                          {/* Agreement Ref */}
-                          <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">
-                            {e.agreementReference || 'â€”'}
-                          </td>
-
-                          {/* Actions */}
-                          <td className="py-2.5 px-3 text-right">
-                            <div className="inline-flex items-center gap-2">
-                              {e.moduleEnabledStatus ? (
-                                <button
-                                  onClick={() => handleInitiateToggle(e, 'moduleEnabledStatus')}
-                                  className="text-[11px] font-mono text-stone-600 hover:text-stone-900 underline"
-                                >
-                                  Disable Module
-                                </button>
-                              ) : (
-                                <button
-                                  onClick={() => handleInitiateToggle(e, 'moduleEnabledStatus')}
-                                  className="text-[11px] font-mono text-stone-900 hover:underline"
-                                >
-                                  Enable Module
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
         </div>
       ) : (
         /* Catalogue Management Tab */
@@ -466,48 +463,44 @@ export const FacilityManagement: React.FC = () => {
             </button>
           </div>
 
-          <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-stone-200 bg-stone-50 text-stone-600 font-mono text-[11px]">
-                    <th className="py-2.5 px-3 font-medium">Code</th>
-                    <th className="py-2.5 px-3 font-medium">Short Code</th>
-                    <th className="py-2.5 px-3 font-medium">Display Name</th>
-                    <th className="py-2.5 px-3 font-medium">Related Module</th>
-                    <th className="py-2.5 px-3 font-medium">Description</th>
-                    <th className="py-2.5 px-3 font-medium">Status</th>
-                    <th className="py-2.5 px-3 font-medium text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100">
-                  {facilities.map(item => (
-                    <tr key={item.id} className="hover:bg-stone-50/70 transition-colors">
-                      <td className="py-2.5 px-3 font-mono font-semibold text-stone-900">{item.code}</td>
-                      <td className="py-2.5 px-3 font-mono text-stone-600">{item.shortCode}</td>
-                      <td className="py-2.5 px-3 font-medium text-stone-900">{item.name}</td>
-                      <td className="py-2.5 px-3 font-mono text-stone-500 text-[11px]">{item.relatedModuleKey}</td>
-                      <td className="py-2.5 px-3 text-stone-600 max-w-xs truncate" title={item.description}>
-                        {item.description}
-                      </td>
-                      <td className="py-2.5 px-3 text-xs font-mono uppercase text-slate-700 dark:text-slate-300">
-                        {item.status}
-                      </td>
-                      <td className="py-2.5 px-3 text-right">
-                        <button
-                          onClick={() => handleOpenEditCatalogue(item)}
-                          className="text-xs text-slate-600 hover:text-slate-900 hover:underline"
-                          title="Edit facility catalogue definition"
-                        >
-                          Edit
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <Table pinLeading={true}>
+            <TableHeader>
+              <TableRow>
+                <TableHead pinned>Code</TableHead>
+                <TableHead>Short Code</TableHead>
+                <TableHead>Display Name</TableHead>
+                <TableHead>Related Module</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead isActions className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {facilities.map(item => (
+                <TableRow key={item.id}>
+                  <TableCell pinned isPrimary className="font-mono font-semibold text-slate-900 dark:text-slate-100">{item.code}</TableCell>
+                  <TableCell className="font-mono text-slate-600 dark:text-slate-400">{item.shortCode}</TableCell>
+                  <TableCell className="font-medium text-slate-900 dark:text-slate-100">{item.name}</TableCell>
+                  <TableCell className="font-mono text-slate-500 text-[11px]">{item.relatedModuleKey}</TableCell>
+                  <TableCell className="text-slate-600 dark:text-slate-400 max-w-xs truncate" title={item.description}>
+                    {item.description}
+                  </TableCell>
+                  <TableCell>
+                    <StatusDot status={item.status} />
+                  </TableCell>
+                  <TableCell isActions className="text-right">
+                    <button
+                      onClick={() => handleOpenEditCatalogue(item)}
+                      className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
+                      title="Edit facility catalogue definition"
+                    >
+                      Edit
+                    </button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
 

@@ -3,6 +3,7 @@ import {
   Download,
   Printer,
 } from 'lucide-react';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, StatusDot } from '@/components/ui/Table';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
 
 type ReportType =
@@ -196,261 +197,244 @@ export const SuperAdminReports: React.FC = () => {
             </button>
           </div>
 
-          <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-stone-200 bg-stone-50 text-stone-600 font-mono text-[11px]">
-                    <th className="py-2 px-3">Code</th>
-                    <th className="py-2 px-3">Branch Name</th>
-                    <th className="py-2 px-3">Type</th>
-                    <th className="py-2 px-3">Status</th>
-                    <th className="py-2 px-3">Onboarding</th>
-                    <th className="py-2 px-3">Location</th>
-                    <th className="py-2 px-3">Contact Email</th>
-                    <th className="py-2 px-3 font-mono">Registered</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100">
-                  {clinics.map(c => (
-                    <tr key={c.id} className="hover:bg-stone-50">
-                      <td className="py-2.5 px-3 font-mono font-medium text-stone-900">{c.code}</td>
-                      <td className="py-2.5 px-3 font-medium text-stone-900">{c.name}</td>
-                      <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{c.branchType.toUpperCase()}</td>
-                      <td className="py-2.5 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
-                        {c.status}
-                      </td>
-                      <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{c.onboardingStatus.replace(/_/g, ' ')}</td>
-                      <td className="py-2.5 px-3 text-stone-600">{c.city ? `${c.city}, ${c.state}` : 'â€”'}</td>
-                      <td className="py-2.5 px-3 text-stone-600 font-mono text-[11px]">{c.email || 'â€”'}</td>
-                      <td className="py-2.5 px-3 font-mono text-[11px] text-stone-500">{c.createdAt.slice(0, 10)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <Table pinLeading={true}>
+            <TableHeader>
+              <TableRow>
+                <TableHead pinned>Code</TableHead>
+                <TableHead>Branch Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Onboarding</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Contact Email</TableHead>
+                <TableHead>Registered</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {clinics.map(c => (
+                <TableRow key={c.id}>
+                  <TableCell pinned isPrimary className="font-mono font-medium text-slate-900 dark:text-slate-100">{c.code}</TableCell>
+                  <TableCell className="font-medium text-slate-900 dark:text-slate-100">{c.name}</TableCell>
+                  <TableCell className="font-mono text-[11px] text-slate-600 dark:text-slate-400">{c.branchType.toUpperCase()}</TableCell>
+                  <TableCell>
+                    <StatusDot status={c.status} />
+                  </TableCell>
+                  <TableCell className="font-mono text-[11px] text-slate-600 dark:text-slate-400">{c.onboardingStatus.replace(/_/g, ' ')}</TableCell>
+                  <TableCell className="text-slate-600 dark:text-slate-400">{c.city ? `${c.city}, ${c.state}` : '—'}</TableCell>
+                  <TableCell className="text-slate-600 dark:text-slate-400 font-mono text-[11px]">{c.email || '—'}</TableCell>
+                  <TableCell className="font-mono text-[11px] text-slate-500">{c.createdAt.slice(0, 10)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
 
       {/* REPORT CONTENT 2: Admin Assignments */}
       {activeReport === 'admin_assignment' && (
         <div className="space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white border border-stone-200 p-3">
-            <div className="text-xs text-stone-600">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-[8px]">
+            <div className="text-xs text-slate-600 dark:text-slate-400">
               Primary administrative personnel appointed to oversee local clinic branches.
             </div>
             <button
               onClick={handleExportAdminAssignment}
-              className="px-3 py-1.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs font-medium bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 rounded cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               Export CSV
             </button>
           </div>
 
-          <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-stone-200 bg-stone-50 text-stone-600 font-mono text-[11px]">
-                    <th className="py-2 px-3">Clinic Branch</th>
-                    <th className="py-2 px-3">Admin Name</th>
-                    <th className="py-2 px-3">Designation</th>
-                    <th className="py-2 px-3">Email Address</th>
-                    <th className="py-2 px-3">Phone</th>
-                    <th className="py-2 px-3">Account Status</th>
-                    <th className="py-2 px-3 font-mono">Effective From</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100">
-                  {admins.map(a => {
-                    const clinic = clinics.find(c => c.id === a.clinicId);
-                    return (
-                      <tr key={a.id} className="hover:bg-stone-50">
-                        <td className="py-2.5 px-3 font-medium text-stone-900">
-                          {clinic?.name || 'Unassigned'} <span className="font-mono text-stone-400">[{clinic?.code}]</span>
-                        </td>
-                        <td className="py-2.5 px-3 font-medium text-stone-900">{a.adminName}</td>
-                        <td className="py-2.5 px-3 text-stone-600">{a.designation}</td>
-                        <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{a.adminEmail}</td>
-                        <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{a.adminPhone || 'â€”'}</td>
-                        <td className="py-2.5 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
-                          {a.status}
-                        </td>
-                        <td className="py-2.5 px-3 font-mono text-[11px] text-stone-500">{a.effectiveFrom}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <Table pinLeading={true}>
+            <TableHeader>
+              <TableRow>
+                <TableHead pinned>Clinic Branch</TableHead>
+                <TableHead>Admin Name</TableHead>
+                <TableHead>Designation</TableHead>
+                <TableHead>Email Address</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Account Status</TableHead>
+                <TableHead>Effective From</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {admins.map(a => {
+                const clinic = clinics.find(c => c.id === a.clinicId);
+                return (
+                  <TableRow key={a.id}>
+                    <TableCell pinned isPrimary className="font-medium text-slate-900 dark:text-slate-100">
+                      {clinic?.name || 'Unassigned'} <span className="font-mono text-slate-400">[{clinic?.code}]</span>
+                    </TableCell>
+                    <TableCell className="font-medium text-slate-900 dark:text-slate-100">{a.adminName}</TableCell>
+                    <TableCell className="text-slate-600 dark:text-slate-400">{a.designation}</TableCell>
+                    <TableCell className="font-mono text-[11px] text-slate-600 dark:text-slate-400">{a.adminEmail}</TableCell>
+                    <TableCell className="font-mono text-[11px] text-slate-600 dark:text-slate-400">{a.adminPhone || '—'}</TableCell>
+                    <TableCell>
+                      <StatusDot status={a.status} />
+                    </TableCell>
+                    <TableCell className="font-mono text-[11px] text-slate-500">{a.effectiveFrom}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         </div>
       )}
 
       {/* REPORT CONTENT 3: Agreement Expiry & Renewals */}
       {activeReport === 'agreement_expiry' && (
         <div className="space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white border border-stone-200 p-3">
-            <div className="text-xs text-stone-600">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-[8px]">
+            <div className="text-xs text-slate-600 dark:text-slate-400">
               Contractual validity audit, pending renewals, and expiration notice schedules.
             </div>
             <button
               onClick={handleExportAgreements}
-              className="px-3 py-1.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs font-medium bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 rounded cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               Export CSV
             </button>
           </div>
 
-          <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-stone-200 bg-stone-50 text-stone-600 font-mono text-[11px]">
-                    <th className="py-2 px-3">Agreement Reference</th>
-                    <th className="py-2 px-3">Clinic Branch</th>
-                    <th className="py-2 px-3">Type</th>
-                    <th className="py-2 px-3 font-mono">Valid From</th>
-                    <th className="py-2 px-3 font-mono">Valid To</th>
-                    <th className="py-2 px-3">Status</th>
-                    <th className="py-2 px-3">Covered Wings</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100">
-                  {agreements.map(a => (
-                    <tr key={a.id} className="hover:bg-stone-50">
-                      <td className="py-2.5 px-3 font-mono font-medium text-stone-900">{a.agreementReference}</td>
-                      <td className="py-2.5 px-3 font-medium text-stone-900">{a.clinicName}</td>
-                      <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{a.agreementType.replace(/_/g, ' ').toUpperCase()}</td>
-                      <td className="py-2.5 px-3 font-mono text-[11px] text-stone-600">{a.startDate}</td>
-                      <td className="py-2.5 px-3 font-mono text-[11px] text-stone-900 font-medium">{a.endDate}</td>
-                      <td className="py-2.5 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
-                        {a.status.replace(/_/g, ' ')}
-                      </td>
-                      <td className="py-2.5 px-3 text-stone-600 text-[11px]">
-                        {a.coveredFacilities.slice(0, 4).join(', ')}
-                        {a.coveredFacilities.length > 4 ? ` +${a.coveredFacilities.length - 4}` : ''}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <Table pinLeading={true}>
+            <TableHeader>
+              <TableRow>
+                <TableHead pinned>Agreement Reference</TableHead>
+                <TableHead>Clinic Branch</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Valid From</TableHead>
+                <TableHead>Valid To</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Covered Wings</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {agreements.map(a => (
+                <TableRow key={a.id}>
+                  <TableCell pinned isPrimary className="font-mono font-medium text-slate-900 dark:text-slate-100">{a.agreementReference}</TableCell>
+                  <TableCell className="font-medium text-slate-900 dark:text-slate-100">{a.clinicName}</TableCell>
+                  <TableCell className="font-mono text-[11px] text-slate-600 dark:text-slate-400">{a.agreementType.replace(/_/g, ' ').toUpperCase()}</TableCell>
+                  <TableCell className="font-mono text-[11px] text-slate-600 dark:text-slate-400">{a.startDate}</TableCell>
+                  <TableCell className="font-mono text-[11px] text-slate-900 dark:text-slate-100 font-medium">{a.endDate}</TableCell>
+                  <TableCell>
+                    <StatusDot status={a.status} />
+                  </TableCell>
+                  <TableCell className="text-slate-600 dark:text-slate-400 text-[11px]">
+                    {a.coveredFacilities.slice(0, 4).join(', ')}
+                    {a.coveredFacilities.length > 4 ? ` +${a.coveredFacilities.length - 4}` : ''}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
 
       {/* REPORT CONTENT 4: Facility Adoption Matrix */}
       {activeReport === 'facility_adoption' && (
         <div className="space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white border border-stone-200 p-3">
-            <div className="text-xs text-stone-600">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-[8px]">
+            <div className="text-xs text-slate-600 dark:text-slate-400">
               Cross-network adoption summary across all platform clinical and diagnostic wings.
             </div>
             <button
               onClick={handleExportFacilityAdoption}
-              className="px-3 py-1.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs font-medium bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 rounded cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               Export CSV
             </button>
           </div>
 
-          <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-stone-200 bg-stone-50 text-stone-600 font-mono text-[11px]">
-                    <th className="py-2 px-3">Facility Code</th>
-                    <th className="py-2 px-3">Display Name</th>
-                    <th className="py-2 px-3 text-center">1. Opted For</th>
-                    <th className="py-2 px-3 text-center">2. Entitled</th>
-                    <th className="py-2 px-3 text-center">3. CMS Enabled</th>
-                    <th className="py-2 px-3 text-center">4. Op. Configured</th>
-                    <th className="py-2 px-3 font-mono text-right">Adoption Rate</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100">
-                  {facilities.map(f => {
-                    const opted = clinics.filter(c => (c.optedFacilities || []).includes(f.code)).length;
-                    const entitled = clinics.filter(c => (c.entitledFacilities || []).includes(f.code)).length;
-                    const enabled = clinics.filter(c => (c.enabledModules || []).includes(f.code)).length;
-                    const configured = enabled;
-                    const rate = clinics.length > 0 ? Math.round((enabled / clinics.length) * 100) : 0;
+          <Table pinLeading={true}>
+            <TableHeader>
+              <TableRow>
+                <TableHead pinned>Facility Code</TableHead>
+                <TableHead>Display Name</TableHead>
+                <TableHead className="text-center">1. Opted For</TableHead>
+                <TableHead className="text-center">2. Entitled</TableHead>
+                <TableHead className="text-center">3. CMS Enabled</TableHead>
+                <TableHead className="text-center">4. Op. Configured</TableHead>
+                <TableHead className="text-right">Adoption Rate</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {facilities.map(f => {
+                const opted = clinics.filter(c => (c.optedFacilities || []).includes(f.code)).length;
+                const entitled = clinics.filter(c => (c.entitledFacilities || []).includes(f.code)).length;
+                const enabled = clinics.filter(c => (c.enabledModules || []).includes(f.code)).length;
+                const configured = enabled;
+                const rate = clinics.length > 0 ? Math.round((enabled / clinics.length) * 100) : 0;
 
-                    return (
-                      <tr key={f.id} className="hover:bg-stone-50">
-                        <td className="py-2.5 px-3 font-mono font-semibold text-stone-900">{f.code}</td>
-                        <td className="py-2.5 px-3 font-medium text-stone-900">{f.name}</td>
-                        <td className="py-2.5 px-3 text-center font-mono text-stone-700">{opted}</td>
-                        <td className="py-2.5 px-3 text-center font-mono text-stone-700">{entitled}</td>
-                        <td className="py-2.5 px-3 text-center font-mono font-semibold text-stone-900">{enabled}</td>
-                        <td className="py-2.5 px-3 text-center font-mono text-stone-700">{configured}</td>
-                        <td className="py-2.5 px-3 text-right font-mono font-medium text-stone-900">{rate}%</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                return (
+                  <TableRow key={f.id}>
+                    <TableCell pinned isPrimary className="font-mono font-semibold text-slate-900 dark:text-slate-100">{f.code}</TableCell>
+                    <TableCell className="font-medium text-slate-900 dark:text-slate-100">{f.name}</TableCell>
+                    <TableCell className="text-center font-mono text-slate-700 dark:text-slate-300">{opted}</TableCell>
+                    <TableCell className="text-center font-mono text-slate-700 dark:text-slate-300">{entitled}</TableCell>
+                    <TableCell className="text-center font-mono font-semibold text-slate-900 dark:text-slate-100">{enabled}</TableCell>
+                    <TableCell className="text-center font-mono text-slate-700 dark:text-slate-300">{configured}</TableCell>
+                    <TableCell className="text-right font-mono font-medium text-slate-900 dark:text-slate-100">{rate}%</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         </div>
       )}
 
       {/* REPORT CONTENT 5: Onboarding Audit Trail */}
       {activeReport === 'onboarding_audit' && (
         <div className="space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white border border-stone-200 p-3">
-            <div className="text-xs text-stone-600">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-[8px]">
+            <div className="text-xs text-slate-600 dark:text-slate-400">
               Audit log of 10-point onboarding compliance and authorized executive overrides.
             </div>
             <button
               onClick={handleExportOnboardingAudit}
-              className="px-3 py-1.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs font-medium bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 rounded cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               Export CSV
             </button>
           </div>
 
-          <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-stone-200 bg-stone-50 text-stone-600 font-mono text-[11px]">
-                    <th className="py-2 px-3">Clinic Branch</th>
-                    <th className="py-2 px-3">Checklist Item</th>
-                    <th className="py-2 px-3">Mandatory</th>
-                    <th className="py-2 px-3">Compliance Status</th>
-                    <th className="py-2 px-3">Override Reason / Audit Reference</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100">
-                  {clinics.flatMap(clinic => {
-                    const items = onboarding.filter(i => i.clinicId === clinic.id);
-                    return items.map(item => (
-                      <tr key={item.id} className="hover:bg-stone-50">
-                        <td className="py-2 px-3 font-medium text-stone-900">
-                          {clinic.name} <span className="font-mono text-stone-400">[{clinic.code}]</span>
-                        </td>
-                        <td className="py-2 px-3 font-medium text-stone-900">{item.title}</td>
-                        <td className="py-2 px-3 font-mono text-stone-500">{item.isMandatory ? 'YES' : 'NO'}</td>
-                        <td className="py-2 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
-                          {item.completed ? 'Completed' : item.isOverridden ? 'Overridden' : 'Pending'}
-                        </td>
-                        <td className="py-2 px-3 font-mono text-[11px] text-stone-600">
-                          {item.overrideReason || (item.completedAt ? `Completed on ${item.completedAt}` : 'â€”')}
-                        </td>
-                      </tr>
-                    ));
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <Table pinLeading={true}>
+            <TableHeader>
+              <TableRow>
+                <TableHead pinned>Clinic Branch</TableHead>
+                <TableHead>Checklist Item</TableHead>
+                <TableHead>Mandatory</TableHead>
+                <TableHead>Compliance Status</TableHead>
+                <TableHead>Override Reason / Audit Reference</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {clinics.flatMap(clinic => {
+                const items = onboarding.filter(i => i.clinicId === clinic.id);
+                return items.map(item => (
+                  <TableRow key={item.id}>
+                    <TableCell pinned isPrimary className="font-medium text-slate-900 dark:text-slate-100">
+                      {clinic.name} <span className="font-mono text-slate-400">[{clinic.code}]</span>
+                    </TableCell>
+                    <TableCell className="font-medium text-slate-900 dark:text-slate-100">{item.title}</TableCell>
+                    <TableCell className="font-mono text-slate-500">{item.isMandatory ? 'YES' : 'NO'}</TableCell>
+                    <TableCell>
+                      <StatusDot
+                        status={item.completed ? 'completed' : item.isOverridden ? 'active' : 'pending'}
+                        label={item.completed ? 'Completed' : item.isOverridden ? 'Overridden' : 'Pending'}
+                      />
+                    </TableCell>
+                    <TableCell className="font-mono text-[11px] text-slate-600 dark:text-slate-400">
+                      {item.overrideReason || (item.completedAt ? `Completed on ${item.completedAt}` : '—')}
+                    </TableCell>
+                  </TableRow>
+                ));
+              })}
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>

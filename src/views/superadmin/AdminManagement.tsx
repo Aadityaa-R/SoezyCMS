@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, StatusDot } from '@/components/ui/Table';
 import {
   Plus,
   Search,
@@ -171,61 +172,62 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
     setStatusReason('');
   };
 
+  const adminToolbar = (
+    <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
+      <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:thin]">
+        {[
+          { id: 'all', label: `All Admins (${admins.length})` },
+          { id: 'active', label: `Active (${admins.filter((a) => a.status === 'active').length})` },
+          { id: 'unassigned', label: `Unassigned Clinics (${unassignedClinics.length})` },
+          { id: 'pending', label: `Pending Invitations (${admins.filter((a) => a.status === 'pending_invitation').length})` },
+          { id: 'inactive', label: `Reassigned / Inactive (${admins.filter((a) => a.status === 'reassigned' || a.status === 'deactivated').length})` },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setTabFilter(tab.id as any)}
+            className={`px-2.5 py-1 text-xs font-medium rounded transition-colors cursor-pointer whitespace-nowrap ${
+              tabFilter === tab.id
+                ? 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <div className="relative">
+          <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Search by admin name, email, clinic..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8 pr-3 h-8 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 w-52 sm:w-64 focus:outline-none focus:ring-1 focus:ring-teal-500"
+          />
+        </div>
+
+        <Button
+          size="sm"
+          variant="primary"
+          onClick={() => {
+            setFormError('');
+            setIsAppointModalOpen(true);
+          }}
+          className="h-8 text-xs rounded bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5 shrink-0 px-3 font-medium"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          <span>Appoint Admin</span>
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-4">
       <h1 className="sr-only">Clinic Administrator Governance</h1>
-
-      {/* Directory Tabs & Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-1 border-b sm:border-b-0 border-slate-200 dark:border-slate-800 pb-2 sm:pb-0 overflow-x-auto">
-          {[
-            { id: 'all', label: `All Admins (${admins.length})` },
-            { id: 'active', label: `Active (${admins.filter((a) => a.status === 'active').length})` },
-            { id: 'unassigned', label: `Unassigned Clinics (${unassignedClinics.length})` },
-            { id: 'pending', label: `Pending Invitations (${admins.filter((a) => a.status === 'pending_invitation').length})` },
-            { id: 'inactive', label: `Reassigned / Inactive (${admins.filter((a) => a.status === 'reassigned' || a.status === 'deactivated').length})` },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setTabFilter(tab.id as any)}
-              className={`px-3 py-1.5 text-xs font-medium rounded transition-colors cursor-pointer whitespace-nowrap ${
-                tabFilter === tab.id
-                  ? 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search by admin name, email, clinic..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 w-56 sm:w-64 focus:outline-none focus:ring-1 focus:ring-slate-500"
-            />
-          </div>
-
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={() => {
-              setFormError('');
-              setIsAppointModalOpen(true);
-            }}
-            className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5 shrink-0"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Appoint Admin</span>
-          </Button>
-        </div>
-      </div>
 
       {/* Unassigned Clinics Notice Card (If tabFilter is unassigned) */}
       {tabFilter === 'unassigned' ? (
@@ -268,119 +270,109 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
         </div>
       ) : (
         /* Main Admins Table */
-        <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                  <th className="py-2.5 px-3">Administrator Name</th>
-                  <th className="py-2.5 px-3">Official Email</th>
-                  <th className="py-2.5 px-3">Contact Phone</th>
-                  <th className="py-2.5 px-3">Assigned Clinic / Branch</th>
-                  <th className="py-2.5 px-3">Designation</th>
-                  <th className="py-2.5 px-3">Appointment Date</th>
-                  <th className="py-2.5 px-3">Assignment Status</th>
-                  <th className="py-2.5 px-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                {filteredAdmins.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="py-12 text-center text-slate-500 dark:text-slate-400">
-                      No administrators match the selected filter.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredAdmins.map((admin) => (
-                    <tr
-                      key={admin.id}
-                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+        <Table toolbar={adminToolbar} pinLeading={true}>
+          <TableHeader>
+            <TableRow>
+              <TableHead pinned>Administrator Name</TableHead>
+              <TableHead>Official Email</TableHead>
+              <TableHead>Contact Phone</TableHead>
+              <TableHead>Assigned Clinic / Branch</TableHead>
+              <TableHead>Designation</TableHead>
+              <TableHead>Appointment Date</TableHead>
+              <TableHead>Assignment Status</TableHead>
+              <TableHead isActions className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredAdmins.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="py-12 text-center text-slate-500 dark:text-slate-400">
+                  No administrators match the selected filter.
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredAdmins.map((admin) => (
+                <TableRow key={admin.id}>
+                  <TableCell pinned isPrimary>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">
+                      {admin.adminName}
+                    </span>
+                    <span className="text-[11px] font-mono text-slate-400 block">
+                      {admin.adminUserId}
+                    </span>
+                  </TableCell>
+
+                  <TableCell className="font-mono text-slate-700 dark:text-slate-300">
+                    {admin.adminEmail}
+                  </TableCell>
+
+                  <TableCell className="text-slate-600 dark:text-slate-400">
+                    {admin.adminPhone || 'N/A'}
+                  </TableCell>
+
+                  <TableCell>
+                    <div className="font-medium text-slate-900 dark:text-slate-100">
+                      {admin.clinicName}
+                    </div>
+                    <span className="text-[11px] font-mono text-slate-400">
+                      {admin.clinicCode}
+                    </span>
+                  </TableCell>
+
+                  <TableCell className="text-slate-700 dark:text-slate-300">
+                    {admin.designation}
+                  </TableCell>
+
+                  <TableCell className="font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                    {admin.effectiveFrom}
+                    {admin.effectiveTo && (
+                      <span className="text-[10px] text-slate-400 block">to {admin.effectiveTo}</span>
+                    )}
+                  </TableCell>
+
+                  <TableCell>
+                    <StatusDot status={admin.status} />
+                  </TableCell>
+
+                  <TableCell isActions className="text-right space-x-3 whitespace-nowrap">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedAdminDetail(admin)}
+                      className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
                     >
-                      <td className="py-3 px-3">
-                        <span className="font-semibold text-slate-900 dark:text-slate-100">
-                          {admin.adminName}
-                        </span>
-                        <span className="text-[11px] font-mono text-slate-400 block">
-                          {admin.adminUserId}
-                        </span>
-                      </td>
-
-                      <td className="py-3 px-3 font-mono text-slate-700 dark:text-slate-300">
-                        {admin.adminEmail}
-                      </td>
-
-                      <td className="py-3 px-3 text-slate-600 dark:text-slate-400">
-                        {admin.adminPhone || 'N/A'}
-                      </td>
-
-                      <td className="py-3 px-3">
-                        <div className="font-medium text-slate-900 dark:text-slate-100">
-                          {admin.clinicName}
-                        </div>
-                        <span className="text-[11px] font-mono text-slate-400">
-                          {admin.clinicCode}
-                        </span>
-                      </td>
-
-                      <td className="py-3 px-3 text-slate-700 dark:text-slate-300">
-                        {admin.designation}
-                      </td>
-
-                      <td className="py-3 px-3 font-mono text-slate-600 dark:text-slate-400">
-                        {admin.effectiveFrom}
-                        {admin.effectiveTo && (
-                          <span className="text-[10px] text-slate-400 block">to {admin.effectiveTo}</span>
-                        )}
-                      </td>
-
-                      <td className="py-3 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
-                        <span className="inline-flex items-center gap-1.5 text-slate-900 dark:text-slate-100 font-medium">
-                          <span className={`w-1.5 h-1.5 rounded-full ${admin.status === 'active' ? 'bg-emerald-500' : admin.status === 'pending_invitation' ? 'bg-amber-500' : 'bg-rose-500'} shrink-0`} />
-                          {admin.status.replace(/_/g, ' ')}
-                        </span>
-                      </td>
-
-                      <td className="py-3 px-3 text-right space-x-3 whitespace-nowrap">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedAdminDetail(admin)}
-                          className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
-                        >
-                          Profile
-                        </button>
-                        {admin.status === 'active' && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setReassigningClinicId(admin.clinicId);
-                              setReassignReason('');
-                              setFormError('');
-                            }}
-                            className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
-                          >
-                            Reassign
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setStatusModalAdmin(admin);
-                            setTargetAccountStatus(admin.status === 'active' ? 'deactivated' : 'active');
-                            setStatusReason('');
-                            setFormError('');
-                          }}
-                          className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
-                        >
-                          {admin.status === 'active' ? 'Deactivate' : 'Activate'}
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                      Profile
+                    </button>
+                    {admin.status === 'active' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setReassigningClinicId(admin.clinicId);
+                          setReassignReason('');
+                          setFormError('');
+                        }}
+                        className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
+                      >
+                        Reassign
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStatusModalAdmin(admin);
+                        setTargetAccountStatus(admin.status === 'active' ? 'deactivated' : 'active');
+                        setStatusReason('');
+                        setFormError('');
+                      }}
+                      className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
+                    >
+                      {admin.status === 'active' ? 'Deactivate' : 'Activate'}
+                    </button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
       )}
 
       {/* APPOINT NEW ADMIN MODAL */}

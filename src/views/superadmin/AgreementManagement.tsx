@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, StatusDot } from '@/components/ui/Table';
 import {
   Plus,
   Search,
@@ -200,183 +201,174 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
     setTerminateReason('');
   };
 
+  const agreementToolbar = (
+    <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
+      <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:thin]">
+        {[
+          { id: 'all', label: `All Agreements (${agreements.length})` },
+          { id: 'active', label: `Active (${agreements.filter((a) => a.status === 'active').length})` },
+          { id: 'expiring', label: `Expiring Soon (${agreements.filter((a) => a.status === 'expiring_soon').length})` },
+          { id: 'pending', label: `Pending Signature (${agreements.filter((a) => a.status === 'pending_signature').length})` },
+          { id: 'expired', label: `Expired (${agreements.filter((a) => a.status === 'expired').length})` },
+          { id: 'renewed', label: `Renewed / Terminated (${agreements.filter((a) => a.status === 'renewed' || a.status === 'terminated').length})` },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setTabFilter(tab.id as any)}
+            className={`px-2.5 py-1 text-xs font-medium rounded transition-colors cursor-pointer whitespace-nowrap ${
+              tabFilter === tab.id
+                ? 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <div className="relative">
+          <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Search reference, clinic..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8 pr-3 h-8 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 w-52 sm:w-64 focus:outline-none focus:ring-1 focus:ring-teal-500"
+          />
+        </div>
+
+        <Button
+          size="sm"
+          variant="primary"
+          onClick={() => {
+            setFormError('');
+            setIsAddModalOpen(true);
+          }}
+          className="h-8 text-xs rounded bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5 shrink-0 px-3 font-medium"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          <span>Add Agreement</span>
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-4">
       <h1 className="sr-only">Licence Agreement Management</h1>
 
-      {/* Directory Tabs & Search Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-1 border-b sm:border-b-0 border-slate-200 dark:border-slate-800 pb-2 sm:pb-0 overflow-x-auto">
-          {[
-            { id: 'all', label: `All Agreements (${agreements.length})` },
-            { id: 'active', label: `Active (${agreements.filter((a) => a.status === 'active').length})` },
-            { id: 'expiring', label: `Expiring Soon (${agreements.filter((a) => a.status === 'expiring_soon').length})` },
-            { id: 'pending', label: `Pending Signature (${agreements.filter((a) => a.status === 'pending_signature').length})` },
-            { id: 'expired', label: `Expired (${agreements.filter((a) => a.status === 'expired').length})` },
-            { id: 'renewed', label: `Renewed / Terminated (${agreements.filter((a) => a.status === 'renewed' || a.status === 'terminated').length})` },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setTabFilter(tab.id as any)}
-              className={`px-3 py-1.5 text-xs font-medium rounded transition-colors cursor-pointer whitespace-nowrap ${
-                tabFilter === tab.id
-                  ? 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400 pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search reference, clinic..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 w-56 sm:w-64 focus:outline-none focus:ring-1 focus:ring-slate-500"
-            />
-          </div>
-
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={() => {
-              setFormError('');
-              setIsAddModalOpen(true);
-            }}
-            className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5 shrink-0"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add Agreement</span>
-          </Button>
-        </div>
-      </div>
-
       {/* Main Agreements Table */}
-      <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                <th className="py-2.5 px-3">Agreement Reference</th>
-                <th className="py-2.5 px-3">Associated Clinic</th>
-                <th className="py-2.5 px-3">Agreement Type</th>
-                <th className="py-2.5 px-3">Validity Window</th>
-                <th className="py-2.5 px-3">Facilities Covered</th>
-                <th className="py-2.5 px-3">Signed Document</th>
-                <th className="py-2.5 px-3">Agreement Status</th>
-                <th className="py-2.5 px-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-              {filteredAgreements.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-500 dark:text-slate-400">
-                    No agreements match the selected filter.
-                  </td>
-                </tr>
-              ) : (
-                filteredAgreements.map((agr) => (
-                  <tr
-                    key={agr.id}
-                    className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
+      <Table toolbar={agreementToolbar} pinLeading={true}>
+        <TableHeader>
+          <TableRow>
+            <TableHead pinned>Agreement Reference</TableHead>
+            <TableHead>Associated Clinic</TableHead>
+            <TableHead>Agreement Type</TableHead>
+            <TableHead>Validity Window</TableHead>
+            <TableHead>Facilities Covered</TableHead>
+            <TableHead>Signed Document</TableHead>
+            <TableHead>Agreement Status</TableHead>
+            <TableHead isActions className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredAgreements.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={8} className="py-12 text-center text-slate-500 dark:text-slate-400">
+                No agreements match the selected filter.
+              </TableCell>
+            </TableRow>
+          ) : (
+            filteredAgreements.map((agr) => (
+              <TableRow key={agr.id}>
+                <TableCell pinned isPrimary>
+                  <span className="font-mono font-bold text-slate-900 dark:text-slate-100">
+                    {agr.agreementReference}
+                  </span>
+                  {agr.previousAgreementId && (
+                    <span className="text-[10px] text-blue-600 dark:text-blue-400 block">
+                      (Renewed from {agr.previousAgreementId})
+                    </span>
+                  )}
+                </TableCell>
+
+                <TableCell className="font-medium text-slate-900 dark:text-slate-100">
+                  {agr.clinicName}
+                </TableCell>
+
+                <TableCell className="capitalize text-slate-700 dark:text-slate-300">
+                  {agr.agreementType.replace(/_/g, ' ')}
+                </TableCell>
+
+                <TableCell className="font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                  {agr.startDate} to {agr.endDate}
+                </TableCell>
+
+                <TableCell>
+                  <div className="flex flex-wrap gap-1.5 max-w-[200px]">
+                    {agr.coveredFacilities.slice(0, 3).map((f) => (
+                      <span key={f} className="text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                        {f}
+                      </span>
+                    ))}
+                    {agr.coveredFacilities.length > 3 && (
+                      <span className="text-[10px] text-slate-400">
+                        +{agr.coveredFacilities.length - 3} more
+                      </span>
+                    )}
+                  </div>
+                </TableCell>
+
+                <TableCell className="font-mono text-[11px] text-slate-600 dark:text-slate-400">
+                  {agr.secureDocumentName ? (
+                    <span className="truncate max-w-[120px] inline-block text-slate-800 dark:text-slate-200">{agr.secureDocumentName}</span>
+                  ) : (
+                    <span className="text-slate-400 italic">No doc</span>
+                  )}
+                </TableCell>
+
+                <TableCell>
+                  <StatusDot status={agr.status} />
+                </TableCell>
+
+                <TableCell isActions className="text-right space-x-3 whitespace-nowrap">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAgreementDetail(agr)}
+                    className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
                   >
-                    <td className="py-3 px-3">
-                      <span className="font-mono font-bold text-slate-900 dark:text-slate-100">
-                        {agr.agreementReference}
-                      </span>
-                      {agr.previousAgreementId && (
-                        <span className="text-[10px] text-blue-600 dark:text-blue-400 block">
-                          (Renewed from {agr.previousAgreementId})
-                        </span>
-                      )}
-                    </td>
-
-                    <td className="py-3 px-3 font-medium text-slate-900 dark:text-slate-100">
-                      {agr.clinicName}
-                    </td>
-
-                    <td className="py-3 px-3 capitalize text-slate-700 dark:text-slate-300">
-                      {agr.agreementType.replace(/_/g, ' ')}
-                    </td>
-
-                    <td className="py-3 px-3 font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap">
-                      {agr.startDate} to {agr.endDate}
-                    </td>
-
-                    <td className="py-3 px-3">
-                      <div className="flex flex-wrap gap-1.5 max-w-[200px]">
-                        {agr.coveredFacilities.slice(0, 3).map((f) => (
-                          <span key={f} className="text-[11px] font-mono text-slate-700 dark:text-slate-300">
-                            {f}
-                          </span>
-                        ))}
-                        {agr.coveredFacilities.length > 3 && (
-                          <span className="text-[10px] text-slate-400">
-                            +{agr.coveredFacilities.length - 3} more
-                          </span>
-                        )}
-                      </div>
-                    </td>
-
-                    <td className="py-3 px-3 font-mono text-[11px] text-slate-600 dark:text-slate-400">
-                      {agr.secureDocumentName ? (
-                        <span className="truncate max-w-[120px] inline-block text-slate-800 dark:text-slate-200">{agr.secureDocumentName}</span>
-                      ) : (
-                        <span className="text-slate-400 italic">No doc</span>
-                      )}
-                    </td>
-
-                    <td className="py-3 px-3 text-xs capitalize text-slate-700 dark:text-slate-300">
-                      <span className="inline-flex items-center gap-1.5 text-slate-900 dark:text-slate-100 font-medium">
-                        <span className={`w-1.5 h-1.5 rounded-full ${agr.status === 'active' ? 'bg-emerald-500' : agr.status === 'expiring_soon' || agr.status === 'pending_signature' ? 'bg-amber-500' : 'bg-rose-500'} shrink-0`} />
-                        {agr.status.replace(/_/g, ' ')}
-                      </span>
-                    </td>
-
-                    <td className="py-3 px-3 text-right space-x-3 whitespace-nowrap">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedAgreementDetail(agr)}
-                        className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
-                      >
-                        Details
-                      </button>
-                      {(agr.status === 'active' || agr.status === 'expiring_soon') && (
-                        <button
-                          type="button"
-                          onClick={() => openRenewModal(agr)}
-                          className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
-                        >
-                          Renew
-                        </button>
-                      )}
-                      {agr.status !== 'terminated' && agr.status !== 'renewed' && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setTerminateTarget(agr);
-                            setTerminateReason('');
-                            setFormError('');
-                          }}
-                          className="px-2 py-1 text-[11px] rounded border border-rose-200 dark:border-rose-800 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
-                        >
-                          Terminate
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                    Details
+                  </button>
+                  {(agr.status === 'active' || agr.status === 'expiring_soon') && (
+                    <button
+                      type="button"
+                      onClick={() => openRenewModal(agr)}
+                      className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
+                    >
+                      Renew
+                    </button>
+                  )}
+                  {agr.status !== 'terminated' && agr.status !== 'renewed' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setTerminateTarget(agr);
+                        setTerminateReason('');
+                        setFormError('');
+                      }}
+                      className="px-2 py-1 text-[11px] rounded border border-rose-200 dark:border-rose-800 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
+                    >
+                      Terminate
+                    </button>
+                  )}
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
 
       {/* ADD AGREEMENT MODAL */}
       {isAddModalOpen && (

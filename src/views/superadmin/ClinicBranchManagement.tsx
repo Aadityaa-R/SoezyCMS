@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import {
   Plus,
   Search,
@@ -1074,91 +1075,86 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
               No side branches are currently linked to this main branch.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    <th className="py-2.5 px-3">Side Branch Name</th>
-                    <th className="py-2.5 px-3">Branch Code</th>
-                    <th className="py-2.5 px-3">Branch Type</th>
-                    <th className="py-2.5 px-3">Classification</th>
-                    <th className="py-2.5 px-3">Location</th>
-                    <th className="py-2.5 px-3">Appointed Admin</th>
-                    <th className="py-2.5 px-3">Agreement</th>
-                    <th className="py-2.5 px-3">Onboarding</th>
-                    <th className="py-2.5 px-3">Activation</th>
-                    <th className="py-2.5 px-3 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                  {linkedSideBranches.map((side) => (
-                    <tr
-                      key={side.id}
-                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
-                    >
-                      <td className="py-3 px-3">
-                        <div className="font-semibold text-slate-900 dark:text-slate-100">
-                          {side.name}
+            <Table pinLeading={true}>
+              <TableHeader>
+                <TableRow>
+                  <TableHead pinned>Side Branch Name</TableHead>
+                  <TableHead>Branch Code</TableHead>
+                  <TableHead>Branch Type</TableHead>
+                  <TableHead>Classification</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Appointed Admin</TableHead>
+                  <TableHead>Agreement</TableHead>
+                  <TableHead>Onboarding</TableHead>
+                  <TableHead>Activation</TableHead>
+                  <TableHead isActions className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {linkedSideBranches.map((side) => (
+                  <TableRow key={side.id}>
+                    <TableCell pinned isPrimary>
+                      <div className="font-semibold text-slate-900 dark:text-slate-100">
+                        {side.name}
+                      </div>
+                      <div className="text-[11px] font-mono text-slate-500">
+                        {side.registrationNumber}
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-slate-700 dark:text-slate-300">
+                      {side.code}
+                    </TableCell>
+                    <TableCell className="capitalize text-slate-600 dark:text-slate-400">
+                      {side.branchType.replace(/_/g, ' ')}
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-semibold text-slate-900 dark:text-slate-100">
+                        {formatClassifications(side.facilityClassifications || side.optedFacilities)}
+                      </span>
+                      <span className="text-[11px] text-slate-500 block font-mono">
+                        {calculateModulesForClassifications(getClinicClassifications(side)).length} modules
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-slate-700 dark:text-slate-300">
+                      {side.city}, {side.state}
+                    </TableCell>
+                    <TableCell>
+                      {side.appointedAdminName ? (
+                        <div>
+                          <span className="font-medium text-slate-900 dark:text-slate-100">
+                            {side.appointedAdminName}
+                          </span>
+                          <span className="text-[11px] text-slate-400 block font-mono">
+                            {side.appointedAdminEmail}
+                          </span>
                         </div>
-                        <div className="text-[11px] font-mono text-slate-500">
-                          {side.registrationNumber}
-                        </div>
-                      </td>
-                      <td className="py-3 px-3 font-mono text-slate-700 dark:text-slate-300">
-                        {side.code}
-                      </td>
-                      <td className="py-3 px-3 capitalize text-slate-600 dark:text-slate-400">
-                        {side.branchType.replace(/_/g, ' ')}
-                      </td>
-                      <td className="py-3 px-3">
-                        <span className="font-semibold text-slate-900 dark:text-slate-100">
-                          {formatClassifications(side.facilityClassifications || side.optedFacilities)}
-                        </span>
-                        <span className="text-[11px] text-slate-500 block font-mono">
-                          {calculateModulesForClassifications(getClinicClassifications(side)).length} modules
-                        </span>
-                      </td>
-                      <td className="py-3 px-3 text-slate-700 dark:text-slate-300">
-                        {side.city}, {side.state}
-                      </td>
-                      <td className="py-3 px-3">
-                        {side.appointedAdminName ? (
-                          <div>
-                            <span className="font-medium text-slate-900 dark:text-slate-100">
-                              {side.appointedAdminName}
-                            </span>
-                            <span className="text-[11px] text-slate-400 block font-mono">
-                              {side.appointedAdminEmail}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-slate-400 italic">Unassigned</span>
-                        )}
-                      </td>
-                      <td className="py-3 px-3">
-                        {renderStatusBadge(side.agreementStatus || 'Active')}
-                      </td>
-                      <td className="py-3 px-3">
-                        {renderStatusBadge(side.onboardingStatus)}
-                      </td>
-                      <td className="py-3 px-3">
-                        {renderStatusBadge(side.status)}
-                      </td>
-                      <td className="py-3 px-3 text-right">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setViewingSideBranchId(side.id)}
-                          className="text-xs rounded border border-slate-300 dark:border-slate-700 cursor-pointer"
-                        >
-                          View Details
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                      ) : (
+                        <span className="text-slate-400 italic">Unassigned</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {renderStatusBadge(side.agreementStatus || 'Active')}
+                    </TableCell>
+                    <TableCell>
+                      {renderStatusBadge(side.onboardingStatus)}
+                    </TableCell>
+                    <TableCell>
+                      {renderStatusBadge(side.status)}
+                    </TableCell>
+                    <TableCell isActions className="text-right">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setViewingSideBranchId(side.id)}
+                        className="text-xs rounded border border-slate-300 dark:border-slate-700 cursor-pointer font-medium"
+                      >
+                        View Details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </div>
 

@@ -18,6 +18,7 @@ export interface ColumnDef<T = any> {
   align?: 'left' | 'right' | 'center';
   isPrimary?: boolean;
   isActions?: boolean;
+  pinned?: boolean;
   render?: (item: T, index: number) => React.ReactNode;
 }
 
@@ -124,9 +125,24 @@ export function calculateVisibleColumns<T = any>(
 interface TableContextValue {
   stackBelow: StackBreakpoint;
   isStacked?: boolean;
+  pinLeading?: boolean;
 }
 
-const TableContext = createContext<TableContextValue>({ stackBelow: 'md' });
+const TableContext = createContext<TableContextValue>({ stackBelow: 'md', pinLeading: false });
+
+export interface TableToolbarProps extends React.HTMLAttributes<HTMLDivElement> {
+  children?: React.ReactNode;
+}
+
+export const TableToolbar: React.FC<TableToolbarProps> = ({ className = '', children, ...props }) => (
+  <div
+    data-slot="smart-table-toolbar"
+    className={`px-3 py-2 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-wrap items-center justify-between gap-2.5 ${className}`.trim()}
+    {...props}
+  >
+    {children}
+  </div>
+);
 
 export interface TableProps<T = any> extends React.TableHTMLAttributes<HTMLTableElement> {
   stackBelow?: StackBreakpoint;
@@ -138,6 +154,9 @@ export interface TableProps<T = any> extends React.TableHTMLAttributes<HTMLTable
   emptyMessage?: React.ReactNode;
   emptyAction?: { label: string; onClick: () => void };
   shrinkToFit?: boolean;
+  toolbar?: React.ReactNode;
+  pinLeading?: boolean;
+  containerClassName?: string;
 }
 
 export const Table = <T = any,>({
@@ -151,6 +170,9 @@ export const Table = <T = any,>({
   emptyMessage,
   emptyAction,
   shrinkToFit,
+  toolbar,
+  pinLeading,
+  containerClassName = '',
   children,
   ...props
 }: TableProps<T>): React.ReactElement => {
@@ -192,102 +214,132 @@ export const Table = <T = any,>({
 
   if (columns && data) {
     return (
-      <div ref={containerRef} className={`${containerShrinkClass} overflow-x-auto rounded-xl`}>
-        <TableContext.Provider value={{ stackBelow: effectiveStackBelow, isStacked }}>
-          <table className={`w-full table-auto text-left text-xs ${className}`} {...props}>
-            <TableHeader>
-              <TableRow>
-                {visibleColumns.map((col) => (
-                  <TableHead
-                    key={col.key}
-                    hideBelow={col.hideBelow}
-                    kind={col.kind || 'short'}
-                    priority={col.priority}
-                    isActions={col.isActions}
-                    className={`${col.headerClassName || ''} ${
-                      col.align === 'right' ? 'text-right' : ''
-                    }`}
-                  >
-                    {col.header}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
+      <div
+        ref={containerRef}
+        data-slot="smart-table"
+        className={`${containerShrinkClass} border border-slate-200 dark:border-slate-800 rounded-[8px] bg-white dark:bg-slate-900 shadow-xs flex flex-col overflow-hidden ${containerClassName}`.trim()}
+      >
+        {toolbar && (
+          <div
+            data-slot="smart-table-toolbar"
+            className="px-3 py-2 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-wrap items-center justify-between gap-2.5 shrink-0"
+          >
+            {toolbar}
+          </div>
+        )}
+        <div className="overflow-x-auto w-full [scrollbar-width:thin] flex-1">
+          <TableContext.Provider value={{ stackBelow: effectiveStackBelow, isStacked, pinLeading: pinLeading ?? true }}>
+            <table className={`w-full border-collapse text-left text-xs ${className}`} {...props}>
+              <TableHeader>
                 <TableRow>
-                  <TableCell
-                    colSpan={visibleColumns.length}
-                    className="text-center py-8 text-slate-500 dark:text-slate-400"
-                  >
-                    Loading records...
-                  </TableCell>
+                  {visibleColumns.map((col, colIdx) => (
+                    <TableHead
+                      key={col.key}
+                      hideBelow={col.hideBelow}
+                      kind={col.kind || 'short'}
+                      priority={col.priority}
+                      isActions={col.isActions}
+                      pinned={col.pinned || (colIdx === 0 && (pinLeading ?? true))}
+                      className={`${col.headerClassName || ''} ${
+                        col.align === 'right' ? 'text-right' : ''
+                      }`}
+                    >
+                      {col.header}
+                    </TableHead>
+                  ))}
                 </TableRow>
-              ) : error ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={visibleColumns.length}
-                    className="text-center py-8 text-rose-600 dark:text-rose-400"
-                  >
-                    {error}
-                  </TableCell>
-                </TableRow>
-              ) : data.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={visibleColumns.length}
-                    className="text-center py-8 text-slate-500 dark:text-slate-400"
-                  >
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <span>{emptyMessage || 'No records found.'}</span>
-                      {emptyAction && (
-                        <Button variant="outline" size="sm" onClick={emptyAction.onClick}>
-                          {emptyAction.label}
-                        </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                data.map((item, rowIdx) => (
-                  <TableRow key={keyExtractor ? keyExtractor(item, rowIdx) : rowIdx}>
-                    {visibleColumns.map((col) => {
-                      const content = col.render ? col.render(item, rowIdx) : (item as any)[col.key];
-                      const colLabel = col.label || (typeof col.header === 'string' ? col.header : undefined);
-                      return (
-                        <TableCell
-                          key={col.key}
-                          hideBelow={col.hideBelow}
-                          kind={col.kind || 'short'}
-                          priority={col.priority}
-                          label={colLabel}
-                          isPrimary={col.isPrimary}
-                          isActions={col.isActions}
-                          className={`${col.className || ''} ${
-                            col.align === 'right' ? 'text-right' : ''
-                          }`}
-                        >
-                          {content}
-                        </TableCell>
-                      );
-                    })}
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={visibleColumns.length}
+                      className="text-center py-8 text-slate-500 dark:text-slate-400"
+                    >
+                      Loading records...
+                    </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </table>
-        </TableContext.Provider>
+                ) : error ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={visibleColumns.length}
+                      className="text-center py-8 text-rose-600 dark:text-rose-400"
+                    >
+                      {error}
+                    </TableCell>
+                  </TableRow>
+                ) : data.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={visibleColumns.length}
+                      className="text-center py-8 text-slate-500 dark:text-slate-400"
+                    >
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <span>{emptyMessage || 'No records found.'}</span>
+                        {emptyAction && (
+                          <Button variant="outline" size="sm" onClick={emptyAction.onClick}>
+                            {emptyAction.label}
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  data.map((item, rowIdx) => (
+                    <TableRow key={keyExtractor ? keyExtractor(item, rowIdx) : rowIdx}>
+                      {visibleColumns.map((col, colIdx) => {
+                        const content = col.render ? col.render(item, rowIdx) : (item as any)[col.key];
+                        const colLabel = col.label || (typeof col.header === 'string' ? col.header : undefined);
+                        return (
+                          <TableCell
+                            key={col.key}
+                            hideBelow={col.hideBelow}
+                            kind={col.kind || 'short'}
+                            priority={col.priority}
+                            label={colLabel}
+                            isPrimary={col.isPrimary}
+                            isActions={col.isActions}
+                            pinned={col.pinned || (colIdx === 0 && (pinLeading ?? true))}
+                            className={`${col.className || ''} ${
+                              col.align === 'right' ? 'text-right' : ''
+                            }`}
+                          >
+                            {content}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </table>
+          </TableContext.Provider>
+        </div>
       </div>
     );
   }
 
   return (
-    <div ref={containerRef} className={`${containerShrinkClass} overflow-x-auto rounded-xl`}>
-      <TableContext.Provider value={{ stackBelow, isStacked: containerWidth < 768 }}>
-        <table className={`w-full table-auto text-left text-xs ${className}`} {...props}>
-          {children}
-        </table>
-      </TableContext.Provider>
+    <div
+      ref={containerRef}
+      data-slot="smart-table"
+      className={`${containerShrinkClass} border border-slate-200 dark:border-slate-800 rounded-[8px] bg-white dark:bg-slate-900 shadow-xs flex flex-col overflow-hidden ${containerClassName}`.trim()}
+    >
+      {toolbar && (
+        <div
+          data-slot="smart-table-toolbar"
+          className="px-3 py-2 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-wrap items-center justify-between gap-2.5 shrink-0"
+        >
+          {toolbar}
+        </div>
+      )}
+      <div className="overflow-x-auto w-full [scrollbar-width:thin] flex-1">
+        <TableContext.Provider value={{ stackBelow, isStacked: containerWidth < 768, pinLeading: pinLeading ?? false }}>
+          <table className={`w-full border-collapse text-left text-xs ${className}`} {...props}>
+            {children}
+          </table>
+        </TableContext.Provider>
+      </div>
     </div>
   );
 };
@@ -309,7 +361,7 @@ export const TableHeader: React.FC<React.HTMLAttributes<HTMLTableSectionElement>
   const stackClass = stackBelow ? stackHeaderClasses[stackBelow] : '';
   return (
     <thead
-      className={`bg-slate-50/90 dark:bg-slate-800/90 border-b border-[#eef0f3] dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold text-fs-th whitespace-nowrap ${stackClass} ${className}`}
+      className={`bg-slate-100/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-semibold text-fs-th whitespace-nowrap ${stackClass} ${className}`.trim()}
       {...props}
     >
       {children}
@@ -393,6 +445,7 @@ export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElem
   priority?: number;
   width?: 'fit' | 'flex';
   isActions?: boolean;
+  pinned?: boolean;
 }
 
 export const TableHead: React.FC<TableHeadProps> = ({
@@ -402,6 +455,7 @@ export const TableHead: React.FC<TableHeadProps> = ({
   priority,
   width,
   isActions = false,
+  pinned = false,
   children,
   scope = 'col',
   ...props
@@ -409,13 +463,14 @@ export const TableHead: React.FC<TableHeadProps> = ({
   const { stackBelow } = useContext(TableContext);
   const hideClass = hideBelow ? hideBelowClasses[hideBelow] : '';
   const stickyClass = isActions && stackBelow ? stickyActionsHeadClasses[stackBelow] : isActions ? 'sticky right-0 bg-inherit z-10' : '';
+  const pinnedClass = pinned ? 'sm:sticky sm:left-0 sm:z-20 bg-slate-100 dark:bg-slate-800 sm:border-r sm:border-slate-200 dark:sm:border-slate-700 sm:shadow-[1px_0_0_0_#e2e8f0] dark:sm:shadow-[1px_0_0_0_#334155]' : '';
   const effectiveKind = kind || (width === 'flex' ? 'text' : 'short');
   const kindClass = isActions || effectiveKind === 'short' ? 'whitespace-nowrap' : 'min-w-[14rem] text-left';
 
   return (
     <th
       scope={scope}
-      className={`px-4 py-3 align-middle font-semibold text-slate-500 dark:text-slate-400 text-fs-th ${kindClass} ${hideClass} ${stickyClass} ${className}`}
+      className={`h-8 px-3 py-1.5 align-middle font-semibold text-slate-600 dark:text-slate-300 text-[11px] uppercase tracking-wider border-r border-slate-200/70 dark:border-slate-800/70 last:border-r-0 ${kindClass} ${hideClass} ${stickyClass} ${pinnedClass} ${className}`.trim()}
       {...props}
     >
       {children}
@@ -432,6 +487,7 @@ export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElem
   fullWidthOnStack?: boolean;
   isPrimary?: boolean;
   isActions?: boolean;
+  pinned?: boolean;
 }
 
 const hideLabelClasses: Record<StackBreakpoint, string> = {
@@ -441,9 +497,9 @@ const hideLabelClasses: Record<StackBreakpoint, string> = {
 };
 
 const stackCellClasses: Record<StackBreakpoint, string> = {
-  sm: 'block sm:table-cell py-1 sm:py-3 px-0 sm:px-4',
-  md: 'block md:table-cell py-1 md:py-3 px-0 md:px-4',
-  lg: 'block lg:table-cell py-1 lg:py-3 px-0 lg:px-4',
+  sm: 'block sm:table-cell py-1 sm:py-2 px-0 sm:px-3',
+  md: 'block md:table-cell py-1 md:py-2 px-0 md:px-3',
+  lg: 'block lg:table-cell py-1 lg:py-2 px-0 lg:px-3',
 };
 
 const fullWidthStackClasses: Record<StackBreakpoint, string> = {
@@ -462,6 +518,7 @@ export const TableCell: React.FC<TableCellProps> = ({
   fullWidthOnStack = false,
   isPrimary = false,
   isActions = false,
+  pinned = false,
   children,
   ...props
 }) => {
@@ -469,6 +526,7 @@ export const TableCell: React.FC<TableCellProps> = ({
   const hideClass = hideBelow ? hideBelowClasses[hideBelow] : '';
   const stackCellClass = stackBelow ? stackCellClasses[stackBelow] : '';
   const stickyClass = isActions && stackBelow ? stickyActionsCellClasses[stackBelow] : isActions ? 'sticky right-0 bg-inherit z-10' : '';
+  const pinnedClass = pinned ? 'sm:sticky sm:left-0 sm:z-10 bg-white dark:bg-slate-900 sm:border-r sm:border-slate-200 dark:sm:border-slate-700 sm:shadow-[1px_0_0_0_#e2e8f0] dark:sm:shadow-[1px_0_0_0_#334155]' : '';
 
   const effectiveKind = kind || (width === 'flex' ? 'text' : 'short');
   const kindClass = isActions
@@ -497,7 +555,7 @@ export const TableCell: React.FC<TableCellProps> = ({
     const desktopDisplay = stackBelow === 'sm' ? 'sm:block' : stackBelow === 'lg' ? 'lg:block' : 'md:block';
     return (
       <td
-        className={`px-0 sm:px-4 py-1 sm:py-3 align-middle leading-normal ${kindClass} ${hideClass} ${stackCellClass} ${className}`}
+        className={`px-0 sm:px-3 py-1 sm:py-2 align-middle leading-normal min-h-[40px] border-r border-slate-100 dark:border-slate-800/60 last:border-r-0 ${kindClass} ${hideClass} ${stackCellClass} ${pinnedClass} ${className}`.trim()}
         {...props}
       >
         <div className={`font-bold text-fs-body text-slate-900 dark:text-slate-100 ${desktopDisplay}`}>
@@ -514,7 +572,7 @@ export const TableCell: React.FC<TableCellProps> = ({
     const desktopDisplay = stackBelow === 'sm' ? 'sm:block' : stackBelow === 'lg' ? 'lg:block' : 'md:block';
     return (
       <td
-        className={`px-0 sm:px-4 py-2 sm:py-3 align-middle ${kindClass} ${hideClass} ${fullStackClass} ${stickyClass} ${className}`}
+        className={`px-0 sm:px-3 py-2 align-middle min-h-[40px] border-r border-slate-100 dark:border-slate-800/60 last:border-r-0 ${kindClass} ${hideClass} ${fullStackClass} ${stickyClass} ${className}`.trim()}
         {...props}
       >
         <div
@@ -533,7 +591,7 @@ export const TableCell: React.FC<TableCellProps> = ({
 
     return (
       <td
-        className={`px-0 sm:px-4 py-1 sm:py-3 align-middle leading-normal ${kindClass} ${hideClass} ${stackCellClass} ${className}`}
+        className={`px-0 sm:px-3 py-1 sm:py-2 align-middle leading-normal min-h-[40px] border-r border-slate-100 dark:border-slate-800/60 last:border-r-0 ${kindClass} ${hideClass} ${stackCellClass} ${pinnedClass} ${className}`.trim()}
         {...props}
       >
         <div className={`flex items-start sm:items-center gap-2 sm:gap-3 text-left ${desktopDisplay}`}>
@@ -552,7 +610,7 @@ export const TableCell: React.FC<TableCellProps> = ({
 
   return (
     <td
-      className={`px-0 sm:px-4 py-1 sm:py-3 align-middle text-fs-body leading-normal ${kindClass} ${hideClass} ${stackCellClass} ${className}`}
+      className={`px-0 sm:px-3 py-2 align-middle text-fs-body leading-normal min-h-[40px] border-r border-slate-100 dark:border-slate-800/60 last:border-r-0 ${kindClass} ${hideClass} ${stackCellClass} ${pinnedClass} ${className}`.trim()}
       {...props}
     >
       {wrappedContent}
@@ -632,3 +690,37 @@ export const TableErrorRow: React.FC<{
     </TableCell>
   </TableRow>
 );
+
+export interface StatusDotProps {
+  status: string;
+  className?: string;
+  label?: string;
+}
+
+export const StatusDot: React.FC<StatusDotProps> = ({ status, className = '', label }) => {
+  const s = (status || '').toLowerCase();
+  let dotColor = 'bg-slate-400';
+  if (s === 'active' || s === 'completed' || s === 'approved' || s === 'present' || s === 'paid' || s === 'signed') {
+    dotColor = 'bg-emerald-500';
+  } else if (s.includes('pending') || s.includes('progress') || s.includes('soon') || s === 'scheduled') {
+    dotColor = 'bg-amber-500';
+  } else if (
+    s.includes('suspend') ||
+    s.includes('inactive') ||
+    s.includes('expired') ||
+    s === 'cancelled' ||
+    s === 'absent' ||
+    s === 'unpaid' ||
+    s === 'terminated' ||
+    s === 'deactivated'
+  ) {
+    dotColor = 'bg-rose-500';
+  }
+
+  return (
+    <span className={`inline-flex items-center gap-1.5 text-xs font-medium text-slate-900 dark:text-slate-100 capitalize ${className}`.trim()}>
+      <span className={`w-1.5 h-1.5 rounded-full ${dotColor} shrink-0`} />
+      <span>{(label || status || '').replace(/_/g, ' ')}</span>
+    </span>
+  );
+};

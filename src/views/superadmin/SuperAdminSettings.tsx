@@ -4,6 +4,7 @@ import {
   Save,
   Check,
 } from 'lucide-react';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
 import { SuperAdminAuditAction, PlatformOrganizationSettings } from '../../types/superAdmin';
 
@@ -274,111 +275,108 @@ export const SuperAdminSettings: React.FC = () => {
             </div>
           </div>
 
-          {/* Audit Filters */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white border border-stone-200 p-3">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-stone-500">Action:</span>
-                <select
-                  value={actionFilter}
-                  onChange={(e) => setActionFilter(e.target.value as any)}
-                  className="px-2.5 py-1.5 text-xs border border-stone-200 bg-white text-stone-900 focus:outline-none focus:border-stone-500"
-                >
-                  <option value="all">All Action Types</option>
-                  <option value="clinic_created">Clinic Created</option>
-                  <option value="clinic_status_changed">Clinic Status Changed</option>
-                  <option value="admin_appointed">Admin Appointed</option>
-                  <option value="admin_reassigned">Admin Reassigned</option>
-                  <option value="agreement_created">Agreement Created</option>
-                  <option value="agreement_renewed">Agreement Renewed</option>
-                  <option value="facility_entitlement_changed">Facility Entitlement Changed</option>
-                  <option value="onboarding_override">Onboarding Override</option>
-                  <option value="branch_activated">Branch Activated</option>
-                  <option value="branch_suspended">Branch Suspended</option>
-                </select>
+          <Table
+            pinLeading={true}
+            toolbar={
+              <div className="flex flex-wrap items-center justify-between gap-3 w-full">
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-slate-500">Action:</span>
+                    <select
+                      value={actionFilter}
+                      onChange={(e) => setActionFilter(e.target.value as any)}
+                      className="h-8 px-2.5 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                    >
+                      <option value="all">All Action Types</option>
+                      <option value="clinic_created">Clinic Created</option>
+                      <option value="clinic_status_changed">Clinic Status Changed</option>
+                      <option value="admin_appointed">Admin Appointed</option>
+                      <option value="admin_reassigned">Admin Reassigned</option>
+                      <option value="agreement_created">Agreement Created</option>
+                      <option value="agreement_renewed">Agreement Renewed</option>
+                      <option value="facility_entitlement_changed">Facility Entitlement Changed</option>
+                      <option value="onboarding_override">Onboarding Override</option>
+                      <option value="branch_activated">Branch Activated</option>
+                      <option value="branch_suspended">Branch Suspended</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-slate-500">Branch:</span>
+                    <select
+                      value={clinicFilter}
+                      onChange={(e) => setClinicFilter(e.target.value)}
+                      className="h-8 px-2.5 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                    >
+                      <option value="all">All Branches</option>
+                      {clinics.map(c => (
+                        <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="relative min-w-[240px]">
+                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search audit details or actor..."
+                    value={auditSearch}
+                    onChange={(e) => setAuditSearch(e.target.value)}
+                    className="w-full pl-8 pr-3 h-8 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
               </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-stone-500">Branch:</span>
-                <select
-                  value={clinicFilter}
-                  onChange={(e) => setClinicFilter(e.target.value)}
-                  className="px-2.5 py-1.5 text-xs border border-stone-200 bg-white text-stone-900 focus:outline-none focus:border-stone-500"
-                >
-                  <option value="all">All Branches</option>
-                  {clinics.map(c => (
-                    <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="relative min-w-[240px]">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400" />
-              <input
-                type="text"
-                placeholder="Search audit details or actor..."
-                value={auditSearch}
-                onChange={(e) => setAuditSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 text-xs border border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-500"
-              />
-            </div>
-          </div>
-
-          {/* Audit Trail Table */}
-          <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-stone-200 bg-stone-50 text-stone-600 font-mono text-[11px]">
-                    <th className="py-2.5 px-3 font-medium">Timestamp</th>
-                    <th className="py-2.5 px-3 font-medium">Actor</th>
-                    <th className="py-2.5 px-3 font-medium">Action</th>
-                    <th className="py-2.5 px-3 font-medium">Target Entity</th>
-                    <th className="py-2.5 px-3 font-medium">Reason & Details</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100">
-                  {filteredAuditLogs.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="py-8 text-center text-stone-500 text-xs">
-                        No audit records matching query.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredAuditLogs.map(log => (
-                      <tr key={log.id} className="hover:bg-stone-50/70">
-                        <td className="py-2.5 px-3 font-mono text-[11px] text-stone-500 whitespace-nowrap">
-                          {log.timestamp}
-                        </td>
-                        <td className="py-2.5 px-3">
-                          <div className="font-medium text-stone-900">{log.actorName}</div>
-                          <div className="font-mono text-[10px] text-stone-400">{log.actorRole}</div>
-                        </td>
-                        <td className="py-2.5 px-3">
-                          <span className="font-mono text-[11px] text-stone-900 font-semibold">
-                            {log.action}
-                          </span>
-                        </td>
-                        <td className="py-2.5 px-3 font-medium text-stone-900">
-                          {log.targetName}
-                          <span className="block font-mono text-[10px] text-stone-400">[{log.targetId}]</span>
-                        </td>
-                        <td className="py-2.5 px-3 text-stone-700 leading-relaxed max-w-md">
-                          {log.reason || 'â€”'}
-                          {log.beforeValue && log.afterValue && (
-                            <div className="text-[10px] font-mono text-stone-500 mt-0.5">
-                              {log.beforeValue} &rarr; {log.afterValue}
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+            }
+          >
+            <TableHeader>
+              <TableRow>
+                <TableHead pinned>Timestamp</TableHead>
+                <TableHead>Actor</TableHead>
+                <TableHead>Action</TableHead>
+                <TableHead>Target Entity</TableHead>
+                <TableHead>Reason & Details</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredAuditLogs.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="py-8 text-center text-slate-500 text-xs">
+                    No audit records matching query.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredAuditLogs.map(log => (
+                  <TableRow key={log.id}>
+                    <TableCell pinned isPrimary className="font-mono text-[11px] text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                      {log.timestamp}
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-medium text-slate-900 dark:text-slate-100">{log.actorName}</div>
+                      <div className="font-mono text-[10px] text-slate-400">{log.actorRole}</div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-mono text-[11px] text-slate-900 dark:text-slate-100 font-semibold">
+                        {log.action}
+                      </span>
+                    </TableCell>
+                    <TableCell className="font-medium text-slate-900 dark:text-slate-100">
+                      {log.targetName}
+                      <span className="block font-mono text-[10px] text-slate-400">[{log.targetId}]</span>
+                    </TableCell>
+                    <TableCell className="text-slate-700 dark:text-slate-300 leading-relaxed max-w-md">
+                      {log.reason || '—'}
+                      {log.beforeValue && log.afterValue && (
+                        <div className="text-[10px] font-mono text-slate-500 mt-0.5">
+                          {log.beforeValue} &rarr; {log.afterValue}
+                        </div>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>
