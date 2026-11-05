@@ -2,7 +2,7 @@ import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'soft';
-  size?: 'compact' | 'xs' | 'sm' | 'md' | 'lg';
+  size?: 'compact' | 'xs' | 'sm' | 'md' | 'lg' | 'toolbar';
   isLoading?: boolean;
   icon?: React.ReactNode;
 }
@@ -22,6 +22,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
 
   const sizeClasses = {
     compact: 'text-[0.875rem] px-3 py-0 h-8 !min-h-0 leading-none gap-1.5',
+    toolbar: 'text-xs px-3.5 h-9 !min-h-0 gap-1.5',
     xs: 'text-[0.6875rem] px-2 py-1 gap-1 min-h-[44px]',
     sm: 'text-xs px-2.5 py-1.5 gap-1.5 min-h-[44px]',
     md: 'text-sm px-4 py-2 gap-2 min-h-[44px]',
@@ -53,9 +54,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
       {isLoading ? (
         <span className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
       ) : (
-        !children && icon ? <span className="inline-flex shrink-0">{icon}</span> : null
+        <>
+          {icon ? <span className="inline-flex shrink-0">{icon}</span> : null}
+          {children ? <span>{children}</span> : null}
+        </>
       )}
-      {children && <span>{children}</span>}
     </button>
   );
 });

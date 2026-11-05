@@ -203,7 +203,40 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
 
   const agreementToolbar = (
     <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
-      <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:thin]">
+      {/* Search on the left - grows into available space */}
+      <div className="relative flex-1 min-w-[200px] sm:min-w-[280px]">
+        <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+        <input
+          type="text"
+          placeholder="Search reference, clinic..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="h-9 w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+          aria-label="Search licence agreements"
+        />
+      </div>
+
+      {/* Primary Action on the right, on the same row */}
+      <button
+        type="button"
+        onClick={() => {
+          setFormError('');
+          setIsAddModalOpen(true);
+        }}
+        className="h-9 !min-h-0 px-3.5 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
+      >
+        <Plus className="w-3.5 h-3.5 shrink-0" />
+        <span>Add Agreement</span>
+      </button>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4">
+      <h1 className="sr-only">Licence Agreement Management</h1>
+
+      {/* Directory Tabs */}
+      <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto [scrollbar-width:thin]">
         {[
           { id: 'all', label: `All Agreements (${agreements.length})` },
           { id: 'active', label: `Active (${agreements.filter((a) => a.status === 'active').length})` },
@@ -216,7 +249,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
             key={tab.id}
             type="button"
             onClick={() => setTabFilter(tab.id as any)}
-            className={`px-2.5 py-1 text-xs font-medium rounded transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
               tabFilter === tab.id
                 ? 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900'
                 : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -226,38 +259,6 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
           </button>
         ))}
       </div>
-
-      <div className="flex items-center gap-2">
-        <div className="relative">
-          <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Search reference, clinic..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 pr-3 h-8 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 w-52 sm:w-64 focus:outline-none focus:ring-1 focus:ring-teal-500"
-          />
-        </div>
-
-        <Button
-          size="sm"
-          variant="primary"
-          onClick={() => {
-            setFormError('');
-            setIsAddModalOpen(true);
-          }}
-          className="h-8 text-xs rounded bg-teal-600 hover:bg-teal-700 text-white flex items-center gap-1.5 shrink-0 px-3 font-medium"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>Add Agreement</span>
-        </Button>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="space-y-4">
-      <h1 className="sr-only">Licence Agreement Management</h1>
 
       {/* Main Agreements Table */}
       <Table toolbar={agreementToolbar} pinLeading={true}>

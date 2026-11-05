@@ -174,26 +174,26 @@ export const SuperAdminReports: React.FC = () => {
 
         <button
           onClick={() => window.print()}
-          className="px-3 py-1.5 text-xs border border-stone-200 text-stone-700 bg-white hover:bg-stone-50 transition-colors inline-flex items-center gap-1.5 self-end sm:self-auto shrink-0 mb-1"
+          className="h-9 !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer self-end sm:self-auto mb-1"
         >
           <Printer className="w-3.5 h-3.5" />
-          Print Report
+          <span>Print Report</span>
         </button>
       </div>
 
       {/* REPORT CONTENT 1: Branch Directory */}
       {activeReport === 'branch_directory' && (
         <div className="space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white border border-stone-200 p-3">
-            <div className="text-xs text-stone-600">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-lg">
+            <div className="text-xs text-slate-600 dark:text-slate-400">
               Listing of all registered branches across the healthcare network.
             </div>
             <button
               onClick={handleExportBranchDirectory}
-              className="px-3 py-1.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5"
+              className="h-9 !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
-              Export CSV
+              <span>Export CSV</span>
             </button>
           </div>
 
@@ -233,16 +233,16 @@ export const SuperAdminReports: React.FC = () => {
       {/* REPORT CONTENT 2: Admin Assignments */}
       {activeReport === 'admin_assignment' && (
         <div className="space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-[8px]">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-lg">
             <div className="text-xs text-slate-600 dark:text-slate-400">
               Primary administrative personnel appointed to oversee local clinic branches.
             </div>
             <button
               onClick={handleExportAdminAssignment}
-              className="px-3 py-1.5 text-xs font-medium bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 rounded cursor-pointer"
+              className="h-9 !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
-              Export CSV
+              <span>Export CSV</span>
             </button>
           </div>
 
@@ -285,16 +285,16 @@ export const SuperAdminReports: React.FC = () => {
       {/* REPORT CONTENT 3: Agreement Expiry & Renewals */}
       {activeReport === 'agreement_expiry' && (
         <div className="space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-[8px]">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-lg">
             <div className="text-xs text-slate-600 dark:text-slate-400">
               Contractual validity audit, pending renewals, and expiration notice schedules.
             </div>
             <button
               onClick={handleExportAgreements}
-              className="px-3 py-1.5 text-xs font-medium bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 rounded cursor-pointer"
+              className="h-9 !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
-              Export CSV
+              <span>Export CSV</span>
             </button>
           </div>
 
@@ -335,16 +335,16 @@ export const SuperAdminReports: React.FC = () => {
       {/* REPORT CONTENT 4: Facility Adoption Matrix */}
       {activeReport === 'facility_adoption' && (
         <div className="space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-[8px]">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-lg">
             <div className="text-xs text-slate-600 dark:text-slate-400">
               Cross-network adoption summary across all platform clinical and diagnostic wings.
             </div>
             <button
               onClick={handleExportFacilityAdoption}
-              className="px-3 py-1.5 text-xs font-medium bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 rounded cursor-pointer"
+              className="h-9 !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
-              Export CSV
+              <span>Export CSV</span>
             </button>
           </div>
 
@@ -388,16 +388,16 @@ export const SuperAdminReports: React.FC = () => {
       {/* REPORT CONTENT 5: Onboarding Audit Trail */}
       {activeReport === 'onboarding_audit' && (
         <div className="space-y-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-[8px]">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-lg">
             <div className="text-xs text-slate-600 dark:text-slate-400">
               Audit log of 10-point onboarding compliance and authorized executive overrides.
             </div>
             <button
               onClick={handleExportOnboardingAudit}
-              className="px-3 py-1.5 text-xs font-medium bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 rounded cursor-pointer"
+              className="h-9 !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
-              Export CSV
+              <span>Export CSV</span>
             </button>
           </div>
 

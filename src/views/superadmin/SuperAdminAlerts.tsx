@@ -4,6 +4,7 @@ import {
   Send,
   Plus,
   ArrowRight,
+  ChevronDown,
   X
 } from 'lucide-react';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
@@ -106,10 +107,10 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
         {activeSubTab === 'announcements' && (
           <button
             onClick={() => setShowAnnouncementModal(true)}
-            className="px-3.5 py-1.5 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5 border border-stone-900"
+            className="h-9 !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg shrink-0 shadow-sm cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            Publish Broadcast
+            <span>Publish Broadcast</span>
           </button>
         )}
       </div>
@@ -117,28 +118,29 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
       {activeSubTab === 'alerts' ? (
         <div className="space-y-4">
           {/* Filter Bar */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white border border-stone-200 rounded-xl overflow-hidden shadow-xs p-3">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-stone-500">Severity:</span>
+          <div className="flex flex-wrap items-center justify-between gap-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 shadow-xs">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative shrink-0">
                 <select
                   value={severityFilter}
                   onChange={(e) => setSeverityFilter(e.target.value as any)}
-                  className="px-2.5 py-1.5 text-xs border border-stone-200 bg-white text-stone-900 focus:outline-none focus:border-stone-500"
+                  className="appearance-none h-9 pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                  aria-label="Filter by severity"
                 >
                   <option value="all">All Severities</option>
                   <option value="critical">Critical Only</option>
                   <option value="warning">Warning Only</option>
                   <option value="info">Info Only</option>
                 </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-stone-500">Type:</span>
+              <div className="relative shrink-0">
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="px-2.5 py-1.5 text-xs border border-stone-200 bg-white text-stone-900 focus:outline-none focus:border-stone-500"
+                  className="appearance-none h-9 pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                  aria-label="Filter by trigger type"
                 >
                   <option value="all">All Trigger Types</option>
                   <option value="agreement_expiry">Licence Expiry</option>
@@ -146,10 +148,11 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
                   <option value="onboarding_pending">Onboarding Blocked</option>
                   <option value="facility_mismatch">Entitlement Mismatch</option>
                 </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             </div>
 
-            <div className="text-xs text-stone-500 font-mono">
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-mono">
               Showing {filteredAlerts.length} actionable alerts
             </div>
           </div>

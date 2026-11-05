@@ -91,13 +91,14 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
 
   const tableToolbar = (
     <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Search and filters aligned on the left */}
+      <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
         {/* Status Filter */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none h-8 pl-3 pr-8 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            className="appearance-none h-9 pl-3 pr-8 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
             aria-label="Filter by status"
           >
             <option value="all">All statuses</option>
@@ -109,11 +110,11 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
         </div>
 
         {/* Facility Filter */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <select
             value={facilityFilter}
             onChange={(e) => setFacilityFilter(e.target.value)}
-            className="appearance-none h-8 pl-3 pr-8 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            className="appearance-none h-9 pl-3 pr-8 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
             aria-label="Filter by facility"
           >
             <option value="all">All facilities</option>
@@ -123,20 +124,29 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           </select>
           <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
+
+        {/* Search Input - grows into available space */}
+        <div className="relative flex-1 min-w-[180px] sm:min-w-[220px]">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search clinics or branches"
+            className="h-9 w-full pl-9 pr-3 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            aria-label="Search clinics or branches"
+          />
+        </div>
       </div>
 
-      {/* Search Input */}
-      <div className="relative flex-1 min-w-[200px] max-w-xs">
-        <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search clinics or branches"
-          className="h-8 w-full pl-8 pr-3 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
-          aria-label="Search clinics or branches"
-        />
-      </div>
+      {/* Primary Action aligned on the right, on the same row */}
+      <button
+        type="button"
+        onClick={() => onNavigate('super_clinics')}
+        className="h-9 !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+      >
+        <span>Full Directory</span>
+      </button>
     </div>
   );
 
@@ -223,23 +233,13 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
 
       {/* Clinic / Branch Network Status Full-Width Card (Approved Mockup Layout) */}
       <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded-xl shadow-xs space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              CLINIC / BRANCH NETWORK STATUS
-            </h3>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              Central registry status, appointed admin, and active facility count
-            </p>
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => onNavigate('super_clinics')}
-            className="text-xs rounded border border-slate-200 dark:border-slate-700 font-medium"
-          >
-            Full Directory
-          </Button>
+        <div className="pb-3 border-b border-slate-100 dark:border-slate-800">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+            CLINIC / BRANCH NETWORK STATUS
+          </h3>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            Central registry status, appointed admin, and active facility count
+          </p>
         </div>
 
         <Table toolbar={tableToolbar} pinLeading={true}>

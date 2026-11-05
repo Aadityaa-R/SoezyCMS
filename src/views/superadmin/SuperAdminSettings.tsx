@@ -3,6 +3,7 @@ import {
   Search,
   Save,
   Check,
+  ChevronDown,
 } from 'lucide-react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
@@ -53,29 +54,27 @@ export const SuperAdminSettings: React.FC = () => {
       <h1 className="sr-only">Platform Settings & Immutable Audit Logs</h1>
 
       {/* Settings / Audit Logs Switcher */}
-      <div className="flex items-center gap-2">
-        <div className="inline-flex border border-stone-200 p-0.5 bg-stone-100">
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-              activeTab === 'settings'
-                ? 'bg-white text-stone-900 shadow-xs'
-                : 'text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            Organization Settings
-          </button>
-          <button
-            onClick={() => setActiveTab('audit_logs')}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-              activeTab === 'audit_logs'
-                ? 'bg-white text-stone-900 shadow-xs'
-                : 'text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            Immutable Audit Logs ({auditLogs.length})
-          </button>
-        </div>
+      <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto [scrollbar-width:thin]">
+        <button
+          onClick={() => setActiveTab('settings')}
+          className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+            activeTab === 'settings'
+              ? 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+        >
+          Organization Settings
+        </button>
+        <button
+          onClick={() => setActiveTab('audit_logs')}
+          className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+            activeTab === 'audit_logs'
+              ? 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900'
+              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+        >
+          Audit Logs ({auditLogs.length})
+        </button>
       </div>
 
       {activeTab === 'settings' ? (
@@ -252,10 +251,10 @@ export const SuperAdminSettings: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              className="px-4 py-2 text-xs font-medium bg-stone-900 text-white hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5"
+              className="h-9 !min-h-0 px-4 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
               <Save className="w-3.5 h-3.5" />
-              Save Organization Settings
+              <span>Save Organization Settings</span>
             </button>
             {isSaved && (
               <span className="text-xs text-teal-700 font-mono inline-flex items-center gap-1">
@@ -278,14 +277,14 @@ export const SuperAdminSettings: React.FC = () => {
           <Table
             pinLeading={true}
             toolbar={
-              <div className="flex flex-wrap items-center justify-between gap-3 w-full">
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-slate-500">Action:</span>
+              <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
+                <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+                  <div className="relative shrink-0">
                     <select
                       value={actionFilter}
                       onChange={(e) => setActionFilter(e.target.value as any)}
-                      className="h-8 px-2.5 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                      className="appearance-none h-9 pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                      aria-label="Filter by action type"
                     >
                       <option value="all">All Action Types</option>
                       <option value="clinic_created">Clinic Created</option>
@@ -299,32 +298,35 @@ export const SuperAdminSettings: React.FC = () => {
                       <option value="branch_activated">Branch Activated</option>
                       <option value="branch_suspended">Branch Suspended</option>
                     </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-slate-500">Branch:</span>
+                  <div className="relative shrink-0">
                     <select
                       value={clinicFilter}
                       onChange={(e) => setClinicFilter(e.target.value)}
-                      className="h-8 px-2.5 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                      className="appearance-none h-9 pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                      aria-label="Filter by branch"
                     >
                       <option value="all">All Branches</option>
                       {clinics.map(c => (
                         <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
                       ))}
                     </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
-                </div>
 
-                <div className="relative min-w-[240px]">
-                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="Search audit details or actor..."
-                    value={auditSearch}
-                    onChange={(e) => setAuditSearch(e.target.value)}
-                    className="w-full pl-8 pr-3 h-8 text-xs rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
-                  />
+                  <div className="relative flex-1 min-w-[200px] sm:min-w-[240px]">
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                    <input
+                      type="text"
+                      placeholder="Search audit details or actor..."
+                      value={auditSearch}
+                      onChange={(e) => setAuditSearch(e.target.value)}
+                      className="h-9 w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                      aria-label="Search audit logs"
+                    />
+                  </div>
                 </div>
               </div>
             }
