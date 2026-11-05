@@ -46,37 +46,34 @@ const SuperAdminPortalContent: React.FC<{
   };
 
   return (
-    <div className="w-full min-h-screen bg-[#fafafa] text-stone-900 font-sans pb-16">
-      {/* Main Tab Content - Navigated via Left Sidebar */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-        {currentTab === 'super_dashboard' && (
-          <SuperAdminDashboard onNavigate={handleTabSelect} />
-        )}
-        {currentTab === 'super_clinics' && (
-          <ClinicBranchManagement onNavigate={handleTabSelect} />
-        )}
-        {currentTab === 'super_admins' && (
-          <AdminManagement onNavigateTab={handleTabSelect} />
-        )}
-        {currentTab === 'super_agreements' && (
-          <AgreementManagement onNavigateTab={handleTabSelect} />
-        )}
-        {currentTab === 'super_facilities' && (
-          <FacilityManagement />
-        )}
-        {currentTab === 'super_onboarding' && (
-          <BranchOnboarding />
-        )}
-        {currentTab === 'super_reports' && (
-          <SuperAdminReports />
-        )}
-        {currentTab === 'super_alerts' && (
-          <SuperAdminAlerts onNavigateTab={handleTabSelect} />
-        )}
-        {currentTab === 'super_settings' && (
-          <SuperAdminSettings />
-        )}
-      </main>
+    <div className="w-full">
+      {currentTab === 'super_dashboard' && (
+        <SuperAdminDashboard onNavigate={handleTabSelect} />
+      )}
+      {currentTab === 'super_clinics' && (
+        <ClinicBranchManagement onNavigate={handleTabSelect} />
+      )}
+      {currentTab === 'super_admins' && (
+        <AdminManagement onNavigateTab={handleTabSelect} />
+      )}
+      {currentTab === 'super_agreements' && (
+        <AgreementManagement onNavigateTab={handleTabSelect} />
+      )}
+      {currentTab === 'super_facilities' && (
+        <FacilityManagement />
+      )}
+      {currentTab === 'super_onboarding' && (
+        <BranchOnboarding />
+      )}
+      {currentTab === 'super_reports' && (
+        <SuperAdminReports />
+      )}
+      {currentTab === 'super_alerts' && (
+        <SuperAdminAlerts onNavigateTab={handleTabSelect} />
+      )}
+      {currentTab === 'super_settings' && (
+        <SuperAdminSettings />
+      )}
     </div>
   );
 };

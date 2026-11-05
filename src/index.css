@@ -55,8 +55,8 @@ select:active,
 :root {
   --radius: 0.75rem;
   --nav-cell: 3.5rem;
-  --page-pad: 1rem;
-  --page-max: 150rem;
+  --page-pad: 12px;
+  --page-max: 100%;
   --card-pad: 1.5rem;
   --card-gap: 1.5rem;
   --section-gap: 1.25rem;
@@ -91,18 +91,18 @@ select:active,
   --fs-label: 0.8125rem;
   --fs-th: 0.75rem;
   --fs-axis: 0.6875rem;
-  --tab-top-space: -1px;
+  --tab-top-space: 0px;
 }
 
 @media (min-width: 640px) {
   :root {
-    --page-pad: 1.5rem;
+    --page-pad: 12px;
   }
 }
 
 @media (min-width: 1024px) {
   :root {
-    --page-pad: 2rem;
+    --page-pad: 12px;
   }
 }
 

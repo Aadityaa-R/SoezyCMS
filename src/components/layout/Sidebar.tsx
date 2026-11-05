@@ -141,6 +141,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const { currentRole, currentUser } = useAuth();
   const { modules, isFacilityEnabled } = useClinic();
+  const checkFacility = (type: any) => (typeof isFacilityEnabled === 'function' ? isFacilityEnabled(type) : true);
   const isSuperAdmin = currentRole === 'platform_super_admin';
   const isUserAdmin = currentRole === 'md' || currentRole === 'admin' || isSuperAdmin || isAdmin(currentUser, modules);
 
@@ -187,17 +188,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
       hasCapability(currentUser, 'patientCheckIn', modules);
     const hasAdminAccess = hasCapability(currentUser, 'administrativeAccess', modules);
 
-    if ((hasFrontDesk || hasAdminAccess || currentRole === 'receptionist') && isFacilityEnabled('OPD')) {
+    if ((hasFrontDesk || hasAdminAccess || currentRole === 'receptionist') && checkFacility('OPD')) {
       items.push({ id: 'appointments', label: 'Appointments', icon: <Calendar className="w-4 h-4" /> });
     }
 
     // 5. Consultation Desk (Clinical Station)
-    if ((hasCapability(currentUser, 'consultationWorkstation', modules) || currentRole === 'doctor') && isFacilityEnabled('OPD')) {
+    if ((hasCapability(currentUser, 'consultationWorkstation', modules) || currentRole === 'doctor') && checkFacility('OPD')) {
       items.push({ id: 'doctor', label: 'Consultation Desk', icon: <Stethoscope className="w-4 h-4" /> });
     }
 
     // 6. Front Desk Reception intake
-    if ((hasFrontDesk || currentRole === 'receptionist') && isFacilityEnabled('OPD')) {
+    if ((hasFrontDesk || currentRole === 'receptionist') && checkFacility('OPD')) {
       items.push({ id: 'role_receptionist', label: 'Reception', icon: <UserCheck className="w-4 h-4" /> });
     }
 
@@ -205,7 +206,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     items.push({ id: 'attendance', label: 'Attendance', icon: <Clock className="w-4 h-4" /> });
 
     // 8. Billing
-    if (canViewBilling(currentUser, modules) && isFacilityEnabled('Billing')) {
+    if (canViewBilling(currentUser, modules) && checkFacility('Billing')) {
       items.push({ id: 'billing', label: 'Billing', icon: <CreditCard className="w-4 h-4" /> });
     }
 
