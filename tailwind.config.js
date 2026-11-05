@@ -14,6 +14,15 @@ export default {
       borderRadius: {
         'card': '0.5rem',
       },
+      height: {
+        'toolbar': '36px',
+      },
+      minHeight: {
+        'toolbar': '36px',
+      },
+      maxHeight: {
+        'toolbar': '36px',
+      },
       fontSize: {
         '2xs': '0.625rem',
         'xs-plus': '0.6875rem',

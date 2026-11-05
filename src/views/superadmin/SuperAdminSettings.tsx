@@ -251,7 +251,7 @@ export const SuperAdminSettings: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              className="h-9 !min-h-0 px-4 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
+              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
               <Save className="w-3.5 h-3.5" />
               <span>Save Organization Settings</span>
@@ -283,7 +283,7 @@ export const SuperAdminSettings: React.FC = () => {
                     <select
                       value={actionFilter}
                       onChange={(e) => setActionFilter(e.target.value as any)}
-                      className="appearance-none h-9 pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                      className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
                       aria-label="Filter by action type"
                     >
                       <option value="all">All Action Types</option>
@@ -305,7 +305,7 @@ export const SuperAdminSettings: React.FC = () => {
                     <select
                       value={clinicFilter}
                       onChange={(e) => setClinicFilter(e.target.value)}
-                      className="appearance-none h-9 pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                      className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
                       aria-label="Filter by branch"
                     >
                       <option value="all">All Branches</option>
@@ -323,7 +323,7 @@ export const SuperAdminSettings: React.FC = () => {
                       placeholder="Search audit details or actor..."
                       value={auditSearch}
                       onChange={(e) => setAuditSearch(e.target.value)}
-                      className="h-9 w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                      className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
                       aria-label="Search audit logs"
                     />
                   </div>

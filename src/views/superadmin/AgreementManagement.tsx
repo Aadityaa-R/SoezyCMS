@@ -7,6 +7,7 @@ import {
   Plus,
   Search,
   Download,
+  ChevronDown,
 } from 'lucide-react';
 import {
   LicenceAgreementRecord,
@@ -203,17 +204,38 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
 
   const agreementToolbar = (
     <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
-      {/* Search on the left - grows into available space */}
-      <div className="relative flex-1 min-w-[200px] sm:min-w-[280px]">
-        <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-        <input
-          type="text"
-          placeholder="Search reference, clinic..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-9 w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
-          aria-label="Search licence agreements"
-        />
+      {/* Search and filters on the left */}
+      <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+        {/* Status Filter Dropdown */}
+        <div className="relative shrink-0">
+          <select
+            value={tabFilter}
+            onChange={(e) => setTabFilter(e.target.value as any)}
+            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            aria-label="Filter by status"
+          >
+            <option value="all">All statuses ({agreements.length})</option>
+            <option value="active">Active ({agreements.filter((a) => a.status === 'active').length})</option>
+            <option value="expiring">Expiring Soon ({agreements.filter((a) => a.status === 'expiring_soon').length})</option>
+            <option value="pending">Pending Signature ({agreements.filter((a) => a.status === 'pending_signature').length})</option>
+            <option value="expired">Expired ({agreements.filter((a) => a.status === 'expired').length})</option>
+            <option value="renewed">Renewed / Terminated ({agreements.filter((a) => a.status === 'renewed' || a.status === 'terminated').length})</option>
+          </select>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        </div>
+
+        {/* Search Input - grows into available space */}
+        <div className="relative flex-1 min-w-[180px] sm:min-w-[240px]">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Search reference, clinic..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            aria-label="Search licence agreements"
+          />
+        </div>
       </div>
 
       {/* Primary Action on the right, on the same row */}
@@ -223,7 +245,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
           setFormError('');
           setIsAddModalOpen(true);
         }}
-        className="h-9 !min-h-0 px-3.5 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
+        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
       >
         <Plus className="w-3.5 h-3.5 shrink-0" />
         <span>Add Agreement</span>
@@ -234,31 +256,6 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
   return (
     <div className="space-y-4">
       <h1 className="sr-only">Licence Agreement Management</h1>
-
-      {/* Directory Tabs */}
-      <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto [scrollbar-width:thin]">
-        {[
-          { id: 'all', label: `All Agreements (${agreements.length})` },
-          { id: 'active', label: `Active (${agreements.filter((a) => a.status === 'active').length})` },
-          { id: 'expiring', label: `Expiring Soon (${agreements.filter((a) => a.status === 'expiring_soon').length})` },
-          { id: 'pending', label: `Pending Signature (${agreements.filter((a) => a.status === 'pending_signature').length})` },
-          { id: 'expired', label: `Expired (${agreements.filter((a) => a.status === 'expired').length})` },
-          { id: 'renewed', label: `Renewed / Terminated (${agreements.filter((a) => a.status === 'renewed' || a.status === 'terminated').length})` },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setTabFilter(tab.id as any)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
-              tabFilter === tab.id
-                ? 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
 
       {/* Main Agreements Table */}
       <Table toolbar={agreementToolbar} pinLeading={true}>
@@ -359,7 +356,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
                         setTerminateReason('');
                         setFormError('');
                       }}
-                      className="px-2 py-1 text-[11px] rounded border border-rose-200 dark:border-rose-800 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
+                      className="text-xs text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:underline cursor-pointer"
                     >
                       Terminate
                     </button>

@@ -92,6 +92,15 @@ select:active,
   --fs-th: 0.75rem;
   --fs-axis: 0.6875rem;
   --tab-top-space: 0px;
+  --h-toolbar: 36px;
+}
+
+/* Super Admin Toolbar 36px exact height utility classes */
+.h-toolbar {
+  height: 36px !important;
+}
+.min-h-toolbar {
+  min-height: 36px !important;
 }
 
 @media (min-width: 640px) {

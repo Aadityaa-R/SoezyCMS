@@ -6,6 +6,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, StatusDo
 import {
   Plus,
   Search,
+  ChevronDown,
 } from 'lucide-react';
 import {
   AdminAssignmentRecord,
@@ -174,17 +175,37 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
 
   const adminToolbar = (
     <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
-      {/* Search on the left - grows into available space */}
-      <div className="relative flex-1 min-w-[200px] sm:min-w-[280px]">
-        <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-        <input
-          type="text"
-          placeholder="Search by admin name, email, clinic..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-9 w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
-          aria-label="Search administrators"
-        />
+      {/* Search and filters on the left */}
+      <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+        {/* Status Filter Dropdown */}
+        <div className="relative shrink-0">
+          <select
+            value={tabFilter}
+            onChange={(e) => setTabFilter(e.target.value as any)}
+            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            aria-label="Filter by status"
+          >
+            <option value="all">All statuses ({admins.length})</option>
+            <option value="active">Active ({admins.filter((a) => a.status === 'active').length})</option>
+            <option value="unassigned">Unassigned Clinics ({unassignedClinics.length})</option>
+            <option value="pending">Pending Invitations ({admins.filter((a) => a.status === 'pending_invitation').length})</option>
+            <option value="inactive">Reassigned / Inactive ({admins.filter((a) => a.status === 'reassigned' || a.status === 'deactivated').length})</option>
+          </select>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        </div>
+
+        {/* Search Input - grows into available space */}
+        <div className="relative flex-1 min-w-[180px] sm:min-w-[240px]">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Search by admin name, email, clinic..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            aria-label="Search administrators"
+          />
+        </div>
       </div>
 
       {/* Primary Action on the right, on the same row */}
@@ -194,7 +215,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
           setFormError('');
           setIsAppointModalOpen(true);
         }}
-        className="h-9 !min-h-0 px-3.5 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
+        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
       >
         <Plus className="w-3.5 h-3.5 shrink-0" />
         <span>Appoint Admin</span>
@@ -206,28 +227,9 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
     <div className="space-y-4">
       <h1 className="sr-only">Clinic Administrator Governance</h1>
 
-      {/* Directory Tabs */}
-      <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto [scrollbar-width:thin]">
-        {[
-          { id: 'all', label: `All Admins (${admins.length})` },
-          { id: 'active', label: `Active (${admins.filter((a) => a.status === 'active').length})` },
-          { id: 'unassigned', label: `Unassigned Clinics (${unassignedClinics.length})` },
-          { id: 'pending', label: `Pending Invitations (${admins.filter((a) => a.status === 'pending_invitation').length})` },
-          { id: 'inactive', label: `Reassigned / Inactive (${admins.filter((a) => a.status === 'reassigned' || a.status === 'deactivated').length})` },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setTabFilter(tab.id as any)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
-              tabFilter === tab.id
-                ? 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Standardized Toolbar: Search & Filter on left, Appoint Admin on right */}
+      <div className="w-full border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 shadow-xs p-2.5">
+        {adminToolbar}
       </div>
 
       {/* Unassigned Clinics Notice Card (If tabFilter is unassigned) */}
@@ -260,7 +262,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                     setAppointClinicId(clinic.id);
                     setIsAppointModalOpen(true);
                   }}
-                  className="h-9 !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center cursor-pointer shrink-0"
+                  className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center cursor-pointer shrink-0"
                 >
                   Appoint Admin
                 </button>
@@ -270,7 +272,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
         </div>
       ) : (
         /* Main Admins Table */
-        <Table toolbar={adminToolbar} pinLeading={true}>
+        <Table pinLeading={true}>
           <TableHeader>
             <TableRow>
               <TableHead pinned>Administrator Name</TableHead>

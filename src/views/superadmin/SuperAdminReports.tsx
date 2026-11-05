@@ -174,7 +174,7 @@ export const SuperAdminReports: React.FC = () => {
 
         <button
           onClick={() => window.print()}
-          className="h-9 !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer self-end sm:self-auto mb-1"
+          className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer self-end sm:self-auto mb-1"
         >
           <Printer className="w-3.5 h-3.5" />
           <span>Print Report</span>
@@ -190,7 +190,7 @@ export const SuperAdminReports: React.FC = () => {
             </div>
             <button
               onClick={handleExportBranchDirectory}
-              className="h-9 !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
+              className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export CSV</span>
@@ -239,7 +239,7 @@ export const SuperAdminReports: React.FC = () => {
             </div>
             <button
               onClick={handleExportAdminAssignment}
-              className="h-9 !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
+              className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export CSV</span>
@@ -291,7 +291,7 @@ export const SuperAdminReports: React.FC = () => {
             </div>
             <button
               onClick={handleExportAgreements}
-              className="h-9 !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
+              className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export CSV</span>
@@ -341,7 +341,7 @@ export const SuperAdminReports: React.FC = () => {
             </div>
             <button
               onClick={handleExportFacilityAdoption}
-              className="h-9 !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
+              className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export CSV</span>
@@ -394,7 +394,7 @@ export const SuperAdminReports: React.FC = () => {
             </div>
             <button
               onClick={handleExportOnboardingAudit}
-              className="h-9 !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
+              className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg cursor-pointer shrink-0 shadow-sm"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export CSV</span>

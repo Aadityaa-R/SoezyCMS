@@ -54,17 +54,20 @@ describe('ClinicBranchManagement - Card-Based Hierarchy & Pagination', () => {
     expect(screen.getByText(/Showing 4[–-]5 of 5 main branches/i)).toBeTruthy();
   });
 
-  it('counts on filter tabs represent Main Branches only', () => {
+  it('counts on status filter dropdown represent Main Branches only', () => {
     renderComponent();
 
+    const statusFilter = screen.getByLabelText(/Filter by status/i);
+    expect(statusFilter).toBeTruthy();
+
     // Total main branches = 5
-    expect(screen.getByRole('button', { name: /All Clinics \(5\)/i })).toBeTruthy();
+    expect(screen.getByRole('option', { name: /All statuses \(5\)/i })).toBeTruthy();
     // Active main branches = 3 (Subiksham, Beacon, Apex)
-    expect(screen.getByRole('button', { name: /Active \(3\)/i })).toBeTruthy();
+    expect(screen.getByRole('option', { name: /Active \(3\)/i })).toBeTruthy();
     // Pending main branches = 1 (Horizon)
-    expect(screen.getByRole('button', { name: /Pending \(1\)/i })).toBeTruthy();
+    expect(screen.getByRole('option', { name: /Pending \(1\)/i })).toBeTruthy();
     // Inactive main branches = 1 (St. Jude)
-    expect(screen.getByRole('button', { name: /Inactive \/ Suspended \(1\)/i })).toBeTruthy();
+    expect(screen.getByRole('option', { name: /Inactive \/ Suspended \(1\)/i })).toBeTruthy();
   });
 
   it('clicking View Details on a main branch opens Main Branch Details with all required sections and linked side branches matching mockup', () => {

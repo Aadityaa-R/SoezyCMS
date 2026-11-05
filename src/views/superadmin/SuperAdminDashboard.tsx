@@ -98,7 +98,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none h-9 pl-3 pr-8 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
             aria-label="Filter by status"
           >
             <option value="all">All statuses</option>
@@ -114,7 +114,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           <select
             value={facilityFilter}
             onChange={(e) => setFacilityFilter(e.target.value)}
-            className="appearance-none h-9 pl-3 pr-8 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
             aria-label="Filter by facility"
           >
             <option value="all">All facilities</option>
@@ -133,7 +133,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search clinics or branches"
-            className="h-9 w-full pl-9 pr-3 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
             aria-label="Search clinics or branches"
           />
         </div>
@@ -143,7 +143,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
       <button
         type="button"
         onClick={() => onNavigate('super_clinics')}
-        className="h-9 !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
       >
         <span>Full Directory</span>
       </button>

@@ -107,7 +107,7 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
         {activeSubTab === 'announcements' && (
           <button
             onClick={() => setShowAnnouncementModal(true)}
-            className="h-9 !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg shrink-0 shadow-sm cursor-pointer"
+            className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg shrink-0 shadow-sm cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Publish Broadcast</span>
@@ -124,7 +124,7 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
                 <select
                   value={severityFilter}
                   onChange={(e) => setSeverityFilter(e.target.value as any)}
-                  className="appearance-none h-9 pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                  className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
                   aria-label="Filter by severity"
                 >
                   <option value="all">All Severities</option>
@@ -139,7 +139,7 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="appearance-none h-9 pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                  className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
                   aria-label="Filter by trigger type"
                 >
                   <option value="all">All Trigger Types</option>

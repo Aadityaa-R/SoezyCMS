@@ -22,7 +22,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
 
   const sizeClasses = {
     compact: 'text-[0.875rem] px-3 py-0 h-8 !min-h-0 leading-none gap-1.5',
-    toolbar: 'text-xs px-3.5 h-9 !min-h-0 gap-1.5',
+    toolbar: 'text-xs px-3.5 h-[36px] min-h-[36px] max-h-[36px] !min-h-0 gap-1.5',
     xs: 'text-[0.6875rem] px-2 py-1 gap-1 min-h-[44px]',
     sm: 'text-xs px-2.5 py-1.5 gap-1.5 min-h-[44px]',
     md: 'text-sm px-4 py-2 gap-2 min-h-[44px]',

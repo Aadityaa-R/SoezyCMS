@@ -557,7 +557,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                 setStatusReason('');
                 setFormError('');
               }}
-              className="h-9 !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center cursor-pointer"
+              className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center cursor-pointer"
             >
               {viewingSideBranch.status === 'active' ? 'Suspend Branch' : 'Activate Branch'}
             </button>
@@ -579,7 +579,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
               type="button"
               disabled={isSavingSideClassification}
               onClick={handleSaveSideClassification}
-              className="h-9 !min-h-0 px-4 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white cursor-pointer transition-colors shrink-0 disabled:opacity-50"
+              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white cursor-pointer transition-colors shrink-0 disabled:opacity-50"
             >
               {isSavingSideClassification ? 'Saving...' : 'Save classification'}
             </button>
@@ -893,7 +893,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                 setStatusReason('');
                 setFormError('');
               }}
-              className="h-9 !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center cursor-pointer"
+              className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center cursor-pointer"
             >
               {viewingMainBranch.status === 'active' ? 'Suspend Main Branch' : 'Activate Main Branch'}
             </button>
@@ -915,7 +915,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
               type="button"
               disabled={isSavingMainClassification}
               onClick={handleSaveMainClassification}
-              className="h-9 !min-h-0 px-4 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white cursor-pointer transition-colors shrink-0 disabled:opacity-50"
+              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white cursor-pointer transition-colors shrink-0 disabled:opacity-50"
             >
               {isSavingMainClassification ? 'Saving...' : 'Save classification'}
             </button>
@@ -1249,39 +1249,32 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
     <div className="space-y-4">
       <h1 className="sr-only">Main Branch Management</h1>
 
-      {/* Directory Tabs */}
-      <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto [scrollbar-width:thin]">
-        {[
-          { id: 'all', label: `All Clinics (${mainBranches.length})` },
-          { id: 'active', label: `Active (${mainBranches.filter((c) => c.status === 'active').length})` },
-          { id: 'pending', label: `Pending (${mainBranches.filter((c) => c.status === 'pending_onboarding' || c.status === 'pending_activation').length})` },
-          { id: 'inactive', label: `Inactive / Suspended (${mainBranches.filter((c) => c.status === 'inactive' || c.status === 'suspended').length})` },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => handleTabFilterChange(tab.id as any)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
-              activeTabFilter === tab.id
-                ? 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Standardized Toolbar: Search & filter on left, Primary action on right */}
+      {/* Standardized Toolbar: Search & filters on left, Primary action on right */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
         {/* Left: Search and Filters */}
         <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+          {/* Status Filter Dropdown */}
+          <div className="relative shrink-0">
+            <select
+              value={activeTabFilter}
+              onChange={(e) => handleTabFilterChange(e.target.value as any)}
+              className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+              aria-label="Filter by status"
+            >
+              <option value="all">All statuses ({mainBranches.length})</option>
+              <option value="active">Active ({mainBranches.filter((c) => c.status === 'active').length})</option>
+              <option value="pending">Pending ({mainBranches.filter((c) => c.status === 'pending_onboarding' || c.status === 'pending_activation').length})</option>
+              <option value="inactive">Inactive / Suspended ({mainBranches.filter((c) => c.status === 'inactive' || c.status === 'suspended').length})</option>
+            </select>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          </div>
+
           {/* Branch-Type Filter */}
           <div className="relative shrink-0">
             <select
               value={branchTypeFilter}
               onChange={(e) => handleBranchTypeChange(e.target.value)}
-              className="appearance-none h-9 pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+              className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
               aria-label="Filter by branch type"
             >
               <option value="all">All Branch Types</option>
@@ -1300,7 +1293,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
               placeholder="Search main branches..."
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="h-9 w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
               aria-label="Search clinics"
             />
           </div>
@@ -1313,7 +1306,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
             setFormError('');
             setIsRegisterModalOpen(true);
           }}
-          className="h-9 !min-h-0 px-3.5 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
+          className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
         >
           <Plus className="w-3.5 h-3.5 shrink-0" />
           <span>Register Clinic</span>
