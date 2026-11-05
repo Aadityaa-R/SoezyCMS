@@ -3,6 +3,12 @@ import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import { Search, ChevronDown } from 'lucide-react';
+import {
+  formatClassifications,
+  getClinicClassifications,
+  FACILITY_TYPE_BUNDLES,
+  FacilityClassification,
+} from '@/lib/facilityClassifications';
 
 interface SuperAdminDashboardProps {
   onNavigate: (tab: string, subTab?: string) => void;
@@ -13,7 +19,6 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
     clinics,
     admins,
     agreements,
-    facilities,
     auditLogs,
     setSelectedClinicId,
   } = useSuperAdmin();
@@ -43,10 +48,10 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
       if (statusFilter === 'pending' && !c.status.includes('pending')) return false;
 
       if (facilityFilter !== 'all') {
-        const matchesFacility =
-          c.entitledFacilities?.some((f) => f.toLowerCase() === facilityFilter.toLowerCase()) ||
-          c.enabledModules?.some((m) => m.toLowerCase().includes(facilityFilter.toLowerCase()));
-        if (!matchesFacility) return false;
+        const classifications = getClinicClassifications(c);
+        if (!classifications.map((t) => t.toLowerCase()).includes(facilityFilter.toLowerCase())) {
+          return false;
+        }
       }
 
       if (searchQuery.trim()) {
@@ -114,9 +119,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
             <option value="all">All facilities</option>
             <option value="OPD">OPD</option>
             <option value="IPD">IPD</option>
-            <option value="Laboratory">Laboratory</option>
-            <option value="Pharmacy">Pharmacy</option>
-            <option value="Radiology">Radiology</option>
+            <option value="Lab">Lab</option>
           </select>
           <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
@@ -286,10 +289,9 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
                     )}
                   </TableCell>
                   <TableCell>
-                    <span className="font-mono text-slate-800 dark:text-slate-200 font-semibold">
-                      {clinic.enabledModules.length}
-                    </span>{' '}
-                    <span className="text-[11px] text-slate-500">wings</span>
+                    <span className="font-medium text-slate-800 dark:text-slate-200">
+                      {formatClassifications(getClinicClassifications(clinic))}
+                    </span>
                   </TableCell>
                   <TableCell>
                     {renderStatusIndicator(clinic.agreementStatus || 'active')}
@@ -306,7 +308,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
 
       {/* 2-Column Section: Facility Adoption Overview & Recent Administrative Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Col: Facility Entitlement Overview */}
+        {/* Left Col: Facility Classification Overview */}
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded-xl shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
@@ -314,22 +316,23 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
                 Facility Adoption
               </h3>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                Clinics contractually entitled per module
+                Locations classified per approved facility type
               </p>
             </div>
           </div>
 
           <div className="space-y-3">
-            {facilities.map((fac) => {
-              const entitledCount = clinics.filter((c) => c.entitledFacilities.includes(fac.code)).length;
+            {(['OPD', 'IPD', 'Lab'] as FacilityClassification[]).map((facType) => {
+              const bundle = FACILITY_TYPE_BUNDLES[facType];
+              const count = clinics.filter((c) => getClinicClassifications(c).includes(facType)).length;
               return (
-                <div key={fac.id} className="flex items-center justify-between text-xs py-1 border-b border-slate-50 dark:border-slate-800/40 last:border-0">
+                <div key={facType} className="flex items-center justify-between text-xs py-1 border-b border-slate-50 dark:border-slate-800/40 last:border-0">
                   <div>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">{fac.name}</span>
-                    <span className="ml-1.5 text-[10px] font-mono text-slate-400">({fac.shortCode})</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{bundle.name}</span>
+                    <span className="ml-1.5 text-[10px] font-mono text-slate-400">({facType})</span>
                   </div>
                   <div className="text-right">
-                    <span className="font-bold text-slate-900 dark:text-slate-100">{entitledCount}</span>
+                    <span className="font-bold text-slate-900 dark:text-slate-100">{count}</span>
                     <span className="text-[11px] text-slate-400"> / {totalClinics} clinics</span>
                   </div>
                 </div>
@@ -341,10 +344,10 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
             <Button
               size="sm"
               variant="outline"
-              onClick={() => onNavigate('super_facilities')}
+              onClick={() => onNavigate('super_clinics')}
               className="w-full text-xs rounded border border-slate-200 dark:border-slate-700 font-medium"
             >
-              Manage Facility Entitlements
+              Manage Clinic Classifications
             </Button>
           </div>
         </div>

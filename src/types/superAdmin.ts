@@ -244,7 +244,6 @@ export interface SuperAdminAlertRecord {
     | 'super_clinics'
     | 'super_admins'
     | 'super_agreements'
-    | 'super_facilities'
     | 'super_onboarding';
   targetId?: string;
   createdAt: string;

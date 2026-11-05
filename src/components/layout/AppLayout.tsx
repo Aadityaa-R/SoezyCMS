@@ -94,6 +94,16 @@ export const AppLayout: React.FC = () => {
       ? 'dashboard'
       : (hasDashboard ? 'dashboard' : (allowed[0]?.id || 'dashboard'));
 
+    const resolveAllowedTab = (tab: string | null | undefined): string => {
+      if (!tab) return defaultLandingTab;
+      if (currentRole === 'platform_super_admin' && (tab === 'super_facilities' || tab === 'facilities')) {
+        return 'super_clinics';
+      }
+      return isTabAllowed(tab, currentRole, currentUser, modules, currentOrganization?.facilities)
+        ? tab
+        : defaultLandingTab;
+    };
+
     // 1. Fresh sign-in: set active page to Organizations for super admin or Dashboard for others
     if (!prevAuthRef.current) {
       prevAuthRef.current = true;
@@ -101,9 +111,7 @@ export const AppLayout: React.FC = () => {
       clearRememberedLastPage();
       const params = new URLSearchParams(window.location.search);
       const urlTab = params.get('tab');
-      const targetTab = (urlTab && isTabAllowed(urlTab, currentRole, currentUser, modules, currentOrganization?.facilities))
-        ? urlTab
-        : defaultLandingTab;
+      const targetTab = resolveAllowedTab(urlTab);
       setActiveTab(targetTab);
       setActiveSubTab(undefined);
       try {
@@ -139,20 +147,16 @@ export const AppLayout: React.FC = () => {
       hasValidatedInitialSessionRef.current = true;
       const params = new URLSearchParams(window.location.search);
       const tabParam = params.get('tab');
-
-      if (tabParam && isTabAllowed(tabParam, currentRole, currentUser, modules, currentOrganization?.facilities)) {
-        // Keep the page named in ?tab= if allowed (refresh stays on the same page)
-        setActiveTab(tabParam);
-      } else {
-        // When there is no ?tab= or it is not allowed, open the Dashboard
-        setActiveTab(defaultLandingTab);
+      const targetTab = resolveAllowedTab(tabParam);
+      setActiveTab(targetTab);
+      if (targetTab !== tabParam) {
         setActiveSubTab(undefined);
         try {
           const pathname = window.location.pathname.startsWith('/profile') ? '/' : window.location.pathname;
           window.history.replaceState(
             {},
             '',
-            `${pathname}?as=${targetAudience}&tab=${defaultLandingTab}`
+            `${pathname}?as=${targetAudience}&tab=${targetTab}`
           );
         } catch {}
       }
@@ -173,6 +177,11 @@ export const AppLayout: React.FC = () => {
         const tabParam = params.get('tab');
         if (tabParam === 'profile') {
           setActiveTab('profile');
+          setActiveSubTab(undefined);
+          return;
+        }
+        if (currentRole === 'platform_super_admin' && (tabParam === 'super_facilities' || tabParam === 'facilities')) {
+          setActiveTab('super_clinics');
           setActiveSubTab(undefined);
           return;
         }

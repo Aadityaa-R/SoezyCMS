@@ -93,7 +93,8 @@ interface SuperAdminContextType {
     clinicId: string,
     facilityCode: string,
     stateUpdate: { optedStatus?: boolean; entitlementStatus?: boolean; moduleEnabledStatus?: boolean },
-    reason: string
+    reason: string,
+    callerRole?: string
   ) => Promise<void>;
   updateClinicFacilityClassification: (
     clinicId: string,
@@ -645,8 +646,16 @@ export const SuperAdminProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     clinicId: string,
     facilityCode: string,
     stateUpdate: { optedStatus?: boolean; entitlementStatus?: boolean; moduleEnabledStatus?: boolean },
-    reason: string
+    reason: string,
+    callerRole: string = 'platform_super_admin'
   ): Promise<void> => {
+    // Role restriction: Super Admin is blocked from manually toggling individual modules.
+    if (callerRole === 'platform_super_admin' && stateUpdate.moduleEnabledStatus !== undefined) {
+      throw new Error(
+        'Platform Super Admin cannot manually toggle individual operational modules. Facility classification (OPD, IPD, Lab) automatically determines module bundles, while Branch Administrators manage operational features.'
+      );
+    }
+
     const target = state.clinics.find((c) => c.id === clinicId);
     if (!target) return;
 

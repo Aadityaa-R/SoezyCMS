@@ -1054,7 +1054,7 @@ export const INITIAL_ALERTS: SuperAdminAlertRecord[] = [
     severity: 'warning',
     title: 'Facility Entitlement Pending Verification',
     description: 'Beacon Health Clinic opted for Radiology module, but it is not authorized under the current SOEZY SLA agreement.',
-    targetTab: 'super_facilities',
+    targetTab: 'super_clinics',
     targetId: 'CLN-004',
     createdAt: '2026-03-01T00:00:00.000Z',
   },

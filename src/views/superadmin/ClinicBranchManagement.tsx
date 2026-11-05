@@ -8,7 +8,6 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-  ArrowLeft,
   FileText,
   CheckCircle2,
   Clock,
@@ -86,24 +85,45 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
   const [newRegNumber, setNewRegNumber] = useState('');
   const [newFacilityClassifications, setNewFacilityClassifications] = useState<FacilityClassification[]>(['OPD']);
 
-  // Classification modal state
-  const [classificationModalClinic, setClassificationModalClinic] = useState<ClinicAdministrativeProfile | null>(null);
-  const [selectedClassifications, setSelectedClassifications] = useState<FacilityClassification[]>(['OPD']);
-  const [classificationReason, setClassificationReason] = useState('');
-  const [classificationError, setClassificationError] = useState('');
-  const [isSavingClassification, setIsSavingClassification] = useState(false);
+  // Inline facility classification state for viewing main branch
+  const [mainBranchClassifications, setMainBranchClassifications] = useState<FacilityClassification[]>(['OPD']);
+  const [isSavingMainClassification, setIsSavingMainClassification] = useState(false);
+  const [mainBranchSaveError, setMainBranchSaveError] = useState('');
+  const [mainBranchSaveFeedback, setMainBranchSaveFeedback] = useState<string | null>(null);
 
-  const toggleClassification = (type: FacilityClassification) => {
-    setSelectedClassifications((prev) => {
+  // Inline facility classification state for viewing side branch
+  const [sideBranchClassifications, setSideBranchClassifications] = useState<FacilityClassification[]>(['OPD']);
+  const [isSavingSideClassification, setIsSavingSideClassification] = useState(false);
+  const [sideBranchSaveError, setSideBranchSaveError] = useState('');
+  const [sideBranchSaveFeedback, setSideBranchSaveFeedback] = useState<string | null>(null);
+
+  const toggleMainClassification = (type: FacilityClassification) => {
+    setMainBranchClassifications((prev) => {
       if (prev.includes(type)) {
         if (prev.length <= 1) {
-          setClassificationError('At least one facility classification (OPD, IPD, or Lab) must remain selected.');
+          setMainBranchSaveError('At least one facility classification (OPD, IPD, or Lab) must remain selected.');
           return prev;
         }
-        setClassificationError('');
+        setMainBranchSaveError('');
         return prev.filter((t) => t !== type);
       } else {
-        setClassificationError('');
+        setMainBranchSaveError('');
+        return [...prev, type];
+      }
+    });
+  };
+
+  const toggleSideClassification = (type: FacilityClassification) => {
+    setSideBranchClassifications((prev) => {
+      if (prev.includes(type)) {
+        if (prev.length <= 1) {
+          setSideBranchSaveError('At least one facility classification (OPD, IPD, or Lab) must remain selected.');
+          return prev;
+        }
+        setSideBranchSaveError('');
+        return prev.filter((t) => t !== type);
+      } else {
+        setSideBranchSaveError('');
         return [...prev, type];
       }
     });
@@ -125,35 +145,53 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
     });
   };
 
-  const openClassificationModal = (clinic: ClinicAdministrativeProfile) => {
-    setClassificationModalClinic(clinic);
-    setSelectedClassifications(getClinicClassifications(clinic));
-    setClassificationReason('');
-    setClassificationError('');
-  };
-
-  const handleSaveClassification = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!classificationModalClinic) return;
-    if (selectedClassifications.length === 0) {
-      setClassificationError('Please select at least one facility classification.');
+  const handleSaveMainClassification = async () => {
+    if (!viewingMainBranch) return;
+    if (mainBranchClassifications.length === 0) {
+      setMainBranchSaveError('Please select at least one facility classification.');
       return;
     }
 
-    setIsSavingClassification(true);
-    setClassificationError('');
+    setIsSavingMainClassification(true);
+    setMainBranchSaveError('');
+    setMainBranchSaveFeedback(null);
 
     try {
       await updateClinicFacilityClassification(
-        classificationModalClinic.id,
-        selectedClassifications,
-        classificationReason || `Updated facility classification to ${selectedClassifications.join(', ')}`
+        viewingMainBranch.id,
+        mainBranchClassifications,
+        `Updated facility classification to ${mainBranchClassifications.join(', ')}`
       );
-      setClassificationModalClinic(null);
+      setMainBranchSaveFeedback('Classification saved successfully.');
     } catch (err: any) {
-      setClassificationError(err?.message || 'Failed to update facility classification.');
+      setMainBranchSaveError(err?.message || 'Failed to update facility classification.');
     } finally {
-      setIsSavingClassification(false);
+      setIsSavingMainClassification(false);
+    }
+  };
+
+  const handleSaveSideClassification = async () => {
+    if (!viewingSideBranch) return;
+    if (sideBranchClassifications.length === 0) {
+      setSideBranchSaveError('Please select at least one facility classification.');
+      return;
+    }
+
+    setIsSavingSideClassification(true);
+    setSideBranchSaveError('');
+    setSideBranchSaveFeedback(null);
+
+    try {
+      await updateClinicFacilityClassification(
+        viewingSideBranch.id,
+        sideBranchClassifications,
+        `Updated facility classification to ${sideBranchClassifications.join(', ')}`
+      );
+      setSideBranchSaveFeedback('Classification saved successfully.');
+    } catch (err: any) {
+      setSideBranchSaveError(err?.message || 'Failed to update facility classification.');
+    } finally {
+      setIsSavingSideClassification(false);
     }
   };
 
@@ -242,6 +280,23 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
       setSelectedClinicId(viewingMainBranchId);
     }
   }, [viewingSideBranchId, viewingMainBranchId, setSelectedClinicId]);
+
+  // Synchronize inline classification state when selecting or changing branch
+  useEffect(() => {
+    if (viewingMainBranch) {
+      setMainBranchClassifications(getClinicClassifications(viewingMainBranch));
+      setMainBranchSaveFeedback(null);
+      setMainBranchSaveError('');
+    }
+  }, [viewingMainBranchId]);
+
+  useEffect(() => {
+    if (viewingSideBranch) {
+      setSideBranchClassifications(getClinicClassifications(viewingSideBranch));
+      setSideBranchSaveFeedback(null);
+      setSideBranchSaveError('');
+    }
+  }, [viewingSideBranchId]);
 
   // Handle register clinic submit
   const handleRegisterSubmit = async (e: React.FormEvent) => {
@@ -427,127 +482,6 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
           </form>
         </Modal>
       )}
-
-      {classificationModalClinic && (
-        <Modal
-          isOpen={true}
-          onClose={() => !isSavingClassification && setClassificationModalClinic(null)}
-          title={`Update Facility Classification: ${classificationModalClinic.name}`}
-          description="Classify this branch strictly using OPD, IPD, and Lab. Functional module bundles and billing features are automatically provisioned."
-          maxWidth="md"
-          footer={
-            <div className="flex items-center justify-end gap-2 w-full">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setClassificationModalClinic(null)}
-                disabled={isSavingClassification}
-                className="text-xs rounded border border-slate-300 dark:border-slate-700"
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={handleSaveClassification}
-                disabled={isSavingClassification}
-                className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
-              >
-                {isSavingClassification ? 'Saving Classification...' : 'Save Classification'}
-              </Button>
-            </div>
-          }
-        >
-          <form onSubmit={handleSaveClassification} className="space-y-4 text-xs">
-            {classificationError && (
-              <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 rounded text-xs">
-                {classificationError}
-              </div>
-            )}
-
-            <div>
-              <label className="block text-slate-800 dark:text-slate-200 font-semibold mb-1.5">
-                Select Approved Facility Types (Only OPD, IPD, and Lab permitted)
-              </label>
-              <div className="space-y-2">
-                {FACILITY_CLASSIFICATIONS.map((type) => {
-                  const bundle = FACILITY_TYPE_BUNDLES[type];
-                  const isChecked = selectedClassifications.includes(type);
-
-                  return (
-                    <label
-                      key={type}
-                      className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                        isChecked
-                          ? 'border-slate-300 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-950/60'
-                          : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50/50'
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => toggleClassification(type)}
-                        className="mt-0.5 rounded border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold text-slate-900 dark:text-slate-100">
-                            {bundle.name} ({bundle.shortCode})
-                          </span>
-                          <span className="text-[11px] font-mono text-slate-500">
-                            {bundle.modules.length} modules
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
-                          {bundle.description}
-                        </p>
-                      </div>
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Live Preview of Resulting Module Bundle */}
-            <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/40">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="font-semibold text-slate-800 dark:text-slate-200">
-                  Automated Module Bundle Preview
-                </span>
-                <span className="font-mono text-slate-600 dark:text-slate-400">
-                  {calculateModulesForClassifications(selectedClassifications).length} deduplicated modules
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-1 text-[11px]">
-                {calculateModulesForClassifications(selectedClassifications).map((m) => (
-                  <span
-                    key={m}
-                    className="px-2 py-0.5 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
-                  >
-                    {m}
-                  </span>
-                ))}
-              </div>
-              <p className="text-[11px] text-slate-500 mt-2">
-                Note: Operational modules cannot be toggled individually. Selecting facility types automatically provisions all required functionality including specialized billing.
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-slate-700 dark:text-slate-300 font-medium mb-1">
-                Administrative Justification / Reason (Optional)
-              </label>
-              <textarea
-                rows={2}
-                placeholder="State reason for facility classification adjustment..."
-                value={classificationReason}
-                onChange={(e) => setClassificationReason(e.target.value)}
-                className="w-full px-3 py-1.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 focus:outline-none resize-none"
-              />
-            </div>
-          </form>
-        </Modal>
-      )}
     </>
   );
 
@@ -568,24 +502,52 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
 
     return (
       <div className="space-y-4">
-        {/* Navigation Breadcrumb / Back button */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setViewingSideBranchId(null)}
-              className="px-2.5 py-1 text-xs font-medium rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Parent Main Branch</span>
-            </button>
-            <span className="text-xs text-slate-400">/</span>
-            <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+        {/* Navigation Breadcrumb matching mockup */}
+        <nav className="flex items-center gap-2 text-xs text-slate-500">
+          <button
+            type="button"
+            onClick={() => {
+              setViewingMainBranchId(null);
+              setViewingSideBranchId(null);
+            }}
+            className="text-teal-600 dark:text-teal-400 hover:underline cursor-pointer font-medium"
+          >
+            Clinics
+          </button>
+          <span>/</span>
+          {parentOfSideBranch && (
+            <>
+              <button
+                type="button"
+                onClick={() => setViewingSideBranchId(null)}
+                className="text-teal-600 dark:text-teal-400 hover:underline cursor-pointer font-medium"
+              >
+                {parentOfSideBranch.name}
+              </button>
+              <span>/</span>
+            </>
+          )}
+          <span className="text-slate-900 dark:text-slate-100 font-semibold">
+            {viewingSideBranch.name}
+          </span>
+        </nav>
+
+        {/* Page Heading & Status */}
+        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
               {viewingSideBranch.name}
-            </span>
+            </h1>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Side branch &bull; {viewingSideBranch.code} &bull; {viewingSideBranch.city}, {viewingSideBranch.state}
+              {parentOfSideBranch && ` &bull; Affiliated with ${parentOfSideBranch.name}`}
+            </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Status: <span className="font-semibold text-emerald-600 dark:text-emerald-400 capitalize">{viewingSideBranch.status.replace(/_/g, ' ')}</span>
+            </div>
             <Button
               size="sm"
               variant="outline"
@@ -602,23 +564,65 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
           </div>
         </div>
 
-        {/* Parent-Child Relationship Banner */}
-        <div className="p-3 bg-slate-50 dark:bg-slate-950/40 border border-slate-200 dark:border-slate-800 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-          <div>
-            <span className="text-slate-500 font-medium">Affiliated Main Branch: </span>
-            <span className="font-semibold text-slate-900 dark:text-slate-100">
-              {parentOfSideBranch ? parentOfSideBranch.name : 'Central Healthcare Organization'}
-            </span>
-            {parentOfSideBranch && (
-              <span className="text-[11px] font-mono text-slate-500 ml-1.5">
-                ({parentOfSideBranch.code})
-              </span>
-            )}
+        {/* Card 1: Facility Classification matching approved mockup */}
+        <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-5 shadow-xs space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                Facility Classification
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Choose the services offered at this location.
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              disabled={isSavingSideClassification}
+              onClick={handleSaveSideClassification}
+              className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-colors shrink-0"
+            >
+              {isSavingSideClassification ? 'Saving...' : 'Save classification'}
+            </Button>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] uppercase tracking-wider text-slate-500 font-mono">Branch Hierarchy:</span>
-            <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
-              Side Branch
+
+          {sideBranchSaveError && (
+            <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 rounded text-xs">
+              {sideBranchSaveError}
+            </div>
+          )}
+
+          {sideBranchSaveFeedback && (
+            <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 rounded text-xs">
+              {sideBranchSaveFeedback}
+            </div>
+          )}
+
+          <div className="flex items-center gap-8 pt-1">
+            {FACILITY_CLASSIFICATIONS.map((facType) => {
+              const isChecked = sideBranchClassifications.includes(facType);
+              return (
+                <label key={facType} className="inline-flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => toggleSideClassification(facType)}
+                    className="w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer accent-teal-600"
+                  />
+                  <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                    {facType}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+            <span className="font-bold text-slate-900 dark:text-slate-100">
+              Automatically enabled
+            </span>
+            <span className="text-slate-600 dark:text-slate-400">
+              {sideBranchClassifications.map((t) => `${t} workflows and billing`).join(' • ') || 'None'}
             </span>
           </div>
         </div>
@@ -627,7 +631,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Section A: Side Branch Overview
+              Side Branch Administrative Details
             </h2>
             <div className="flex items-center gap-2">
               {renderStatusBadge(viewingSideBranch.status)}
@@ -682,12 +686,9 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
               <div className="mt-0.5">{renderStatusBadge(viewingSideBranch.status)}</div>
             </div>
             <div>
-              <span className="text-slate-500 block text-[11px]">Facility Classification</span>
+              <span className="text-slate-500 block text-[11px]">Current Approved Classification</span>
               <span className="font-semibold text-slate-900 dark:text-slate-100">
                 {formatClassifications(viewingSideBranch.facilityClassifications || viewingSideBranch.optedFacilities)}
-              </span>
-              <span className="text-slate-500 text-[11px] block mt-0.5 font-mono">
-                ({calculateModulesForClassifications(getClinicClassifications(viewingSideBranch)).length} automated modules)
               </span>
             </div>
           </div>
@@ -697,7 +698,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Section C: Licence Agreement Details
+              Licence Agreement Details
             </h2>
             <button
               type="button"
@@ -747,99 +748,11 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
           )}
         </div>
 
-        {/* Section D: Facility Classification & Automated Module Entitlements */}
-        <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
-            <div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                Section D: Facility Classification & Automated Module Entitlements
-              </h2>
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                Classify facility wings (OPD, IPD, Lab). Side branches maintain independent classifications from their parent main branch.
-              </p>
-            </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => openClassificationModal(viewingSideBranch)}
-              className="text-xs rounded border border-slate-300 dark:border-slate-700 cursor-pointer self-start sm:self-auto"
-            >
-              Update Facility Classification
-            </Button>
-          </div>
-
-          {/* Active Facility Classifications (Only 3 permitted: OPD, IPD, Lab) */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {FACILITY_CLASSIFICATIONS.map((facType) => {
-              const bundle = FACILITY_TYPE_BUNDLES[facType];
-              const currentClassifications = getClinicClassifications(viewingSideBranch);
-              const isAssigned = currentClassifications.includes(facType);
-
-              return (
-                <div
-                  key={facType}
-                  className={`p-3 rounded-lg border transition-colors ${
-                    isAssigned
-                      ? 'border-slate-300 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-950/60'
-                      : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 opacity-60'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold text-xs text-slate-900 dark:text-slate-100">
-                      {bundle.name} ({bundle.shortCode})
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-900 dark:text-slate-100">
-                      <span className={`w-1.5 h-1.5 rounded-full ${isAssigned ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'} shrink-0`} />
-                      <span>{isAssigned ? 'Classified' : 'Not Opted'}</span>
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mb-2">
-                    {bundle.description}
-                  </p>
-                  <div className="text-[11px] text-slate-500">
-                    <span className="font-medium text-slate-700 dark:text-slate-300 block mb-1">Predefined Modules:</span>
-                    <ul className="list-disc list-inside space-y-0.5 text-[10px] text-slate-600 dark:text-slate-400">
-                      {bundle.modules.map((m) => (
-                        <li key={m}>{m}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Combined Deduplicated Modules Display */}
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
-                Automatically Provisioned CMS Operational Modules ({calculateModulesForClassifications(getClinicClassifications(viewingSideBranch)).length} Total)
-              </span>
-              <span className="text-[11px] text-slate-500 font-mono">
-                Derived strictly from approved side branch facilities
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {calculateModulesForClassifications(getClinicClassifications(viewingSideBranch)).map((modName) => (
-                <span
-                  key={modName}
-                  className="text-[11px] px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 text-slate-800 dark:text-slate-200 font-medium"
-                >
-                  {modName}
-                </span>
-              ))}
-            </div>
-            <p className="text-[11px] text-slate-500 mt-2.5">
-              Administrative Note: Each side branch maintains its own facility classification independently of the parent main branch. Super Admin controls classification only; individual operational modules cannot be manually toggled.
-            </p>
-          </div>
-        </div>
-
         {/* Section E: Onboarding Details */}
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Section E: Branch Onboarding Details
+              Branch Onboarding Details
             </h2>
             <button
               type="button"
@@ -884,7 +797,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Section F: Administrative Activity & Audit Trail
+              Administrative Activity & Audit Trail
             </h2>
           </div>
 
@@ -940,27 +853,39 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
 
     return (
       <div className="space-y-4">
-        {/* Navigation Breadcrumb & Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setViewingMainBranchId(null);
-                setViewingSideBranchId(null);
-              }}
-              className="px-2.5 py-1 text-xs font-medium rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Main Branches</span>
-            </button>
-            <span className="text-xs text-slate-400">/</span>
-            <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+        {/* Navigation Breadcrumb matching mockup */}
+        <nav className="flex items-center gap-2 text-xs text-slate-500">
+          <button
+            type="button"
+            onClick={() => {
+              setViewingMainBranchId(null);
+              setViewingSideBranchId(null);
+            }}
+            className="text-teal-600 dark:text-teal-400 hover:underline cursor-pointer font-medium"
+          >
+            Clinics
+          </button>
+          <span>/</span>
+          <span className="text-slate-900 dark:text-slate-100 font-semibold">
+            {viewingMainBranch.name}
+          </span>
+        </nav>
+
+        {/* Page Heading & Status */}
+        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
               {viewingMainBranch.name}
-            </span>
+            </h1>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Main branch &bull; {viewingMainBranch.code} &bull; {viewingMainBranch.city}, {viewingMainBranch.state}
+            </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Status: <span className="font-semibold text-emerald-600 dark:text-emerald-400 capitalize">{viewingMainBranch.status.replace(/_/g, ' ')}</span>
+            </div>
             <Button
               size="sm"
               variant="outline"
@@ -977,12 +902,138 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
           </div>
         </div>
 
+        {/* Card 1: Facility Classification matching approved mockup */}
+        <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-5 shadow-xs space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                Facility Classification
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Choose the services offered at this location.
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              disabled={isSavingMainClassification}
+              onClick={handleSaveMainClassification}
+              className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold px-4 py-2 rounded-lg cursor-pointer transition-colors shrink-0"
+            >
+              {isSavingMainClassification ? 'Saving...' : 'Save classification'}
+            </Button>
+          </div>
+
+          {mainBranchSaveError && (
+            <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 rounded text-xs">
+              {mainBranchSaveError}
+            </div>
+          )}
+
+          {mainBranchSaveFeedback && (
+            <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300 rounded text-xs">
+              {mainBranchSaveFeedback}
+            </div>
+          )}
+
+          <div className="flex items-center gap-8 pt-1">
+            {FACILITY_CLASSIFICATIONS.map((facType) => {
+              const isChecked = mainBranchClassifications.includes(facType);
+              return (
+                <label key={facType} className="inline-flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => toggleMainClassification(facType)}
+                    className="w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer accent-teal-600"
+                  />
+                  <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                    {facType}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+            <span className="font-bold text-slate-900 dark:text-slate-100">
+              Automatically enabled
+            </span>
+            <span className="text-slate-600 dark:text-slate-400">
+              {mainBranchClassifications.map((t) => `${t} workflows and billing`).join(' • ') || 'None'}
+            </span>
+          </div>
+        </div>
+
+        {/* Card 2: Side branches matching approved mockup */}
+        <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-5 shadow-xs space-y-3">
+          <div className="flex items-center justify-between pb-1">
+            <div>
+              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                Side branches
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Side branches grouped under {viewingMainBranch.name}
+              </p>
+            </div>
+            <span className="text-xs font-mono font-medium text-slate-500">
+              {linkedSideBranches.length} {linkedSideBranches.length === 1 ? 'branch' : 'branches'}
+            </span>
+          </div>
+
+          {linkedSideBranches.length === 0 ? (
+            <div className="py-6 text-center text-slate-500 dark:text-slate-400 text-xs">
+              No side branches are currently linked to this main branch.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>BRANCH</TableHead>
+                  <TableHead>FACILITY TYPES</TableHead>
+                  <TableHead>APPOINTED ADMIN</TableHead>
+                  <TableHead isActions className="text-right">ACTION</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {linkedSideBranches.map((side) => {
+                  const sideClassifications = getClinicClassifications(side);
+                  return (
+                    <TableRow key={side.id}>
+                      <TableCell className="font-semibold text-slate-900 dark:text-slate-100">
+                        {side.name}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-teal-700 dark:text-teal-300 font-medium">
+                          {formatClassifications(sideClassifications)}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-slate-800 dark:text-slate-200">
+                        {side.appointedAdminName || 'None Appointed'}
+                      </TableCell>
+                      <TableCell isActions className="text-right">
+                        <button
+                          type="button"
+                          onClick={() => setViewingSideBranchId(side.id)}
+                          className="text-xs font-semibold text-teal-600 dark:text-teal-400 hover:text-teal-700 hover:underline cursor-pointer"
+                        >
+                          View Details
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+
         {/* Section A: Main Branch Overview */}
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
             <div>
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                Section A: Main Branch Overview
+                Main Branch Administrative Details
               </h2>
             </div>
             <div className="flex items-center gap-3">
@@ -1043,126 +1094,19 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
               </span>
             </div>
             <div>
-              <span className="text-slate-500 block text-[11px]">Facility Classification</span>
+              <span className="text-slate-500 block text-[11px]">Approved Facility Classification</span>
               <span className="font-semibold text-slate-900 dark:text-slate-100">
                 {formatClassifications(viewingMainBranch.facilityClassifications || viewingMainBranch.optedFacilities)}
               </span>
-              <span className="text-slate-500 text-[11px] block mt-0.5 font-mono">
-                ({calculateModulesForClassifications(getClinicClassifications(viewingMainBranch)).length} automated modules)
-              </span>
             </div>
           </div>
-        </div>
-
-        {/* Section B: Side Branches (Important Section) */}
-        <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-            <div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                Section B: Side Branches Grouped Under {viewingMainBranch.name}
-              </h2>
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                Hierarchy: {viewingMainBranch.name} (Main Branch) &rarr; {linkedSideBranches.length} Linked Side {linkedSideBranches.length === 1 ? 'Branch' : 'Branches'}
-              </p>
-            </div>
-            <span className="text-xs font-mono font-medium text-slate-600 dark:text-slate-400">
-              ({linkedSideBranches.length} total)
-            </span>
-          </div>
-
-          {linkedSideBranches.length === 0 ? (
-            <div className="py-8 text-center text-slate-500 dark:text-slate-400 text-xs">
-              No side branches are currently linked to this main branch.
-            </div>
-          ) : (
-            <Table pinLeading={true}>
-              <TableHeader>
-                <TableRow>
-                  <TableHead pinned>Side Branch Name</TableHead>
-                  <TableHead>Branch Code</TableHead>
-                  <TableHead>Branch Type</TableHead>
-                  <TableHead>Classification</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Appointed Admin</TableHead>
-                  <TableHead>Agreement</TableHead>
-                  <TableHead>Onboarding</TableHead>
-                  <TableHead>Activation</TableHead>
-                  <TableHead isActions className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {linkedSideBranches.map((side) => (
-                  <TableRow key={side.id}>
-                    <TableCell pinned isPrimary>
-                      <div className="font-semibold text-slate-900 dark:text-slate-100">
-                        {side.name}
-                      </div>
-                      <div className="text-[11px] font-mono text-slate-500">
-                        {side.registrationNumber}
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-mono text-slate-700 dark:text-slate-300">
-                      {side.code}
-                    </TableCell>
-                    <TableCell className="capitalize text-slate-600 dark:text-slate-400">
-                      {side.branchType.replace(/_/g, ' ')}
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-semibold text-slate-900 dark:text-slate-100">
-                        {formatClassifications(side.facilityClassifications || side.optedFacilities)}
-                      </span>
-                      <span className="text-[11px] text-slate-500 block font-mono">
-                        {calculateModulesForClassifications(getClinicClassifications(side)).length} modules
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-slate-700 dark:text-slate-300">
-                      {side.city}, {side.state}
-                    </TableCell>
-                    <TableCell>
-                      {side.appointedAdminName ? (
-                        <div>
-                          <span className="font-medium text-slate-900 dark:text-slate-100">
-                            {side.appointedAdminName}
-                          </span>
-                          <span className="text-[11px] text-slate-400 block font-mono">
-                            {side.appointedAdminEmail}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-slate-400 italic">Unassigned</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {renderStatusBadge(side.agreementStatus || 'Active')}
-                    </TableCell>
-                    <TableCell>
-                      {renderStatusBadge(side.onboardingStatus)}
-                    </TableCell>
-                    <TableCell>
-                      {renderStatusBadge(side.status)}
-                    </TableCell>
-                    <TableCell isActions className="text-right">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setViewingSideBranchId(side.id)}
-                        className="text-xs rounded border border-slate-300 dark:border-slate-700 cursor-pointer font-medium"
-                      >
-                        View Details
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
         </div>
 
         {/* Section C: Agreement Details */}
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Section C: Licence Agreement Details
+              Licence Agreement Details
             </h2>
             <button
               type="button"
@@ -1210,94 +1154,6 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
               No licence agreement record currently active for this main branch.
             </p>
           )}
-        </div>
-
-        {/* Section D: Facility Classification & Automated Module Entitlements */}
-        <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
-            <div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                Section D: Facility Classification & Automated Module Entitlements
-              </h2>
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                Classify facility wings (OPD, IPD, Lab). Functional modules and billing workflows are provisioned automatically.
-              </p>
-            </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => openClassificationModal(viewingMainBranch)}
-              className="text-xs rounded border border-slate-300 dark:border-slate-700 cursor-pointer self-start sm:self-auto"
-            >
-              Update Facility Classification
-            </Button>
-          </div>
-
-          {/* Active Facility Classifications (Only 3 permitted: OPD, IPD, Lab) */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {FACILITY_CLASSIFICATIONS.map((facType) => {
-              const bundle = FACILITY_TYPE_BUNDLES[facType];
-              const currentClassifications = getClinicClassifications(viewingMainBranch);
-              const isAssigned = currentClassifications.includes(facType);
-
-              return (
-                <div
-                  key={facType}
-                  className={`p-3 rounded-lg border transition-colors ${
-                    isAssigned
-                      ? 'border-slate-300 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-950/60'
-                      : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 opacity-60'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold text-xs text-slate-900 dark:text-slate-100">
-                      {bundle.name} ({bundle.shortCode})
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-900 dark:text-slate-100">
-                      <span className={`w-1.5 h-1.5 rounded-full ${isAssigned ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'} shrink-0`} />
-                      <span>{isAssigned ? 'Classified' : 'Not Opted'}</span>
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mb-2">
-                    {bundle.description}
-                  </p>
-                  <div className="text-[11px] text-slate-500">
-                    <span className="font-medium text-slate-700 dark:text-slate-300 block mb-1">Predefined Modules:</span>
-                    <ul className="list-disc list-inside space-y-0.5 text-[10px] text-slate-600 dark:text-slate-400">
-                      {bundle.modules.map((m) => (
-                        <li key={m}>{m}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Combined Deduplicated Modules Display */}
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
-                Automatically Provisioned CMS Operational Modules ({calculateModulesForClassifications(getClinicClassifications(viewingMainBranch)).length} Total)
-              </span>
-              <span className="text-[11px] text-slate-500 font-mono">
-                Derived strictly from selected facility classifications
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {calculateModulesForClassifications(getClinicClassifications(viewingMainBranch)).map((modName) => (
-                <span
-                  key={modName}
-                  className="text-[11px] px-2 py-1 rounded border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 text-slate-800 dark:text-slate-200 font-medium"
-                >
-                  {modName}
-                </span>
-              ))}
-            </div>
-            <p className="text-[11px] text-slate-500 mt-2.5">
-              Administrative Note: Super Admin manages only the facility classification (OPD, IPD, Lab). Predefined module bundles and billing features are automatically enabled without duplicating shared modules. Super Admin cannot individually toggle operational modules; internal desk configurations are governed by the Clinic Administrator.
-            </p>
-          </div>
         </div>
 
         {/* Section E: Onboarding Details */}

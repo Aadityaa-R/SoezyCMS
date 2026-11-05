@@ -4,7 +4,6 @@ import { SuperAdminDashboard } from './SuperAdminDashboard';
 import { ClinicBranchManagement } from './ClinicBranchManagement';
 import { AdminManagement } from './AdminManagement';
 import { AgreementManagement } from './AgreementManagement';
-import { FacilityManagement } from './FacilityManagement';
 import { BranchOnboarding } from './BranchOnboarding';
 import { SuperAdminReports } from './SuperAdminReports';
 import { SuperAdminAlerts } from './SuperAdminAlerts';
@@ -21,9 +20,10 @@ const SuperAdminPortalContent: React.FC<{
 }> = ({ initialTab = 'super_dashboard', onNavigateGlobal }) => {
   const { setSelectedClinicId } = useSuperAdmin();
 
-  // Map incoming tab or internal tab
+  // Map incoming tab or internal tab (redirect old facilities URL to clinics)
   const normalizeTab = (tab: string) => {
     if (tab === 'organizations' || tab === 'dashboard') return 'super_dashboard';
+    if (tab === 'super_facilities' || tab === 'facilities') return 'super_clinics';
     return tab;
   };
 
@@ -36,12 +36,13 @@ const SuperAdminPortalContent: React.FC<{
   }, [initialTab]);
 
   const handleTabSelect = (tabKey: string, clinicId?: string) => {
-    setCurrentTab(tabKey);
+    const resolved = normalizeTab(tabKey);
+    setCurrentTab(resolved);
     if (clinicId) {
       setSelectedClinicId(clinicId);
     }
     if (onNavigateGlobal) {
-      onNavigateGlobal(tabKey);
+      onNavigateGlobal(resolved);
     }
   };
 
@@ -58,9 +59,6 @@ const SuperAdminPortalContent: React.FC<{
       )}
       {currentTab === 'super_agreements' && (
         <AgreementManagement onNavigateTab={handleTabSelect} />
-      )}
-      {currentTab === 'super_facilities' && (
-        <FacilityManagement />
       )}
       {currentTab === 'super_onboarding' && (
         <BranchOnboarding />

@@ -67,56 +67,69 @@ describe('ClinicBranchManagement - Card-Based Hierarchy & Pagination', () => {
     expect(screen.getByRole('button', { name: /Inactive \/ Suspended \(1\)/i })).toBeTruthy();
   });
 
-  it('clicking View Details on a main branch opens Main Branch Details with all required sections and linked side branches', () => {
+  it('clicking View Details on a main branch opens Main Branch Details with all required sections and linked side branches matching mockup', () => {
     renderComponent();
 
     // Find View Details buttons for main branch cards
     const viewButtons = screen.getAllByRole('button', { name: /View Details/i });
-    fireEvent.click(viewButtons[0]); // Subiksham
+    fireEvent.click(viewButtons[0]); // Subiksham Speciality Hospital
 
-    // Section A: Main Branch Overview
-    expect(screen.getByText(/Section A: Main Branch Overview/i)).toBeTruthy();
-    expect(screen.getByText(/MED-REG-MH-2024-8849/)).toBeTruthy();
+    // Breadcrumb
+    expect(screen.getByRole('button', { name: 'Clinics' })).toBeTruthy();
+    expect(screen.getAllByText('Subiksham Speciality Hospital').length).toBeGreaterThan(0);
 
-    // Section B: Side Branches table
-    expect(screen.getByText(/Section B: Side Branches Grouped Under Subiksham Speciality Hospital/i)).toBeTruthy();
+    // Card 1: Inline Facility Classification matching mockup
+    expect(screen.getByText('Facility Classification')).toBeTruthy();
+    expect(screen.getByText('Choose the services offered at this location.')).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Save classification/i })).toBeTruthy();
+    expect(screen.getByText('Automatically enabled')).toBeTruthy();
+
+    // Card 2: Side branches table
+    expect(screen.getByText('Side branches')).toBeTruthy();
     expect(screen.getByText('Subiksham Oncology Center')).toBeTruthy();
     expect(screen.getByText('Subiksham Outpatient Wing (West Campus)')).toBeTruthy();
     expect(screen.getByText('Subiksham Diagnostics & Day Care')).toBeTruthy();
 
-    // Section C: Agreement Details
-    expect(screen.getByText(/Section C: Licence Agreement Details/i)).toBeTruthy();
+    // Administrative sections
+    expect(screen.getByText('Main Branch Administrative Details')).toBeTruthy();
+    expect(screen.getByText('Licence Agreement Details')).toBeTruthy();
     expect(screen.getByText('AGR-2025-SOEZY-SUB01')).toBeTruthy();
-
-    // Section D: Facility Classification & Automated Module Entitlements
-    expect(screen.getByText(/Section D: Facility Classification/i)).toBeTruthy();
-
-    // Section E: Onboarding Details
-    expect(screen.getByText(/Section E: Branch Onboarding Details/i)).toBeTruthy();
-
-    // Section F: Administrative Activity
-    expect(screen.getByText(/Section F: Administrative Activity & Audit Trail/i)).toBeTruthy();
+    expect(screen.getByText(/Branch Onboarding Details/i)).toBeTruthy();
+    expect(screen.getByText(/Administrative Activity/i)).toBeTruthy();
   });
 
-  it('clicking a side branch in Section B opens its own details and provides back navigation', () => {
+  it('clicking a side branch opens its own details with independent classification and provides breadcrumb back navigation', () => {
     renderComponent();
 
     // Open Subiksham details
     const viewButtons = screen.getAllByRole('button', { name: /View Details/i });
     fireEvent.click(viewButtons[0]);
 
-    // Click View Details on Subiksham Oncology Center side branch
+    // Click View Details on Subiksham Oncology Center side branch in the Side branches table
     const sideBranchViewButtons = screen.getAllByRole('button', { name: /View Details/i });
     fireEvent.click(sideBranchViewButtons[0]);
 
     // Side branch detail view
-    expect(screen.getByText(/Affiliated Main Branch:/i)).toBeTruthy();
     expect(screen.getAllByText('Subiksham Oncology Center').length).toBeGreaterThan(0);
-    expect(screen.getByRole('button', { name: /Back to Parent Main Branch/i })).toBeTruthy();
+    expect(screen.getByText('Facility Classification')).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Save classification/i })).toBeTruthy();
 
-    // Click back to parent main branch
-    fireEvent.click(screen.getByRole('button', { name: /Back to Parent Main Branch/i }));
-    expect(screen.getByText(/Section B: Side Branches Grouped Under Subiksham Speciality Hospital/i)).toBeTruthy();
+    // Breadcrumb navigation back to parent main branch
+    const parentBreadcrumbBtn = screen.getByRole('button', { name: 'Subiksham Speciality Hospital' });
+    expect(parentBreadcrumbBtn).toBeTruthy();
+    fireEvent.click(parentBreadcrumbBtn);
+
+    // Now back on Subiksham Speciality Hospital details
+    expect(screen.getByText('Side branches')).toBeTruthy();
+    expect(screen.getByText('Subiksham Oncology Center')).toBeTruthy();
+
+    // Breadcrumb navigation back to Clinics list
+    const clinicsBreadcrumbBtn = screen.getByRole('button', { name: 'Clinics' });
+    expect(clinicsBreadcrumbBtn).toBeTruthy();
+    fireEvent.click(clinicsBreadcrumbBtn);
+
+    // Now back on main branch card listing
+    expect(screen.getByText(/Showing 1[–-]3 of 5 main branches/i)).toBeTruthy();
   });
 
   it('resets pagination to page 1 when search or tab filters change', () => {
@@ -169,24 +182,49 @@ describe('ClinicBranchManagement - Card-Based Hierarchy & Pagination', () => {
     expect(screen.getAllByText('OPD, IPD, Lab').length).toBeGreaterThan(0);
   });
 
-  it('displays side branch independent classification and allows updating classification', async () => {
+  it('displays side branch independent classification and allows inline editing and saving', async () => {
     renderComponent();
 
     // Open Subiksham details
     const viewButtons = screen.getAllByRole('button', { name: /View Details/i });
     fireEvent.click(viewButtons[0]);
 
-    // Section B shows side branch independent classifications
+    // Side branches table shows independent classifications
     expect(screen.getByText('OPD, IPD')).toBeTruthy(); // Subiksham Oncology Center
-    expect(screen.getByText('Lab')).toBeTruthy(); // Subiksham Diagnostics & Day Care
+    expect(screen.getAllByText('OPD').length).toBeGreaterThan(0); // West Campus and checkbox
 
-    // Open Section D update modal on main branch
-    const updateButtons = screen.getAllByRole('button', { name: /Update Facility Classification/i });
-    expect(updateButtons.length).toBeGreaterThan(0);
-    fireEvent.click(updateButtons[0]);
+    // Main branch has inline Facility Classification card
+    expect(screen.getByText('Facility Classification')).toBeTruthy();
+    const saveBtn = screen.getByRole('button', { name: /Save classification/i });
+    expect(saveBtn).toBeTruthy();
 
-    // Modal opens with 3 allowed facility types
-    expect(screen.getByText(/Select Approved Facility Types/i)).toBeTruthy();
-    expect(screen.getByText(/Automated Module Bundle Preview/i)).toBeTruthy();
+    // Save classification
+    fireEvent.click(saveBtn);
+    expect(await screen.findByText(/Classification saved successfully/i)).toBeTruthy();
+  });
+
+  it('allows side branch classification to be updated independently without altering the parent main branch', async () => {
+    renderComponent();
+
+    // Open Subiksham main branch details
+    const viewButtons = screen.getAllByRole('button', { name: /View Details/i });
+    fireEvent.click(viewButtons[0]);
+
+    // Open Subiksham Oncology Center side branch
+    const sideBranchViewButtons = screen.getAllByRole('button', { name: /View Details/i });
+    fireEvent.click(sideBranchViewButtons[0]);
+
+    // Side branch detail view has its own Save classification button
+    expect(screen.getAllByText('Subiksham Oncology Center').length).toBeGreaterThan(0);
+    const saveSideBtn = screen.getByRole('button', { name: /Save classification/i });
+    expect(saveSideBtn).toBeTruthy();
+
+    // Save side branch classification
+    fireEvent.click(saveSideBtn);
+    expect(await screen.findByText(/Classification saved successfully/i)).toBeTruthy();
+
+    // Return to parent main branch
+    fireEvent.click(screen.getByRole('button', { name: 'Subiksham Speciality Hospital' }));
+    expect(screen.getByText('Side branches')).toBeTruthy();
   });
 });
