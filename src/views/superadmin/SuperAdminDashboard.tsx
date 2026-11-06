@@ -98,7 +98,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
             aria-label="Filter by status"
           >
             <option value="all">All statuses</option>
@@ -114,7 +114,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           <select
             value={facilityFilter}
             onChange={(e) => setFacilityFilter(e.target.value)}
-            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
             aria-label="Filter by facility"
           >
             <option value="all">All facilities</option>

@@ -283,7 +283,7 @@ export const SuperAdminSettings: React.FC = () => {
                     <select
                       value={actionFilter}
                       onChange={(e) => setActionFilter(e.target.value as any)}
-                      className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                      className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
                       aria-label="Filter by action type"
                     >
                       <option value="all">All action types</option>
@@ -305,7 +305,7 @@ export const SuperAdminSettings: React.FC = () => {
                     <select
                       value={clinicFilter}
                       onChange={(e) => setClinicFilter(e.target.value)}
-                      className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                      className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
                       aria-label="Filter by branch"
                     >
                       <option value="all">All branches</option>

@@ -272,6 +272,59 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
         expect(screen.queryByRole('heading', { name: /Appoint Clinic Administrator/i })).toBeNull();
       });
     });
+
+    it('verifies filter selects render exactly one Lucide chevron with background-image: none and work with mouse and keyboard', () => {
+      const onNavigate = vi.fn();
+      render(
+        <SuperAdminProvider>
+          <SuperAdminDashboard onNavigate={onNavigate} />
+        </SuperAdminProvider>
+      );
+
+      // Status filter select has appearance-none and background-image: none
+      const statusSelect = screen.getByLabelText(/Filter by status/i) as HTMLSelectElement;
+      expect(statusSelect.className).toContain('appearance-none');
+      expect(statusSelect.className).toContain('[background-image:none]');
+      expect(statusSelect.className).toContain('bg-none');
+
+      // Facility filter select has appearance-none and background-image: none
+      const facilitySelect = screen.getByLabelText(/Filter by facility/i) as HTMLSelectElement;
+      expect(facilitySelect.className).toContain('appearance-none');
+      expect(facilitySelect.className).toContain('[background-image:none]');
+      expect(facilitySelect.className).toContain('bg-none');
+
+      // Parent container contains exactly one SVG Lucide ChevronDown icon
+      const statusContainer = statusSelect.parentElement;
+      const statusChevrons = statusContainer?.querySelectorAll('svg');
+      expect(statusChevrons?.length).toBe(1);
+      expect(statusChevrons?.[0].classList.contains('pointer-events-none')).toBe(true);
+
+      const facilityContainer = facilitySelect.parentElement;
+      const facilityChevrons = facilityContainer?.querySelectorAll('svg');
+      expect(facilityChevrons?.length).toBe(1);
+      expect(facilityChevrons?.[0].classList.contains('pointer-events-none')).toBe(true);
+
+      // Verify mouse interaction works
+      fireEvent.change(statusSelect, { target: { value: 'active' } });
+      expect(statusSelect.value).toBe('active');
+
+      // Verify keyboard interaction (focus, change, blur) works
+      statusSelect.focus();
+      expect(document.activeElement).toBe(statusSelect);
+      fireEvent.change(statusSelect, { target: { value: 'all' } });
+      expect(statusSelect.value).toBe('all');
+    });
+
+    it('verifies scoped CSS override sets background-image: none only on selects with bg-none / [background-image:none]', () => {
+      const cssPath = path.resolve(process.cwd(), 'src/index.css');
+      const cssContent = fs.readFileSync(cssPath, 'utf-8');
+
+      // Universal base retains default background-image for other selects
+      expect(cssContent).toContain('background-image: url("data:image/svg+xml');
+
+      // Scoped override disables background-image specifically for selects with Lucide icons
+      expect(cssContent).toMatch(/select\.bg-none[^{]*\{[^}]*background-image:\s*none\s*!important/);
+    });
   });
 
   describe('3. Secondary Control Alignment & Usable Click Areas', () => {

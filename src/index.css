@@ -548,6 +548,13 @@ html.dark {
     padding-right: 2.25rem;
   }
 
+  /* Scoped override for selects that render a dedicated Lucide icon indicator */
+  select.bg-none,
+  select[class*="[background-image:none]"],
+  select[class*="bg-none"] {
+    background-image: none !important;
+  }
+
   select:hover {
     @apply border-slate-400;
   }
