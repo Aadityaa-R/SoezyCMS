@@ -357,74 +357,80 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
       expect(layoutContent).toContain("paddingBottom: 'var(--page-pad)'");
     });
 
-    it('verifies all seven top-level Super Admin screens support wrapping and internal table scroll without horizontal page overflow', () => {
+    it('verifies all seven top-level Super Admin screens support wrapping and internal table scroll across 320px, 375px, and 768px viewports', () => {
       const onNavigate = vi.fn();
+      const viewports = [320, 375, 768];
 
-      // Screen 1: Overview
-      const { unmount: unmount1 } = render(
-        <SuperAdminProvider>
-          <SuperAdminDashboard onNavigate={onNavigate} />
-        </SuperAdminProvider>
-      );
-      expect(document.querySelector('[data-slot="smart-table-toolbar"]')?.className).toContain('flex-wrap');
-      expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
-      unmount1();
+      viewports.forEach((vpWidth) => {
+        window.innerWidth = vpWidth;
+        window.dispatchEvent(new Event('resize'));
 
-      // Screen 2: Clinics
-      const { unmount: unmount2 } = render(
-        <SuperAdminProvider>
-          <ClinicBranchManagement onNavigate={onNavigate} />
-        </SuperAdminProvider>
-      );
-      expect(screen.getByPlaceholderText(/Search main branches/i).className).toContain('h-[36px]');
-      unmount2();
+        // Screen 1: Overview
+        const { unmount: unmount1 } = render(
+          <SuperAdminProvider>
+            <SuperAdminDashboard onNavigate={onNavigate} />
+          </SuperAdminProvider>
+        );
+        expect(document.querySelector('[data-slot="smart-table-toolbar"]')?.className).toContain('flex-wrap');
+        expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
+        unmount1();
 
-      // Screen 3: Admins
-      const { unmount: unmount3 } = render(
-        <SuperAdminProvider>
-          <AdminManagement onNavigateTab={onNavigate} />
-        </SuperAdminProvider>
-      );
-      expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
-      unmount3();
+        // Screen 2: Clinics
+        const { unmount: unmount2 } = render(
+          <SuperAdminProvider>
+            <ClinicBranchManagement onNavigate={onNavigate} />
+          </SuperAdminProvider>
+        );
+        expect(screen.getByPlaceholderText(/Search main branches/i).className).toContain('h-[36px]');
+        unmount2();
 
-      // Screen 4: Agreements
-      const { unmount: unmount4 } = render(
-        <SuperAdminProvider>
-          <AgreementManagement onNavigateTab={onNavigate} />
-        </SuperAdminProvider>
-      );
-      expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
-      unmount4();
+        // Screen 3: Admins
+        const { unmount: unmount3 } = render(
+          <SuperAdminProvider>
+            <AdminManagement onNavigateTab={onNavigate} />
+          </SuperAdminProvider>
+        );
+        expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
+        unmount3();
 
-      // Screen 5: Onboarding
-      const { unmount: unmount5 } = render(
-        <SuperAdminProvider>
-          <BranchOnboarding />
-        </SuperAdminProvider>
-      );
-      expect(screen.getByLabelText(/Filter by onboarding status/i).className).toContain('h-[36px]');
-      unmount5();
+        // Screen 4: Agreements
+        const { unmount: unmount4 } = render(
+          <SuperAdminProvider>
+            <AgreementManagement onNavigateTab={onNavigate} />
+          </SuperAdminProvider>
+        );
+        expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
+        unmount4();
 
-      // Screen 6: Reports
-      const { unmount: unmount6 } = render(
-        <SuperAdminProvider>
-          <SuperAdminReports />
-        </SuperAdminProvider>
-      );
-      expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
-      unmount6();
+        // Screen 5: Onboarding
+        const { unmount: unmount5 } = render(
+          <SuperAdminProvider>
+            <BranchOnboarding />
+          </SuperAdminProvider>
+        );
+        expect(screen.getByLabelText(/Filter by onboarding status/i).className).toContain('h-[36px]');
+        unmount5();
 
-      // Screen 7: Settings (Audit Logs)
-      const { unmount: unmount7 } = render(
-        <SuperAdminProvider>
-          <SuperAdminSettings />
-        </SuperAdminProvider>
-      );
-      const auditTab = screen.getByRole('button', { name: /Audit logs/i });
-      fireEvent.click(auditTab);
-      expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
-      unmount7();
+        // Screen 6: Reports
+        const { unmount: unmount6 } = render(
+          <SuperAdminProvider>
+            <SuperAdminReports />
+          </SuperAdminProvider>
+        );
+        expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
+        unmount6();
+
+        // Screen 7: Settings (Audit Logs)
+        const { unmount: unmount7 } = render(
+          <SuperAdminProvider>
+            <SuperAdminSettings />
+          </SuperAdminProvider>
+        );
+        const auditTab = screen.getByRole('button', { name: /Audit logs/i });
+        fireEvent.click(auditTab);
+        expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
+        unmount7();
+      });
     });
   });
 
