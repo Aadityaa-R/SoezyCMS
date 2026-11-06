@@ -51,29 +51,29 @@ export const SuperAdminSettings: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <h1 className="sr-only">Platform Settings & Immutable Audit Logs</h1>
+      <h1 className="text-[22px] font-semibold text-slate-900 dark:text-slate-100 tracking-tight">Platform settings</h1>
 
       {/* Settings / Audit Logs Switcher */}
       <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto [scrollbar-width:thin]">
         <button
           onClick={() => setActiveTab('settings')}
-          className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+          className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
             activeTab === 'settings'
               ? 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
-          Organization Settings
+          Organization settings
         </button>
         <button
           onClick={() => setActiveTab('audit_logs')}
-          className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
+          className={`px-3 py-1.5 text-[13px] font-medium rounded-lg transition-colors cursor-pointer whitespace-nowrap ${
             activeTab === 'audit_logs'
               ? 'bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900'
               : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
-          Audit Logs ({auditLogs.length})
+          Audit logs ({auditLogs.length})
         </button>
       </div>
 
@@ -82,7 +82,7 @@ export const SuperAdminSettings: React.FC = () => {
           {/* Section 1: Organization Identity */}
           <div className="border border-stone-200 bg-white p-5 space-y-4">
             <div className="border-b border-stone-100 pb-2">
-              <h3 className="text-sm font-semibold text-stone-900">1. Healthcare Organization Identity</h3>
+              <h3 className="text-[15px] font-semibold text-stone-900">1. Healthcare organization identity</h3>
               <p className="text-xs text-stone-500">Legal corporate details governing all clinic branches.</p>
             </div>
 
@@ -154,7 +154,7 @@ export const SuperAdminSettings: React.FC = () => {
           {/* Section 2: Expiration Notice Thresholds */}
           <div className="border border-stone-200 bg-white p-5 space-y-4">
             <div className="border-b border-stone-100 pb-2">
-              <h3 className="text-sm font-semibold text-stone-900">2. Agreement Expiration Warning Thresholds</h3>
+              <h3 className="text-[15px] font-semibold text-stone-900">2. Agreement expiration warning thresholds</h3>
               <p className="text-xs text-stone-500">Notice days configured in descending urgency.</p>
             </div>
 
@@ -215,7 +215,7 @@ export const SuperAdminSettings: React.FC = () => {
           {/* Section 3: Governance Policies */}
           <div className="border border-stone-200 bg-white p-5 space-y-4">
             <div className="border-b border-stone-100 pb-2">
-              <h3 className="text-sm font-semibold text-stone-900">3. Governance & Audit Guardrails</h3>
+              <h3 className="text-[15px] font-semibold text-stone-900">3. Governance & audit guardrails</h3>
               <p className="text-xs text-stone-500">Security enforcement and prerequisite requirements.</p>
             </div>
 
@@ -228,7 +228,7 @@ export const SuperAdminSettings: React.FC = () => {
                   className="mt-0.5"
                 />
                 <div>
-                  <span className="font-semibold text-stone-900 block">Require Appointed Admin Before Branch Activation</span>
+                  <span className="font-semibold text-stone-900 block">Require appointed admin before branch activation</span>
                   <span className="text-stone-500">Enforces that a primary administrator must be assigned and verified before branch go-live.</span>
                 </div>
               </label>
@@ -241,7 +241,7 @@ export const SuperAdminSettings: React.FC = () => {
                   className="mt-0.5"
                 />
                 <div>
-                  <span className="font-semibold text-stone-900 block">Require Signed Agreement Before Activation</span>
+                  <span className="font-semibold text-stone-900 block">Require signed agreement before activation</span>
                   <span className="text-stone-500">Enforces an active verified licence agreement before clinical modules can be enabled.</span>
                 </div>
               </label>
@@ -251,10 +251,10 @@ export const SuperAdminSettings: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
+              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-[13px] font-medium bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
               <Save className="w-3.5 h-3.5" />
-              <span>Save Organization Settings</span>
+              <span>Save organization settings</span>
             </button>
             {isSaved && (
               <span className="text-xs text-teal-700 font-mono inline-flex items-center gap-1">
@@ -269,7 +269,7 @@ export const SuperAdminSettings: React.FC = () => {
         <div className="space-y-4">
           <div className="border border-stone-200 bg-stone-50 p-3.5 text-xs text-stone-700">
             <div>
-              <span className="font-semibold text-stone-900 block">Immutable Security Audit Trail</span>
+              <span className="text-[15px] font-semibold text-stone-900 block mb-0.5">Immutable security audit trail</span>
               Every Super Admin action (branch registration, admin appointment, agreement modification, entitlement change, override, activation) is permanently logged with actor credentials, timestamp, and justification. Records cannot be altered or deleted.
             </div>
           </div>
@@ -283,20 +283,20 @@ export const SuperAdminSettings: React.FC = () => {
                     <select
                       value={actionFilter}
                       onChange={(e) => setActionFilter(e.target.value as any)}
-                      className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                      className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
                       aria-label="Filter by action type"
                     >
-                      <option value="all">All Action Types</option>
-                      <option value="clinic_created">Clinic Created</option>
-                      <option value="clinic_status_changed">Clinic Status Changed</option>
-                      <option value="admin_appointed">Admin Appointed</option>
-                      <option value="admin_reassigned">Admin Reassigned</option>
-                      <option value="agreement_created">Agreement Created</option>
-                      <option value="agreement_renewed">Agreement Renewed</option>
-                      <option value="facility_entitlement_changed">Facility Entitlement Changed</option>
-                      <option value="onboarding_override">Onboarding Override</option>
-                      <option value="branch_activated">Branch Activated</option>
-                      <option value="branch_suspended">Branch Suspended</option>
+                      <option value="all">All action types</option>
+                      <option value="clinic_created">Clinic created</option>
+                      <option value="clinic_status_changed">Clinic status changed</option>
+                      <option value="admin_appointed">Admin appointed</option>
+                      <option value="admin_reassigned">Admin reassigned</option>
+                      <option value="agreement_created">Agreement created</option>
+                      <option value="agreement_renewed">Agreement renewed</option>
+                      <option value="facility_entitlement_changed">Facility entitlement changed</option>
+                      <option value="onboarding_override">Onboarding override</option>
+                      <option value="branch_activated">Branch activated</option>
+                      <option value="branch_suspended">Branch suspended</option>
                     </select>
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
@@ -305,10 +305,10 @@ export const SuperAdminSettings: React.FC = () => {
                     <select
                       value={clinicFilter}
                       onChange={(e) => setClinicFilter(e.target.value)}
-                      className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                      className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
                       aria-label="Filter by branch"
                     >
-                      <option value="all">All Branches</option>
+                      <option value="all">All branches</option>
                       {clinics.map(c => (
                         <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
                       ))}
@@ -323,7 +323,7 @@ export const SuperAdminSettings: React.FC = () => {
                       placeholder="Search audit details or actor..."
                       value={auditSearch}
                       onChange={(e) => setAuditSearch(e.target.value)}
-                      className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                      className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-[13px] font-normal rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
                       aria-label="Search audit logs"
                     />
                   </div>
@@ -336,8 +336,8 @@ export const SuperAdminSettings: React.FC = () => {
                 <TableHead pinned>Timestamp</TableHead>
                 <TableHead>Actor</TableHead>
                 <TableHead>Action</TableHead>
-                <TableHead>Target Entity</TableHead>
-                <TableHead>Reason & Details</TableHead>
+                <TableHead>Target entity</TableHead>
+                <TableHead>Reason & details</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

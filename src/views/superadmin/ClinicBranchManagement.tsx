@@ -536,7 +536,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         {/* Page Heading & Status */}
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+            <h1 className="text-[22px] font-semibold text-slate-900 dark:text-slate-100 tracking-tight">
               {viewingSideBranch.name}
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -873,16 +873,16 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         {/* Page Heading & Status */}
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+            <h1 className="text-[22px] font-semibold text-slate-900 dark:text-slate-100 tracking-tight">
               {viewingMainBranch.name}
             </h1>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-[12px] text-slate-500 mt-0.5">
               Main branch &bull; {viewingMainBranch.code} &bull; {viewingMainBranch.city}, {viewingMainBranch.state}
             </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <div className="text-[13px] font-medium text-slate-700 dark:text-slate-300">
               Status: <span className="font-semibold text-emerald-600 dark:text-emerald-400 capitalize">{viewingMainBranch.status.replace(/_/g, ' ')}</span>
             </div>
             <button
@@ -893,7 +893,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                 setStatusReason('');
                 setFormError('');
               }}
-              className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center cursor-pointer"
+              className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center cursor-pointer"
             >
               {viewingMainBranch.status === 'active' ? 'Suspend Main Branch' : 'Activate Main Branch'}
             </button>
@@ -904,10 +904,10 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-5 shadow-xs space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
-                Facility Classification
+              <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+                Facility classification
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-[12px] text-slate-500 mt-0.5">
                 Choose the services offered at this location.
               </p>
             </div>
@@ -915,7 +915,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
               type="button"
               disabled={isSavingMainClassification}
               onClick={handleSaveMainClassification}
-              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white cursor-pointer transition-colors shrink-0 disabled:opacity-50"
+              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-[13px] font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white cursor-pointer transition-colors shrink-0 disabled:opacity-50"
             >
               {isSavingMainClassification ? 'Saving...' : 'Save classification'}
             </button>
@@ -966,30 +966,30 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between pb-1">
             <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
                 Side branches
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-[12px] text-slate-500 mt-0.5">
                 Side branches grouped under {viewingMainBranch.name}
               </p>
             </div>
-            <span className="text-xs font-mono font-medium text-slate-500">
+            <span className="text-[12px] font-mono font-medium text-slate-500">
               {linkedSideBranches.length} {linkedSideBranches.length === 1 ? 'branch' : 'branches'}
             </span>
           </div>
 
           {linkedSideBranches.length === 0 ? (
-            <div className="py-6 text-center text-slate-500 dark:text-slate-400 text-xs">
+            <div className="py-6 text-center text-slate-500 dark:text-slate-400 text-[14px]">
               No side branches are currently linked to this main branch.
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>BRANCH</TableHead>
-                  <TableHead>FACILITY TYPES</TableHead>
-                  <TableHead>APPOINTED ADMIN</TableHead>
-                  <TableHead isActions className="text-right">ACTION</TableHead>
+                  <TableHead>Branch</TableHead>
+                  <TableHead>Facility types</TableHead>
+                  <TableHead>Appointed admin</TableHead>
+                  <TableHead isActions className="text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -1014,7 +1014,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                           onClick={() => setViewingSideBranchId(side.id)}
                           className="text-xs font-semibold text-teal-600 dark:text-teal-400 hover:text-teal-700 hover:underline cursor-pointer"
                         >
-                          View Details
+                          View details
                         </button>
                       </TableCell>
                     </TableRow>
@@ -1247,7 +1247,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
   // =========================================================================
   return (
     <div className="space-y-4">
-      <h1 className="sr-only">Main Branch Management</h1>
+      <h1 className="text-[22px] font-semibold text-slate-900 dark:text-slate-100 tracking-tight">Clinics & branches</h1>
 
       {/* Standardized Toolbar: Search & filters on left, Primary action on right */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
@@ -1258,7 +1258,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
             <select
               value={activeTabFilter}
               onChange={(e) => handleTabFilterChange(e.target.value as any)}
-              className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+              className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
               aria-label="Filter by status"
             >
               <option value="all">All statuses ({mainBranches.length})</option>
@@ -1274,13 +1274,13 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
             <select
               value={branchTypeFilter}
               onChange={(e) => handleBranchTypeChange(e.target.value)}
-              className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+              className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
               aria-label="Filter by branch type"
             >
-              <option value="all">All Branch Types</option>
-              <option value="main_hospital">Main Hospital</option>
-              <option value="speciality_center">Speciality Center</option>
-              <option value="outpatient_clinic">Outpatient Clinic</option>
+              <option value="all">All branch types</option>
+              <option value="main_hospital">Main hospital</option>
+              <option value="speciality_center">Speciality center</option>
+              <option value="outpatient_clinic">Outpatient clinic</option>
             </select>
             <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
@@ -1293,7 +1293,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
               placeholder="Search main branches..."
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-[13px] font-normal rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
               aria-label="Search clinics"
             />
           </div>
@@ -1306,10 +1306,10 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
             setFormError('');
             setIsRegisterModalOpen(true);
           }}
-          className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
+          className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
         >
           <Plus className="w-3.5 h-3.5 shrink-0" />
-          <span>Register Clinic</span>
+          <span>Register clinic</span>
         </button>
       </div>
 
@@ -1413,22 +1413,21 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                       setStatusReason('');
                       setFormError('');
                     }}
-                    className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
+                    className="h-[32px] min-h-[32px] px-3 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center justify-center cursor-pointer"
                   >
                     {branch.status === 'active' ? 'Suspend' : 'Activate'}
                   </button>
 
-                  <Button
-                    size="sm"
-                    variant="outline"
+                  <button
+                    type="button"
                     onClick={() => {
                       setViewingMainBranchId(branch.id);
                       setViewingSideBranchId(null);
                     }}
-                    className="text-xs rounded border border-slate-300 dark:border-slate-700 cursor-pointer"
+                    className="h-[32px] min-h-[32px] px-3 text-[13px] font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center justify-center cursor-pointer shadow-xs"
                   >
-                    View Details
-                  </Button>
+                    View details
+                  </button>
                 </div>
               </div>
             );

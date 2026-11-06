@@ -10,10 +10,15 @@
   -webkit-tap-highlight-color: transparent !important;
 }
 
-*:focus,
-*:focus-visible,
-*:focus-within,
-*:active {
+/* Universal global suppression of focus bars, outlines, borders, and rings on pointer click */
+*:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+[role="tab"]:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible) {
   outline: none !important;
   outline-width: 0 !important;
   outline-style: none !important;
@@ -22,33 +27,30 @@
   -webkit-focus-ring-color: transparent !important;
 }
 
-button:focus,
+/* Shared, high-contrast, accessible keyboard focus indicator */
+:focus-visible,
 button:focus-visible,
-button:active,
-a:focus,
 a:focus-visible,
-a:active,
-input:focus,
 input:focus-visible,
-input:active,
-textarea:focus,
 textarea:focus-visible,
-textarea:active,
-select:focus,
 select:focus-visible,
-select:active,
-[role="tab"]:focus,
 [role="tab"]:focus-visible,
-[role="tab"]:active,
-[role="button"]:focus,
 [role="button"]:focus-visible,
-[role="button"]:active {
-  outline: none !important;
-  outline-width: 0 !important;
-  outline-style: none !important;
-  outline-color: transparent !important;
-  box-shadow: none !important;
-  -webkit-focus-ring-color: transparent !important;
+[tabindex]:focus-visible {
+  outline: 2px solid #0d9488 !important;
+  outline-offset: 2px !important;
+}
+
+.dark :focus-visible,
+.dark button:focus-visible,
+.dark a:focus-visible,
+.dark input:focus-visible,
+.dark textarea:focus-visible,
+.dark select:focus-visible,
+.dark [role="tab"]:focus-visible,
+.dark [role="button"]:focus-visible,
+.dark [tabindex]:focus-visible {
+  outline-color: #14b8a6 !important;
 }
 
 /* Light-Mode Elevation Tokens (Milestone M10 Section 1) */
@@ -428,11 +430,6 @@ html.dark {
     @apply bg-slate-950 text-slate-100;
   }
 
-  /* Suppression of harsh focus outline bars */
-  :focus-visible {
-    outline: none !important;
-  }
-
   /* Universal suppression of outlines on plain pointer :focus (Milestone M10.8) */
   :focus:not(:focus-visible) {
     outline: none !important;
@@ -467,20 +464,13 @@ html.dark {
     -webkit-tap-highlight-color: transparent;
   }
 
-  button:focus,
-  [role="button"]:focus,
-  a:focus,
-  [tabindex]:focus,
-  summary:focus {
+  button:focus:not(:focus-visible),
+  [role="button"]:focus:not(:focus-visible),
+  a:focus:not(:focus-visible),
+  [tabindex]:focus:not(:focus-visible),
+  summary:focus:not(:focus-visible) {
     outline: none !important;
     box-shadow: none !important;
-  }
-
-  button:focus-visible,
-  [role="button"]:focus-visible,
-  a:focus-visible,
-  [tabindex]:focus-visible {
-    outline: none !important;
   }
 
   /* Universal UI Base for Text Inputs - low specificity so utility classes (pl-11, etc.) override */
@@ -837,10 +827,8 @@ tr.block .table-cell-truncate {
   }
 }
 
-/* Absolute end-of-file overrides for zero focus bars or outlines */
-*:focus,
-*:focus-visible,
-*:focus-within,
+/* Pointer click overrides to prevent outlines on click */
+*:focus:not(:focus-visible),
 *:active {
   outline: none !important;
   outline-width: 0 !important;

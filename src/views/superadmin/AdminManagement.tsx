@@ -182,7 +182,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
           <select
             value={tabFilter}
             onChange={(e) => setTabFilter(e.target.value as any)}
-            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
             aria-label="Filter by status"
           >
             <option value="all">All statuses ({admins.length})</option>
@@ -202,7 +202,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
             placeholder="Search by admin name, email, clinic..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-[13px] font-normal rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
             aria-label="Search administrators"
           />
         </div>
@@ -215,17 +215,17 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
           setFormError('');
           setIsAppointModalOpen(true);
         }}
-        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
+        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
       >
         <Plus className="w-3.5 h-3.5 shrink-0" />
-        <span>Appoint Admin</span>
+        <span>Appoint admin</span>
       </button>
     </div>
   );
 
   return (
     <div className="space-y-4">
-      <h1 className="sr-only">Clinic Administrator Governance</h1>
+      <h1 className="text-[22px] font-semibold text-slate-900 dark:text-slate-100 tracking-tight">Clinic administrators</h1>
 
       {/* Standardized Toolbar: Search & Filter on left, Appoint Admin on right */}
       <div className="w-full border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 shadow-xs p-2.5">
@@ -236,11 +236,11 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
       {tabFilter === 'unassigned' ? (
         <div className="border border-amber-200 dark:border-amber-900/60 bg-amber-50/30 dark:bg-amber-950/20 p-5 rounded space-y-4">
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200">
-              Clinics Without Appointed Administrator ({unassignedClinics.length})
-            </h3>
+            <h2 className="text-[15px] font-semibold text-amber-900 dark:text-amber-200">
+              Clinics without appointed administrator ({unassignedClinics.length})
+            </h2>
           </div>
-          <p className="text-xs text-slate-600 dark:text-slate-400">
+          <p className="text-[12px] text-slate-600 dark:text-slate-400">
             According to organizational compliance policy, an appointed Clinic Administrator is mandatory before a branch can be activated.
           </p>
 
@@ -251,8 +251,8 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded flex items-center justify-between text-xs"
               >
                 <div>
-                  <div className="font-semibold text-slate-900 dark:text-slate-100">{clinic.name}</div>
-                  <div className="text-[11px] font-mono text-slate-500">
+                  <div className="font-semibold text-[14px] text-slate-900 dark:text-slate-100">{clinic.name}</div>
+                  <div className="text-[12px] font-mono text-slate-500">
                     {clinic.code} &bull; {clinic.city}, {clinic.state}
                   </div>
                 </div>
@@ -262,9 +262,9 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                     setAppointClinicId(clinic.id);
                     setIsAppointModalOpen(true);
                   }}
-                  className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center cursor-pointer shrink-0"
+                  className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center cursor-pointer shrink-0"
                 >
-                  Appoint Admin
+                  Appoint admin
                 </button>
               </div>
             ))}
@@ -275,20 +275,20 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
         <Table pinLeading={true}>
           <TableHeader>
             <TableRow>
-              <TableHead pinned>Administrator Name</TableHead>
-              <TableHead>Official Email</TableHead>
-              <TableHead>Contact Phone</TableHead>
-              <TableHead>Assigned Clinic / Branch</TableHead>
+              <TableHead pinned>Administrator name</TableHead>
+              <TableHead>Official email</TableHead>
+              <TableHead>Contact phone</TableHead>
+              <TableHead>Assigned clinic / branch</TableHead>
               <TableHead>Designation</TableHead>
-              <TableHead>Appointment Date</TableHead>
-              <TableHead>Assignment Status</TableHead>
+              <TableHead>Appointment date</TableHead>
+              <TableHead>Assignment status</TableHead>
               <TableHead isActions className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredAdmins.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="py-12 text-center text-slate-500 dark:text-slate-400">
+                <TableCell colSpan={8} className="py-12 text-center text-[14px] text-slate-500 dark:text-slate-400">
                   No administrators match the selected filter.
                 </TableCell>
               </TableRow>
@@ -296,39 +296,39 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
               filteredAdmins.map((admin) => (
                 <TableRow key={admin.id}>
                   <TableCell pinned isPrimary>
-                    <span className="font-semibold text-slate-900 dark:text-slate-100">
+                    <span className="font-semibold text-[14px] text-slate-900 dark:text-slate-100">
                       {admin.adminName}
                     </span>
-                    <span className="text-[11px] font-mono text-slate-400 block">
+                    <span className="text-[12px] font-mono text-slate-400 block">
                       {admin.adminUserId}
                     </span>
                   </TableCell>
 
-                  <TableCell className="font-mono text-slate-700 dark:text-slate-300">
+                  <TableCell className="font-mono text-[14px] text-slate-700 dark:text-slate-300">
                     {admin.adminEmail}
                   </TableCell>
 
-                  <TableCell className="text-slate-600 dark:text-slate-400">
+                  <TableCell className="text-[14px] text-slate-600 dark:text-slate-400">
                     {admin.adminPhone || 'N/A'}
                   </TableCell>
 
                   <TableCell>
-                    <div className="font-medium text-slate-900 dark:text-slate-100">
+                    <div className="font-medium text-[14px] text-slate-900 dark:text-slate-100">
                       {admin.clinicName}
                     </div>
-                    <span className="text-[11px] font-mono text-slate-400">
+                    <span className="text-[12px] font-mono text-slate-400">
                       {admin.clinicCode}
                     </span>
                   </TableCell>
 
-                  <TableCell className="text-slate-700 dark:text-slate-300">
+                  <TableCell className="text-[14px] text-slate-700 dark:text-slate-300">
                     {admin.designation}
                   </TableCell>
 
-                  <TableCell className="font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                  <TableCell className="font-mono text-[14px] text-slate-600 dark:text-slate-400 whitespace-nowrap">
                     {admin.effectiveFrom}
                     {admin.effectiveTo && (
-                      <span className="text-[10px] text-slate-400 block">to {admin.effectiveTo}</span>
+                      <span className="text-[12px] text-slate-400 block">to {admin.effectiveTo}</span>
                     )}
                   </TableCell>
 
@@ -336,11 +336,11 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                     <StatusDot status={admin.status} />
                   </TableCell>
 
-                  <TableCell isActions className="text-right space-x-3 whitespace-nowrap">
+                  <TableCell isActions className="text-right space-x-2 whitespace-nowrap">
                     <button
                       type="button"
                       onClick={() => setSelectedAdminDetail(admin)}
-                      className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
+                      className="h-[28px] min-h-[28px] px-2 text-[13px] font-medium rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors inline-flex items-center cursor-pointer"
                     >
                       Profile
                     </button>
@@ -352,7 +352,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                           setReassignReason('');
                           setFormError('');
                         }}
-                        className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
+                        className="h-[28px] min-h-[28px] px-2 text-[13px] font-medium rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors inline-flex items-center cursor-pointer"
                       >
                         Reassign
                       </button>
@@ -365,7 +365,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                         setStatusReason('');
                         setFormError('');
                       }}
-                      className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
+                      className="h-[28px] min-h-[28px] px-2 text-[13px] font-medium rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors inline-flex items-center cursor-pointer"
                     >
                       {admin.status === 'active' ? 'Deactivate' : 'Activate'}
                     </button>

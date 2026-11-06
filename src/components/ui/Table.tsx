@@ -470,7 +470,7 @@ export const TableHead: React.FC<TableHeadProps> = ({
   return (
     <th
       scope={scope}
-      className={`h-8 px-3 py-1.5 align-middle font-semibold text-slate-600 dark:text-slate-300 text-[11px] uppercase tracking-wider border-r border-slate-200/70 dark:border-slate-800/70 last:border-r-0 ${kindClass} ${hideClass} ${stickyClass} ${pinnedClass} ${className}`.trim()}
+      className={`h-8 px-3 py-1.5 align-middle font-semibold text-slate-600 dark:text-slate-300 text-[13px] normal-case border-r border-slate-200/70 dark:border-slate-800/70 last:border-r-0 ${kindClass} ${hideClass} ${stickyClass} ${pinnedClass} ${className}`.trim()}
       {...props}
     >
       {children}

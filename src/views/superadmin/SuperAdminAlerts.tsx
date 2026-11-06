@@ -77,27 +77,27 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
 
   return (
     <div className="space-y-4">
-      <h1 className="sr-only">Notifications & Actionable Alerts</h1>
+      <h1 className="text-[22px] font-semibold text-slate-900 dark:text-slate-100 tracking-tight">Alerts & announcements</h1>
 
       {/* Subtabs Switcher */}
       <div className="flex items-center justify-between gap-4">
-        <div className="inline-flex border border-stone-200 p-0.5 bg-stone-100">
+        <div className="inline-flex border border-stone-200 dark:border-slate-700 p-0.5 bg-stone-100 dark:bg-slate-800 rounded-lg">
           <button
             onClick={() => setActiveSubTab('alerts')}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`px-3 py-1.5 text-[13px] font-medium rounded-md transition-colors ${
               activeSubTab === 'alerts'
-                ? 'bg-white text-stone-900 shadow-xs'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-white dark:bg-slate-900 text-stone-900 dark:text-slate-100 shadow-xs'
+                : 'text-stone-600 dark:text-slate-400 hover:text-stone-900 dark:hover:text-slate-200'
             }`}
           >
-            Actionable Alerts ({alerts.filter(a => !a.acknowledged).length})
+            Actionable alerts ({alerts.filter(a => !a.acknowledged).length})
           </button>
           <button
             onClick={() => setActiveSubTab('announcements')}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
+            className={`px-3 py-1.5 text-[13px] font-medium rounded-md transition-colors ${
               activeSubTab === 'announcements'
-                ? 'bg-white text-stone-900 shadow-xs'
-                : 'text-stone-600 hover:text-stone-900'
+                ? 'bg-white dark:bg-slate-900 text-stone-900 dark:text-slate-100 shadow-xs'
+                : 'text-stone-600 dark:text-slate-400 hover:text-stone-900 dark:hover:text-slate-200'
             }`}
           >
             Announcements ({announcements.length})
@@ -107,10 +107,10 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
         {activeSubTab === 'announcements' && (
           <button
             onClick={() => setShowAnnouncementModal(true)}
-            className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg shrink-0 shadow-sm cursor-pointer"
+            className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg shrink-0 shadow-sm cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Publish Broadcast</span>
+            <span>Publish broadcast</span>
           </button>
         )}
       </div>
@@ -124,13 +124,13 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
                 <select
                   value={severityFilter}
                   onChange={(e) => setSeverityFilter(e.target.value as any)}
-                  className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                  className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
                   aria-label="Filter by severity"
                 >
-                  <option value="all">All Severities</option>
-                  <option value="critical">Critical Only</option>
-                  <option value="warning">Warning Only</option>
-                  <option value="info">Info Only</option>
+                  <option value="all">All severities</option>
+                  <option value="critical">Critical only</option>
+                  <option value="warning">Warning only</option>
+                  <option value="info">Info only</option>
                 </select>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
@@ -139,20 +139,20 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+                  className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
                   aria-label="Filter by trigger type"
                 >
-                  <option value="all">All Trigger Types</option>
-                  <option value="agreement_expiry">Licence Expiry</option>
-                  <option value="admin_missing">Unassigned Branch</option>
-                  <option value="onboarding_pending">Onboarding Blocked</option>
-                  <option value="facility_mismatch">Entitlement Mismatch</option>
+                  <option value="all">All trigger types</option>
+                  <option value="agreement_expiry">Licence expiry</option>
+                  <option value="admin_missing">Unassigned branch</option>
+                  <option value="onboarding_pending">Onboarding blocked</option>
+                  <option value="facility_mismatch">Entitlement mismatch</option>
                 </select>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
             </div>
 
-            <div className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+            <div className="text-[12px] text-slate-500 dark:text-slate-400 font-mono">
               Showing {filteredAlerts.length} actionable alerts
             </div>
           </div>
@@ -263,7 +263,7 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
                       <h3 className="text-sm font-semibold text-stone-900">{ann.title}</h3>
                     </div>
                     <span className="text-[11px] font-mono text-stone-400">
-                      {ann.createdAt} Â· By {ann.createdBy}
+                      {ann.createdAt} &bull; By {ann.createdBy}
                     </span>
                   </div>
 
@@ -271,8 +271,8 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
                     {ann.content}
                   </p>
 
-                  <div className="text-[11px] text-stone-500 font-mono pt-1">
-                    Audience: {ann.audience.replace(/_/g, ' ').toUpperCase()}
+                  <div className="text-[11px] text-stone-500 font-mono pt-1 capitalize">
+                    Audience: {ann.audience.replace(/_/g, ' ')}
                   </div>
                 </div>
               ))

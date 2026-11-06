@@ -11,6 +11,21 @@ import {
 import { useSuperAdmin } from '../../context/SuperAdminContext';
 import { OnboardingChecklistItemKey, OnboardingProgressStatus } from '../../types/superAdmin';
 
+// Helper to format branch type labels cleanly in sentence case
+const formatBranchType = (type: string): string => {
+  if (!type) return '';
+  const map: Record<string, string> = {
+    main_hospital: 'Main hospital',
+    speciality_center: 'Speciality center',
+    outpatient_clinic: 'Outpatient clinic',
+    diagnostic_lab: 'Diagnostic lab',
+  };
+  const key = type.toLowerCase().trim();
+  if (map[key]) return map[key];
+  const cleaned = type.replace(/_/g, ' ').toLowerCase();
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+};
+
 export const BranchOnboarding: React.FC = () => {
   const {
     clinics,
@@ -108,7 +123,7 @@ export const BranchOnboarding: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <h1 className="sr-only">Branch Onboarding & Activation</h1>
+      <h1 className="text-[22px] font-semibold text-slate-900 dark:text-slate-100 tracking-tight">Branch onboarding & activation</h1>
 
       {/* Standardized Toolbar: Onboarding status filter on left, Results summary on right */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5 shadow-xs">
@@ -117,20 +132,20 @@ export const BranchOnboarding: React.FC = () => {
             <select
               value={activeStatusFilter}
               onChange={(e) => setActiveStatusFilter(e.target.value as any)}
-              className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+              className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
               aria-label="Filter by onboarding status"
             >
               <option value="all">All statuses ({clinics.length})</option>
               <option value="pending">Pending ({clinics.filter((c) => c.onboardingStatus === 'pending').length})</option>
-              <option value="in_progress">In Progress ({clinics.filter((c) => c.onboardingStatus === 'in_progress').length})</option>
-              <option value="ready_for_review">Ready For Review ({clinics.filter((c) => c.onboardingStatus === 'ready_for_review').length})</option>
+              <option value="in_progress">In progress ({clinics.filter((c) => c.onboardingStatus === 'in_progress').length})</option>
+              <option value="ready_for_review">Ready for review ({clinics.filter((c) => c.onboardingStatus === 'ready_for_review').length})</option>
               <option value="completed">Completed ({clinics.filter((c) => c.onboardingStatus === 'completed').length})</option>
             </select>
             <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
 
-        <div className="text-xs text-slate-500 dark:text-slate-400 font-mono shrink-0">
+        <div className="text-[12px] text-slate-500 dark:text-slate-400 font-mono shrink-0">
           Showing {filteredClinics.length} of {clinics.length} branches
         </div>
       </div>
@@ -139,13 +154,13 @@ export const BranchOnboarding: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Branch Directory List */}
         <div className="lg:col-span-4 space-y-3">
-          <div className="text-xs font-mono uppercase tracking-wider text-stone-500">
-            Select Clinic Branch
-          </div>
+          <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+            Select clinic branch
+          </h2>
 
           <div className="border border-stone-200 bg-white rounded-xl overflow-hidden shadow-xs divide-y divide-stone-100 max-h-[720px] overflow-y-auto">
             {filteredClinics.length === 0 ? (
-              <div className="p-4 text-center text-xs text-stone-500">
+              <div className="p-4 text-center text-[13px] text-stone-500">
                 No clinics found under &apos;{activeStatusFilter}&apos;.
               </div>
             ) : (
@@ -169,17 +184,17 @@ export const BranchOnboarding: React.FC = () => {
                     }`}
                   >
                     <div className="min-w-0">
-                      <div className="font-semibold text-xs text-stone-900 truncate">
+                      <div className="font-semibold text-[14px] text-stone-900 truncate">
                         {clinic.name}
                       </div>
-                      <div className="font-mono text-[10px] text-stone-500 mt-0.5">
-                        {clinic.code} Â· {clinic.branchType.toUpperCase()}
+                      <div className="font-mono text-[12px] text-stone-500 mt-0.5">
+                        {clinic.code} &bull; {formatBranchType(clinic.branchType)}
                       </div>
                       <div className="mt-2 flex items-center gap-2">
-                        <span className="text-[10px] capitalize text-slate-700 dark:text-slate-300">
+                        <span className="text-[11px] capitalize text-slate-700 dark:text-slate-300">
                           {clinic.onboardingStatus.replace(/_/g, ' ')}
                         </span>
-                        <span className="text-[10px] text-stone-500 font-mono">
+                        <span className="text-[11px] text-stone-500 font-mono">
                           {done}/10 ({pct}%)
                         </span>
                       </div>
@@ -201,16 +216,16 @@ export const BranchOnboarding: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h2 className="text-lg font-semibold text-stone-900">
+                      <h2 className="text-[18px] font-semibold text-stone-900">
                         {currentClinic.name}
                       </h2>
-                      <span className="font-mono text-xs text-stone-500">[{currentClinic.code}]</span>
-                      <span className="text-xs capitalize text-slate-700 dark:text-slate-300">
+                      <span className="font-mono text-[12px] text-stone-500">[{currentClinic.code}]</span>
+                      <span className="text-[12px] capitalize text-slate-700 dark:text-slate-300">
                         {currentClinic.status.replace(/_/g, ' ')}
                       </span>
                     </div>
-                    <div className="text-xs text-stone-600 mt-1 flex flex-wrap gap-x-4 gap-y-1">
-                      <span>Type: <strong className="text-stone-900 font-medium">{currentClinic.branchType.toUpperCase()}</strong></span>
+                    <div className="text-[13px] text-stone-600 mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                      <span>Type: <strong className="text-stone-900 font-medium">{formatBranchType(currentClinic.branchType)}</strong></span>
                       <span>Admin: <strong className="text-stone-900 font-medium">{currentAdmin ? currentAdmin.adminName : 'UNASSIGNED'}</strong></span>
                       <span>Agreement: <strong className="text-stone-900 font-medium">{currentAgreement ? currentAgreement.agreementReference : 'NONE'}</strong></span>
                     </div>
@@ -226,7 +241,7 @@ export const BranchOnboarding: React.FC = () => {
                           action: 'suspend',
                           reason: '',
                         })}
-                        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium border border-rose-300 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 hover:bg-rose-100 dark:hover:bg-rose-900/60 rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer shrink-0"
+                        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium border border-rose-300 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 hover:bg-rose-100 dark:hover:bg-rose-900/60 rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer shrink-0"
                       >
                         <PauseCircle className="w-3.5 h-3.5" />
                         <span>Suspend Branch</span>

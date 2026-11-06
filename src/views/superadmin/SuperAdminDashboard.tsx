@@ -98,7 +98,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
             aria-label="Filter by status"
           >
             <option value="all">All statuses</option>
@@ -114,7 +114,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           <select
             value={facilityFilter}
             onChange={(e) => setFacilityFilter(e.target.value)}
-            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
             aria-label="Filter by facility"
           >
             <option value="all">All facilities</option>
@@ -133,7 +133,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search clinics or branches"
-            className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-[13px] font-normal bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
             aria-label="Search clinics or branches"
           />
         </div>
@@ -143,16 +143,16 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
       <button
         type="button"
         onClick={() => onNavigate('super_clinics')}
-        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
       >
-        <span>Full Directory</span>
+        <span>Full directory</span>
       </button>
     </div>
   );
 
   return (
     <div className="space-y-6">
-      <h1 className="sr-only">Organisation Overview & Administrative Operations</h1>
+      <h1 className="text-[22px] font-semibold text-slate-900 dark:text-slate-100 tracking-tight">Organisation overview</h1>
 
       {/* Primary 4 Key Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -162,13 +162,13 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
         >
           <div>
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Registered Clinics</span>
+            <span className="text-[13px] font-medium text-slate-500 dark:text-slate-400">Registered clinics</span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{totalClinics}</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{activeClinics} active</span>
+            <span className="text-[12px] text-slate-500 dark:text-slate-400 font-medium">{activeClinics} active</span>
           </div>
-          <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
+          <div className="mt-2 text-[12px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
             <span>Pending: {pendingClinics}</span>
             <span>Inactive: {inactiveClinics}</span>
           </div>
@@ -180,13 +180,13 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
         >
           <div>
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Clinic Admins</span>
+            <span className="text-[13px] font-medium text-slate-500 dark:text-slate-400">Clinic admins</span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{activeAdmins}</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">appointed</span>
+            <span className="text-[12px] text-slate-500 dark:text-slate-400 font-medium">appointed</span>
           </div>
-          <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
+          <div className="mt-2 text-[12px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
             <span>Missing Admin:</span>
             <span className="text-slate-500 font-medium">{clinicsWithoutAdmin.length} clinics</span>
           </div>
@@ -198,13 +198,13 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
         >
           <div>
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Licence Agreements</span>
+            <span className="text-[13px] font-medium text-slate-500 dark:text-slate-400">Licence agreements</span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{activeAgreements}</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">active contracts</span>
+            <span className="text-[12px] text-slate-500 dark:text-slate-400 font-medium">active contracts</span>
           </div>
-          <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
+          <div className="mt-2 text-[12px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
             <span>Expiring: {expiringAgreements}</span>
             <span>Expired: {expiredAgreements}</span>
           </div>
@@ -216,15 +216,15 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group"
         >
           <div>
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Branch Onboarding</span>
+            <span className="text-[13px] font-medium text-slate-500 dark:text-slate-400">Branch onboarding</span>
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">
               {clinics.filter((c) => c.onboardingStatus === 'completed').length} / {totalClinics}
             </span>
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">completed</span>
+            <span className="text-[12px] text-slate-500 dark:text-slate-400 font-medium">completed</span>
           </div>
-          <div className="mt-2 text-[11px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
+          <div className="mt-2 text-[12px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between">
             <span>In Progress: {clinics.filter((c) => c.onboardingStatus === 'in_progress').length}</span>
             <span>Pending Review: {clinics.filter((c) => c.onboardingStatus === 'ready_for_review').length}</span>
           </div>
@@ -234,10 +234,10 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
       {/* Clinic / Branch Network Status Full-Width Card (Approved Mockup Layout) */}
       <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded-xl shadow-xs space-y-4">
         <div className="pb-3 border-b border-slate-100 dark:border-slate-800">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-            CLINIC / BRANCH NETWORK STATUS
-          </h3>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400">
+          <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+            Clinic / branch network status
+          </h2>
+          <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">
             Central registry status, appointed admin, and active facility count
           </p>
         </div>
@@ -245,18 +245,18 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
         <Table toolbar={tableToolbar} pinLeading={true}>
           <TableHeader>
             <TableRow>
-              <TableHead pinned>CLINIC / BRANCH</TableHead>
-              <TableHead>LOCATION</TableHead>
-              <TableHead>APPOINTED ADMIN</TableHead>
-              <TableHead>FACILITIES</TableHead>
-              <TableHead>AGREEMENT</TableHead>
-              <TableHead>STATUS</TableHead>
+              <TableHead pinned>Clinic / branch</TableHead>
+              <TableHead>Location</TableHead>
+              <TableHead>Appointed admin</TableHead>
+              <TableHead>Facilities</TableHead>
+              <TableHead>Agreement</TableHead>
+              <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredClinics.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-slate-500">
+                <TableCell colSpan={6} className="text-center py-8 text-[14px] text-slate-500">
                   No clinics match the current filter or search criteria.
                 </TableCell>
               </TableRow>
@@ -271,25 +271,25 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
                   className="hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
                 >
                   <TableCell pinned isPrimary>
-                    <div className="font-semibold text-slate-900 dark:text-slate-100">{clinic.name}</div>
-                    <div className="text-[10px] font-mono text-slate-500">{clinic.code}</div>
+                    <div className="font-semibold text-[14px] text-slate-900 dark:text-slate-100">{clinic.name}</div>
+                    <div className="text-[12px] font-mono text-slate-400">{clinic.code}</div>
                   </TableCell>
                   <TableCell>
-                    <span className="text-slate-700 dark:text-slate-300">
+                    <span className="text-[14px] text-slate-700 dark:text-slate-300">
                       {clinic.city}, {clinic.state}
                     </span>
                   </TableCell>
                   <TableCell>
                     {clinic.appointedAdminName ? (
-                      <span className="text-slate-900 dark:text-slate-100 font-medium">
+                      <span className="text-[14px] text-slate-900 dark:text-slate-100 font-medium">
                         {clinic.appointedAdminName}
                       </span>
                     ) : (
-                      <span className="text-slate-400 italic text-[11px]">Unassigned</span>
+                      <span className="text-slate-400 italic text-[12px]">Unassigned</span>
                     )}
                   </TableCell>
                   <TableCell>
-                    <span className="font-medium text-slate-800 dark:text-slate-200">
+                    <span className="font-medium text-[14px] text-slate-800 dark:text-slate-200">
                       {formatClassifications(getClinicClassifications(clinic))}
                     </span>
                   </TableCell>
@@ -312,10 +312,10 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded-xl shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                Facility Adoption
-              </h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+                Facility adoption
+              </h2>
+              <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Locations classified per approved facility type
               </p>
             </div>
@@ -328,12 +328,12 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
               return (
                 <div key={facType} className="flex items-center justify-between text-xs py-1 border-b border-slate-50 dark:border-slate-800/40 last:border-0">
                   <div>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">{bundle.name}</span>
-                    <span className="ml-1.5 text-[10px] font-mono text-slate-400">({facType})</span>
+                    <span className="font-semibold text-[14px] text-slate-800 dark:text-slate-200">{bundle.name}</span>
+                    <span className="ml-1.5 text-[12px] font-mono text-slate-400">({facType})</span>
                   </div>
                   <div className="text-right">
-                    <span className="font-bold text-slate-900 dark:text-slate-100">{count}</span>
-                    <span className="text-[11px] text-slate-400"> / {totalClinics} clinics</span>
+                    <span className="font-bold text-[14px] text-slate-900 dark:text-slate-100">{count}</span>
+                    <span className="text-[12px] text-slate-400"> / {totalClinics} clinics</span>
                   </div>
                 </div>
               );
@@ -356,9 +356,9 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 rounded-xl shadow-xs space-y-3">
           <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                Recent Administrative Audit Trail
-              </h3>
+              <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+                Recent administrative audit trail
+              </h2>
             </div>
             <button
               type="button"

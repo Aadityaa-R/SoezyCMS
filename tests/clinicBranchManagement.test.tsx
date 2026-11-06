@@ -82,7 +82,7 @@ describe('ClinicBranchManagement - Card-Based Hierarchy & Pagination', () => {
     expect(screen.getAllByText('Subiksham Speciality Hospital').length).toBeGreaterThan(0);
 
     // Card 1: Inline Facility Classification matching mockup
-    expect(screen.getByText('Facility Classification')).toBeTruthy();
+    expect(screen.getAllByText(/Facility Classification/i).length).toBeGreaterThan(0);
     expect(screen.getByText('Choose the services offered at this location.')).toBeTruthy();
     expect(screen.getByRole('button', { name: /Save classification/i })).toBeTruthy();
     expect(screen.getByText('Automatically enabled')).toBeTruthy();
@@ -197,7 +197,7 @@ describe('ClinicBranchManagement - Card-Based Hierarchy & Pagination', () => {
     expect(screen.getAllByText('OPD').length).toBeGreaterThan(0); // West Campus and checkbox
 
     // Main branch has inline Facility Classification card
-    expect(screen.getByText('Facility Classification')).toBeTruthy();
+    expect(screen.getAllByText(/Facility Classification/i).length).toBeGreaterThan(0);
     const saveBtn = screen.getByRole('button', { name: /Save classification/i });
     expect(saveBtn).toBeTruthy();
 

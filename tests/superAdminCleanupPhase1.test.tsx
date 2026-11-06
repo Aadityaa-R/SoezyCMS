@@ -113,9 +113,9 @@ describe('Super Admin Cleanup Phase 1 Verification', () => {
     expect(options).toEqual(['All facilities', 'OPD', 'IPD', 'Lab']);
 
     // Network table headers: Location, Appointed Admin, Facilities, Agreement, Status
-    expect(screen.getByText('FACILITIES')).toBeTruthy();
-    expect(screen.getByText('APPOINTED ADMIN')).toBeTruthy();
-    expect(screen.getByText('AGREEMENT')).toBeTruthy();
+    expect(screen.getByRole('columnheader', { name: /Facilities/i })).toBeTruthy();
+    expect(screen.getByRole('columnheader', { name: /Appointed Admin/i })).toBeTruthy();
+    expect(screen.getByRole('columnheader', { name: /Agreement/i })).toBeTruthy();
 
     // Table rows display formatted facility classifications (e.g., OPD, IPD, Lab) instead of "14 wings"
     expect(screen.queryByText(/14 wings/i)).toBeNull();

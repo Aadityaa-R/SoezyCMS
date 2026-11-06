@@ -211,15 +211,15 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
           <select
             value={tabFilter}
             onChange={(e) => setTabFilter(e.target.value as any)}
-            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            className="appearance-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
             aria-label="Filter by status"
           >
             <option value="all">All statuses ({agreements.length})</option>
             <option value="active">Active ({agreements.filter((a) => a.status === 'active').length})</option>
-            <option value="expiring">Expiring Soon ({agreements.filter((a) => a.status === 'expiring_soon').length})</option>
-            <option value="pending">Pending Signature ({agreements.filter((a) => a.status === 'pending_signature').length})</option>
+            <option value="expiring">Expiring soon ({agreements.filter((a) => a.status === 'expiring_soon').length})</option>
+            <option value="pending">Pending signature ({agreements.filter((a) => a.status === 'pending_signature').length})</option>
             <option value="expired">Expired ({agreements.filter((a) => a.status === 'expired').length})</option>
-            <option value="renewed">Renewed / Terminated ({agreements.filter((a) => a.status === 'renewed' || a.status === 'terminated').length})</option>
+            <option value="renewed">Renewed / terminated ({agreements.filter((a) => a.status === 'renewed' || a.status === 'terminated').length})</option>
           </select>
           <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
@@ -232,7 +232,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
             placeholder="Search reference, clinic..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            className="h-[36px] min-h-[36px] w-full pl-9 pr-3 text-[13px] font-normal rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-500"
             aria-label="Search licence agreements"
           />
         </div>
@@ -245,36 +245,36 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
           setFormError('');
           setIsAddModalOpen(true);
         }}
-        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
+        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
       >
         <Plus className="w-3.5 h-3.5 shrink-0" />
-        <span>Add Agreement</span>
+        <span>Add agreement</span>
       </button>
     </div>
   );
 
   return (
     <div className="space-y-4">
-      <h1 className="sr-only">Licence Agreement Management</h1>
+      <h1 className="text-[22px] font-semibold text-slate-900 dark:text-slate-100 tracking-tight">Licence agreements</h1>
 
       {/* Main Agreements Table */}
       <Table toolbar={agreementToolbar} pinLeading={true}>
         <TableHeader>
           <TableRow>
-            <TableHead pinned>Agreement Reference</TableHead>
-            <TableHead>Associated Clinic</TableHead>
-            <TableHead>Agreement Type</TableHead>
-            <TableHead>Validity Window</TableHead>
-            <TableHead>Facilities Covered</TableHead>
-            <TableHead>Signed Document</TableHead>
-            <TableHead>Agreement Status</TableHead>
+            <TableHead pinned>Agreement reference</TableHead>
+            <TableHead>Associated clinic</TableHead>
+            <TableHead>Agreement type</TableHead>
+            <TableHead>Validity window</TableHead>
+            <TableHead>Facilities covered</TableHead>
+            <TableHead>Signed document</TableHead>
+            <TableHead>Agreement status</TableHead>
             <TableHead isActions className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {filteredAgreements.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="py-12 text-center text-slate-500 dark:text-slate-400">
+              <TableCell colSpan={8} className="py-12 text-center text-[14px] text-slate-500 dark:text-slate-400">
                 No agreements match the selected filter.
               </TableCell>
             </TableRow>
@@ -282,44 +282,44 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
             filteredAgreements.map((agr) => (
               <TableRow key={agr.id}>
                 <TableCell pinned isPrimary>
-                  <span className="font-mono font-bold text-slate-900 dark:text-slate-100">
+                  <span className="font-mono font-bold text-[14px] text-slate-900 dark:text-slate-100">
                     {agr.agreementReference}
                   </span>
                   {agr.previousAgreementId && (
-                    <span className="text-[10px] text-blue-600 dark:text-blue-400 block">
+                    <span className="text-[12px] text-blue-600 dark:text-blue-400 block">
                       (Renewed from {agr.previousAgreementId})
                     </span>
                   )}
                 </TableCell>
 
-                <TableCell className="font-medium text-slate-900 dark:text-slate-100">
+                <TableCell className="font-medium text-[14px] text-slate-900 dark:text-slate-100">
                   {agr.clinicName}
                 </TableCell>
 
-                <TableCell className="capitalize text-slate-700 dark:text-slate-300">
+                <TableCell className="capitalize text-[14px] text-slate-700 dark:text-slate-300">
                   {agr.agreementType.replace(/_/g, ' ')}
                 </TableCell>
 
-                <TableCell className="font-mono text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                <TableCell className="font-mono text-[14px] text-slate-600 dark:text-slate-400 whitespace-nowrap">
                   {agr.startDate} to {agr.endDate}
                 </TableCell>
 
                 <TableCell>
                   <div className="flex flex-wrap gap-1.5 max-w-[200px]">
                     {agr.coveredFacilities.slice(0, 3).map((f) => (
-                      <span key={f} className="text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                      <span key={f} className="text-[12px] font-mono text-slate-700 dark:text-slate-300">
                         {f}
                       </span>
                     ))}
                     {agr.coveredFacilities.length > 3 && (
-                      <span className="text-[10px] text-slate-400">
+                      <span className="text-[11px] text-slate-400">
                         +{agr.coveredFacilities.length - 3} more
                       </span>
                     )}
                   </div>
                 </TableCell>
 
-                <TableCell className="font-mono text-[11px] text-slate-600 dark:text-slate-400">
+                <TableCell className="font-mono text-[12px] text-slate-600 dark:text-slate-400">
                   {agr.secureDocumentName ? (
                     <span className="truncate max-w-[120px] inline-block text-slate-800 dark:text-slate-200">{agr.secureDocumentName}</span>
                   ) : (
@@ -331,11 +331,11 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
                   <StatusDot status={agr.status} />
                 </TableCell>
 
-                <TableCell isActions className="text-right space-x-3 whitespace-nowrap">
+                <TableCell isActions className="text-right space-x-2 whitespace-nowrap">
                   <button
                     type="button"
                     onClick={() => setSelectedAgreementDetail(agr)}
-                    className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
+                    className="h-[28px] min-h-[28px] px-2 text-[13px] font-medium rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors inline-flex items-center cursor-pointer"
                   >
                     Details
                   </button>
@@ -343,7 +343,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
                     <button
                       type="button"
                       onClick={() => openRenewModal(agr)}
-                      className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:underline cursor-pointer"
+                      className="h-[28px] min-h-[28px] px-2 text-[13px] font-medium rounded text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors inline-flex items-center cursor-pointer"
                     >
                       Renew
                     </button>
@@ -356,7 +356,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
                         setTerminateReason('');
                         setFormError('');
                       }}
-                      className="text-xs text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:underline cursor-pointer"
+                      className="h-[28px] min-h-[28px] px-2 text-[13px] font-medium rounded text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors inline-flex items-center cursor-pointer"
                     >
                       Terminate
                     </button>
