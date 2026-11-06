@@ -82,7 +82,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
     }
 
     return (
-      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-900 dark:text-slate-100 capitalize">
+      <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-slate-900 dark:text-slate-100 capitalize">
         <span className={`w-1.5 h-1.5 rounded-full ${dotColor} shrink-0`} />
         <span>{status.replace(/_/g, ' ')}</span>
       </span>
@@ -345,9 +345,9 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
               size="sm"
               variant="outline"
               onClick={() => onNavigate('super_clinics')}
-              className="w-full text-xs rounded border border-slate-200 dark:border-slate-700 font-medium"
+              className="w-full text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700"
             >
-              Manage Clinic Classifications
+              Manage clinic classifications
             </Button>
           </div>
         </div>
@@ -363,9 +363,9 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
             <button
               type="button"
               onClick={() => onNavigate('super_settings', 'audit_logs')}
-              className="text-xs text-slate-600 dark:text-slate-400 hover:underline cursor-pointer"
+              className="text-[13px] font-medium text-slate-600 dark:text-slate-400 hover:underline cursor-pointer"
             >
-              Full Audit Ledger &rarr;
+              Full audit ledger &rarr;
             </button>
           </div>
 

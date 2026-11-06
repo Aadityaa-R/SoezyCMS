@@ -316,7 +316,7 @@ export const SuperAdminSettings: React.FC = () => {
                     <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                   </div>
 
-                  <div className="relative flex-1 min-w-[200px] sm:min-w-[240px]">
+                  <div className="relative flex-1 min-w-[180px] sm:min-w-[240px]">
                     <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                     <input
                       type="text"

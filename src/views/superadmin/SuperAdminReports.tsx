@@ -192,7 +192,7 @@ export const SuperAdminReports: React.FC = () => {
           className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer self-end sm:self-auto mb-1"
         >
           <Printer className="w-3.5 h-3.5" />
-          <span>Print Report</span>
+          <span>Print report</span>
         </button>
       </div>
 

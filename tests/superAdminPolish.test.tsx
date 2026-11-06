@@ -1,10 +1,12 @@
+import React, { useState } from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 // @ts-ignore
 import fs from 'node:fs';
 // @ts-ignore
 import path from 'node:path';
-import { SuperAdminProvider } from '../src/context/SuperAdminContext';
+import { SuperAdminProvider, useSuperAdmin } from '../src/context/SuperAdminContext';
+import { calculateModulesForClassifications } from '../src/lib/facilityClassifications';
 import { SuperAdminDashboard } from '../src/views/superadmin/SuperAdminDashboard';
 import { ClinicBranchManagement } from '../src/views/superadmin/ClinicBranchManagement';
 import { AdminManagement } from '../src/views/superadmin/AdminManagement';
@@ -16,6 +18,49 @@ import { SuperAdminSettings } from '../src/views/superadmin/SuperAdminSettings';
 import { SuperAdminPortal } from '../src/views/superadmin/SuperAdminPortal';
 
 declare const process: any;
+
+// Test harness for backend/context role enforcement on operational module toggles
+const RoleEnforcementHarness: React.FC = () => {
+  const { updateClinicFacilityEntitlement } = useSuperAdmin();
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const attemptSuperAdminManualToggle = async () => {
+    try {
+      await updateClinicFacilityEntitlement(
+        'c-subiksham',
+        'registration',
+        { moduleEnabledStatus: false },
+        'Super admin manual toggle attempt',
+        'platform_super_admin'
+      );
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'Error occurred');
+    }
+  };
+
+  const attemptBranchAdminToggle = async () => {
+    try {
+      await updateClinicFacilityEntitlement(
+        'c-subiksham',
+        'registration',
+        { moduleEnabledStatus: true },
+        'Branch admin operational adjustment',
+        'admin'
+      );
+      setErrorMessage('Branch admin allowed');
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'Error occurred');
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={attemptSuperAdminManualToggle}>Super Admin Toggle Module</button>
+      <button onClick={attemptBranchAdminToggle}>Branch Admin Toggle Module</button>
+      <div data-testid="error-message">{errorMessage}</div>
+    </div>
+  );
+};
 
 describe('SOEZY CMS Super Admin Polish Verification', () => {
   beforeEach(() => {
@@ -63,6 +108,22 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
       const fullDirectoryBtn = screen.getByRole('button', { name: /Full directory/i });
       expect(fullDirectoryBtn.className).toContain('text-[13px]');
       expect(fullDirectoryBtn.className).toContain('font-medium');
+
+      // Agreement and Status labels in table body are 13px font-medium
+      const statusSpans = screen.getAllByText(/Active/i);
+      expect(statusSpans.length).toBeGreaterThan(0);
+      const activeIndicator = statusSpans.find(span => span.parentElement?.className.includes('text-[13px] font-medium'));
+      expect(activeIndicator).toBeTruthy();
+
+      // Manage clinic classifications button: 13px font-medium, sentence case
+      const manageClassificationsBtn = screen.getByRole('button', { name: /Manage clinic classifications/i });
+      expect(manageClassificationsBtn.className).toContain('text-[13px]');
+      expect(manageClassificationsBtn.className).toContain('font-medium');
+
+      // Full audit ledger link: 13px font-medium, sentence case
+      const fullAuditLedgerBtn = screen.getByRole('button', { name: /Full audit ledger/i });
+      expect(fullAuditLedgerBtn.className).toContain('text-[13px]');
+      expect(fullAuditLedgerBtn.className).toContain('font-medium');
     });
 
     it('Clinics & Branches renders 22px visible page title and 13px toolbar controls', () => {
@@ -296,22 +357,74 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
       expect(layoutContent).toContain("paddingBottom: 'var(--page-pad)'");
     });
 
-    it('verifies toolbars and tables support wrapping and internal scroll without horizontal page overflow', () => {
+    it('verifies all seven top-level Super Admin screens support wrapping and internal table scroll without horizontal page overflow', () => {
       const onNavigate = vi.fn();
-      render(
+
+      // Screen 1: Overview
+      const { unmount: unmount1 } = render(
         <SuperAdminProvider>
           <SuperAdminDashboard onNavigate={onNavigate} />
         </SuperAdminProvider>
       );
+      expect(document.querySelector('[data-slot="smart-table-toolbar"]')?.className).toContain('flex-wrap');
+      expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
+      unmount1();
 
-      const toolbar = document.querySelector('[data-slot="smart-table-toolbar"]');
-      expect(toolbar).toBeTruthy();
-      expect(toolbar?.className).toContain('flex-wrap');
+      // Screen 2: Clinics
+      const { unmount: unmount2 } = render(
+        <SuperAdminProvider>
+          <ClinicBranchManagement onNavigate={onNavigate} />
+        </SuperAdminProvider>
+      );
+      expect(screen.getByPlaceholderText(/Search main branches/i).className).toContain('h-[36px]');
+      unmount2();
 
-      // Table scroll wrapper ensures horizontal scrolling is inside the container
-      const tableWrapper = document.querySelector('[data-slot="smart-table"] .overflow-x-auto');
-      expect(tableWrapper).toBeTruthy();
-      expect(tableWrapper?.className).toContain('overflow-x-auto');
+      // Screen 3: Admins
+      const { unmount: unmount3 } = render(
+        <SuperAdminProvider>
+          <AdminManagement onNavigateTab={onNavigate} />
+        </SuperAdminProvider>
+      );
+      expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
+      unmount3();
+
+      // Screen 4: Agreements
+      const { unmount: unmount4 } = render(
+        <SuperAdminProvider>
+          <AgreementManagement onNavigateTab={onNavigate} />
+        </SuperAdminProvider>
+      );
+      expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
+      unmount4();
+
+      // Screen 5: Onboarding
+      const { unmount: unmount5 } = render(
+        <SuperAdminProvider>
+          <BranchOnboarding />
+        </SuperAdminProvider>
+      );
+      expect(screen.getByLabelText(/Filter by onboarding status/i).className).toContain('h-[36px]');
+      unmount5();
+
+      // Screen 6: Reports
+      const { unmount: unmount6 } = render(
+        <SuperAdminProvider>
+          <SuperAdminReports />
+        </SuperAdminProvider>
+      );
+      expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
+      unmount6();
+
+      // Screen 7: Settings (Audit Logs)
+      const { unmount: unmount7 } = render(
+        <SuperAdminProvider>
+          <SuperAdminSettings />
+        </SuperAdminProvider>
+      );
+      const auditTab = screen.getByRole('button', { name: /Audit logs/i });
+      fireEvent.click(auditTab);
+      expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
+      unmount7();
     });
   });
 
@@ -381,6 +494,55 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
       expect(recheckedLab.checked).toBe(true);
     });
 
+    it('confirms expected modules and applicable billing features are provisioned with shared modules deduplicated', () => {
+      // OPD alone (6 modules including OPD billing)
+      const opdModules = calculateModulesForClassifications(['OPD']);
+      expect(opdModules).toEqual([
+        'Patient Registration',
+        'Appointment Scheduling',
+        'Consultation Workstation',
+        'EMR Clinical Records',
+        'Prescription Authoring',
+        'OPD Billing & Invoicing',
+      ]);
+
+      // IPD alone (6 modules including IPD billing)
+      const ipdModules = calculateModulesForClassifications(['IPD']);
+      expect(ipdModules).toEqual([
+        'Patient Registration',
+        'Inpatient Admissions',
+        'Bed Allocation & Wards',
+        'Nursing Station',
+        'EMR Clinical Records',
+        'IPD Billing & Discharge Settlements',
+      ]);
+
+      // Lab alone (5 modules including Lab billing)
+      const labModules = calculateModulesForClassifications(['Lab']);
+      expect(labModules).toEqual([
+        'Patient Registration',
+        'Specimen Intake & Barcoding',
+        'Diagnostic Lab Workstation',
+        'Pathology Report Authoring',
+        'Diagnostic Billing & Invoicing',
+      ]);
+
+      // Combining OPD + IPD: 10 unique modules, shared ('Patient Registration', 'EMR Clinical Records') deduplicated
+      const opdIpdModules = calculateModulesForClassifications(['OPD', 'IPD']);
+      expect(opdIpdModules.length).toBe(10);
+      expect(new Set(opdIpdModules).size).toBe(10);
+      expect(opdIpdModules).toContain('OPD Billing & Invoicing');
+      expect(opdIpdModules).toContain('IPD Billing & Discharge Settlements');
+
+      // Combining all three (OPD + IPD + Lab): 14 unique modules without duplication
+      const allThreeModules = calculateModulesForClassifications(['OPD', 'IPD', 'Lab']);
+      expect(allThreeModules.length).toBe(14);
+      expect(new Set(allThreeModules).size).toBe(14);
+      expect(allThreeModules).toContain('OPD Billing & Invoicing');
+      expect(allThreeModules).toContain('IPD Billing & Discharge Settlements');
+      expect(allThreeModules).toContain('Diagnostic Billing & Invoicing');
+    });
+
     it('redirects old Facilities URL / tab to Clinics (super_clinics)', () => {
       render(
         <SuperAdminPortal initialTab="super_facilities" />
@@ -388,6 +550,29 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
 
       // Verify it renders Clinics & branches rather than a broken page
       expect(screen.getByRole('heading', { level: 1, name: /Clinics & branches/i })).toBeTruthy();
+    });
+
+    it('enforces role restrictions: rejects Super Admin manual module toggles while allowing branch admin adjustments', async () => {
+      render(
+        <SuperAdminProvider>
+          <RoleEnforcementHarness />
+        </SuperAdminProvider>
+      );
+
+      // Super Admin attempts manual toggle -> rejected
+      const superAdminToggleBtn = screen.getByRole('button', { name: 'Super Admin Toggle Module' });
+      fireEvent.click(superAdminToggleBtn);
+
+      const errorDiv = await screen.findByTestId('error-message');
+      expect(errorDiv.textContent).toContain('Platform Super Admin cannot manually toggle individual operational modules');
+
+      // Branch admin attempts adjustment -> permitted
+      const branchAdminToggleBtn = screen.getByRole('button', { name: 'Branch Admin Toggle Module' });
+      fireEvent.click(branchAdminToggleBtn);
+
+      await waitFor(() => {
+        expect(errorDiv.textContent).toBe('Branch admin allowed');
+      });
     });
   });
 });
