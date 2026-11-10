@@ -317,7 +317,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Navigation list */}
         <nav
           aria-label="Main Navigation"
-          className={`flex-1 pt-2 pb-2 px-1.5 space-y-1 overflow-y-auto overflow-x-hidden ${
+          className={`flex-1 pt-2 pb-2 ${
+            isOpen ? 'px-1.5' : 'px-3'
+          } space-y-1 overflow-y-auto overflow-x-hidden ${
             isSuperAdmin
               ? 'border-r border-black/20'
               : 'border-r border-[#eef0f3] dark:border-slate-800'
@@ -349,8 +351,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 aria-label={item.label}
                 aria-current={isActive ? 'page' : undefined}
                 className={`${
-                  isOpen ? 'w-full px-2.5' : 'w-[var(--nav-cell)] justify-center'
-                } h-[var(--nav-cell)] flex items-center rounded-lg text-xs font-medium cursor-pointer transition-colors duration-200 ${
+                  isOpen
+                    ? 'w-full px-2.5 h-[var(--nav-cell)] justify-start'
+                    : 'w-8 h-8 mx-auto justify-center'
+                } flex items-center rounded-lg text-xs font-medium cursor-pointer transition-colors duration-200 ${
                   isSuperAdmin
                     ? (isActive
                         ? 'bg-white/15 text-white font-semibold'
@@ -361,7 +365,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 } ${
                   isSuperAdmin
                     ? 'focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none'
-                    : 'outline-none focus:outline-none focus:ring-0'
+                    : 'outline-none focus:outline-none focus:ring-0 focus-visible:ring-2 focus-visible:ring-teal-500'
                 }`}
               >
                 <span

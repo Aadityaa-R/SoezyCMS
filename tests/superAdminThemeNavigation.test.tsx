@@ -200,6 +200,37 @@ describe('Super Admin Three Red Shades Navigation & Theme Tokens', () => {
       fireEvent.click(toggleBtn);
       expect(sidebar.className).toContain('transition-all');
     });
+
+    it('makes each collapsed sidebar button fit inside the rail with equal insets and centered on toggle axis', () => {
+      renderSuperAdminApp();
+
+      const sidebar = document.getElementById('sidebar-navigation')!;
+      // Rail container has 3.5rem width when collapsed
+      expect(sidebar.className).toContain('lg:w-[3.5rem]');
+
+      const nav = sidebar.querySelector('nav');
+      expect(nav).toBeTruthy();
+      // Nav container uses px-3 when collapsed to give equal 12px insets
+      expect(nav?.className).toContain('px-3');
+
+      // Collapsed navigation buttons fit inside rail with equal insets (w-8 h-8 mx-auto)
+      const overviewBtn = screen.getByRole('button', { name: 'Overview' });
+      expect(overviewBtn.className).toContain('w-8');
+      expect(overviewBtn.className).toContain('h-8');
+      expect(overviewBtn.className).toContain('mx-auto');
+      expect(overviewBtn.className).toContain('justify-center');
+
+      // Focus ring and active highlight fit inside rail
+      expect(overviewBtn.className).toContain('bg-white/15');
+      expect(overviewBtn.className).toContain('focus-visible:ring-2');
+      expect(overviewBtn.className).toContain('focus-visible:ring-white');
+
+      // Topbar toggle matches same width and horizontal axis
+      const topbarToggle = screen.getByTitle(/Collapse sidebar|Expand sidebar/i);
+      expect(topbarToggle.className).toContain('w-8');
+      expect(topbarToggle.className).toContain('h-8');
+      expect(topbarToggle.className).toContain('justify-center');
+    });
   });
 
   describe('4. Minimal Overview Content and 12px Padding Preservation', () => {
