@@ -90,6 +90,14 @@ async function captureScreen(ws, outDirs, fileName) {
   }
 }
 
+function rgbToHex(rgbStr) {
+  if (!rgbStr) return '';
+  const match = rgbStr.match(/\d+/g);
+  if (!match || match.length < 3) return rgbStr;
+  const [r, g, b] = match.map(Number);
+  return '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
 async function main() {
   const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
   const repoDocsDir = path.join(__dirname, '..', 'docs', 'superadmin-theme');
@@ -128,7 +136,45 @@ async function main() {
     await sendCommand(ws, 'Page.navigate', { url: 'http://localhost:3000/?role=platform_super_admin' });
     await waitForApp(ws);
 
-    console.log('Capturing Desktop Collapsed...');
+    // Verify computed colors on Desktop
+    const computedColors = await evaluate(ws, `
+      (() => {
+        const header = document.getElementById('headerdiv');
+        const sidebar = document.getElementById('sidebar-navigation');
+        const userBtn = document.querySelector('button[aria-label*="User profile"]');
+        const avatar = userBtn ? userBtn.querySelector('.rounded-full') : null;
+
+        const headerBg = header ? window.getComputedStyle(header).backgroundColor : '';
+        const sidebarBg = sidebar ? window.getComputedStyle(sidebar).backgroundColor : '';
+        const avatarBg = avatar ? window.getComputedStyle(avatar).backgroundColor : '';
+
+        return {
+          headerBg,
+          sidebarBg,
+          avatarBg,
+        };
+      })()
+    `);
+
+    console.log('Computed Topbar Background:', computedColors.headerBg, '=>', rgbToHex(computedColors.headerBg));
+    console.log('Computed Sidebar Background:', computedColors.sidebarBg, '=>', rgbToHex(computedColors.sidebarBg));
+    console.log('Computed Avatar Background:', computedColors.avatarBg, '=>', rgbToHex(computedColors.avatarBg));
+
+    const topbarHex = rgbToHex(computedColors.headerBg);
+    const sidebarHex = rgbToHex(computedColors.sidebarBg);
+    const avatarHex = rgbToHex(computedColors.avatarBg);
+
+    if (topbarHex !== '#6D0000') {
+      console.error('ERROR: Topbar hex mismatch! Expected #6D0000, got:', topbarHex);
+    }
+    if (sidebarHex !== '#6D0000') {
+      console.error('ERROR: Sidebar hex mismatch! Expected #6D0000, got:', sidebarHex);
+    }
+    if (avatarHex !== '#8F0000') {
+      console.error('ERROR: Avatar hex mismatch! Expected #8F0000, got:', avatarHex);
+    }
+
+    console.log('Capturing Desktop Collapsed (Both bars #6D0000)...');
     await captureScreen(ws, outDirs, 'superadmin-desktop-collapsed.png');
 
     // 2. Expand Sidebar on Desktop
@@ -149,19 +195,50 @@ async function main() {
     console.log('Capturing Desktop Expanded...');
     await captureScreen(ws, outDirs, 'superadmin-desktop-expanded.png');
 
-    // 3. Open profile menu to test contrast and dropdown
-    console.log('Opening profile menu...');
-    await evaluate(ws, `
+    // 3. Open notifications popover
+    console.log('Opening notifications popover...');
+    const notifClicked = await evaluate(ws, `
       (() => {
-        const profileBtn = document.querySelector('button[aria-haspopup="menu"]');
-        if (profileBtn) profileBtn.click();
+        const bellBtn = document.querySelector('button[aria-label*="Notifications"]');
+        if (bellBtn) {
+          bellBtn.click();
+          return true;
+        }
+        return false;
       })()
     `);
+    console.log('Notification button clicked:', notifClicked);
+    await new Promise((r) => setTimeout(r, 500));
+    console.log('Capturing Desktop with Notifications open...');
+    await captureScreen(ws, outDirs, 'superadmin-notifications-open.png');
+
+    // Close notifications popover
+    await evaluate(ws, `
+      (() => {
+        const bellBtn = document.querySelector('button[aria-label*="Notifications"]');
+        if (bellBtn) bellBtn.click();
+      })()
+    `);
+    await new Promise((r) => setTimeout(r, 300));
+
+    // 4. Open profile menu to test contrast and dropdown
+    console.log('Opening profile menu...');
+    const profileClicked = await evaluate(ws, `
+      (() => {
+        const profileBtn = document.querySelector('button[aria-haspopup="menu"]');
+        if (profileBtn) {
+          profileBtn.click();
+          return true;
+        }
+        return false;
+      })()
+    `);
+    console.log('Profile button clicked:', profileClicked);
     await new Promise((r) => setTimeout(r, 500));
     console.log('Capturing Desktop with Profile Menu open...');
     await captureScreen(ws, outDirs, 'superadmin-profile-menu-open.png');
 
-    // 4. Mobile 375x812 - Drawer closed
+    // 5. Mobile 375x812 - Drawer closed
     console.log('Setting mobile viewport (375x812)...');
     await sendCommand(ws, 'Emulation.setDeviceMetricsOverride', {
       width: 375,
@@ -173,10 +250,33 @@ async function main() {
     await sendCommand(ws, 'Page.navigate', { url: 'http://localhost:3000/?role=platform_super_admin' });
     await waitForApp(ws);
 
+    // Verify computed colors on Mobile
+    const mobileColors = await evaluate(ws, `
+      (() => {
+        const header = document.getElementById('headerdiv');
+        const sidebar = document.getElementById('sidebar-navigation');
+        const userBtn = document.querySelector('button[aria-label*="User profile"]');
+        const avatar = userBtn ? userBtn.querySelector('.rounded-full') : null;
+
+        const headerBg = header ? window.getComputedStyle(header).backgroundColor : '';
+        const sidebarBg = sidebar ? window.getComputedStyle(sidebar).backgroundColor : '';
+        const avatarBg = avatar ? window.getComputedStyle(avatar).backgroundColor : '';
+
+        return {
+          headerBg,
+          sidebarBg,
+          avatarBg,
+        };
+      })()
+    `);
+    console.log('Mobile Topbar Background:', mobileColors.headerBg, '=>', rgbToHex(mobileColors.headerBg));
+    console.log('Mobile Sidebar Background:', mobileColors.sidebarBg, '=>', rgbToHex(mobileColors.sidebarBg));
+    console.log('Mobile Avatar Background:', mobileColors.avatarBg, '=>', rgbToHex(mobileColors.avatarBg));
+
     console.log('Capturing Mobile Drawer Closed...');
     await captureScreen(ws, outDirs, 'superadmin-mobile-closed.png');
 
-    // 5. Open mobile drawer
+    // 6. Open mobile drawer
     console.log('Opening mobile drawer...');
     const openMobileClicked = await evaluate(ws, `
       (() => {
@@ -195,7 +295,7 @@ async function main() {
     await captureScreen(ws, outDirs, 'superadmin-mobile-drawer-open.png');
 
     ws.close();
-    console.log('Done capturing screenshots!');
+    console.log('Done capturing and verifying screenshots!');
   } finally {
     try {
       chromeProc.kill();
@@ -204,6 +304,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error(err);
+  console.error('Fatal error:', err);
   process.exit(1);
 });

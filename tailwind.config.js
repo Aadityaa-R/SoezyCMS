@@ -38,7 +38,7 @@ export default {
         superadmin: {
           sidebar: 'var(--superadmin-sidebar-bg)',
           avatar: 'var(--superadmin-avatar-bg)',
-          topbar: 'var(--superadmin-topbar-bg)',
+          topbar: 'var(--superadmin-sidebar-bg)',
         },
         clinic: {
           50: '#f0fdfa',

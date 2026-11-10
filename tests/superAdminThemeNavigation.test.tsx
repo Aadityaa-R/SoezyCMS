@@ -82,32 +82,36 @@ describe('Super Admin Three Red Shades Navigation & Theme Tokens', () => {
     const tailwindPath = path.resolve(process.cwd(), 'tailwind.config.js');
     const tailwindContent = fs.readFileSync(tailwindPath, 'utf-8');
 
-    it('defines the three exact logo red hex tokens in src/index.css', () => {
+    it('defines the shared logo red hex tokens in src/index.css syncing topbar with sidebar', () => {
       // First red: darkest shade for left sidebar background (#6d0000)
       expect(cssContent).toMatch(/--superadmin-sidebar-bg:\s*#6d0000;/);
 
       // Second red: middle shade for circular profile avatar background (#8f0000)
       expect(cssContent).toMatch(/--superadmin-avatar-bg:\s*#8f0000;/);
 
-      // Third red: brighter shade for full-width top navigation bar background (#d90202)
-      expect(cssContent).toMatch(/--superadmin-topbar-bg:\s*#d90202;/);
+      // Top navigation bar reuses existing sidebar color token to stay in sync
+      expect(cssContent).toMatch(/--superadmin-topbar-bg:\s*var\(--superadmin-sidebar-bg\);/);
     });
 
     it('configures shared theme tokens scoped to Super Admin in tailwind.config.js', () => {
       expect(tailwindContent).toContain("sidebar: 'var(--superadmin-sidebar-bg)'");
       expect(tailwindContent).toContain("avatar: 'var(--superadmin-avatar-bg)'");
-      expect(tailwindContent).toContain("topbar: 'var(--superadmin-topbar-bg)'");
+      expect(tailwindContent).toContain("topbar: 'var(--superadmin-sidebar-bg)'");
     });
   });
 
-  describe('2. Top Navigation Bar (Third red #d90202, white backplate logo, avatar in second red #8f0000)', () => {
-    it('renders full-width top navigation bar with brighter red background and white text', () => {
+  describe('2. Top Navigation Bar (Shared deep red #6d0000 with sidebar, white backplate logo, avatar in ruby red #8f0000)', () => {
+    it('renders full-width top navigation bar with deep red background sharing sidebar color token and white text', () => {
       renderSuperAdminApp();
 
       const header = document.getElementById('headerdiv');
       expect(header).toBeTruthy();
-      expect(header?.className).toContain('bg-[var(--superadmin-topbar-bg)]');
+      expect(header?.className).toContain('bg-[var(--superadmin-sidebar-bg)]');
       expect(header?.className).toContain('text-white');
+
+      const sidebar = document.getElementById('sidebar-navigation');
+      expect(sidebar).toBeTruthy();
+      expect(sidebar?.className).toContain('bg-[var(--superadmin-sidebar-bg)]');
     });
 
     it('renders original SOEZY logo on a small white backplate', () => {

@@ -79,7 +79,7 @@ select:focus-visible,
   /* SOEZY Logo Red Theme Tokens Scoped to Super Admin Navigation */
   --superadmin-sidebar-bg: #6d0000;
   --superadmin-avatar-bg: #8f0000;
-  --superadmin-topbar-bg: #d90202;
+  --superadmin-topbar-bg: var(--superadmin-sidebar-bg);
 
   /* Spacing Tokens (Milestone M13) */
   --space-card: var(--card-pad);
@@ -150,7 +150,7 @@ select:focus-visible,
 [data-theme-role="superadmin"] {
   --superadmin-sidebar-bg: #6d0000;
   --superadmin-avatar-bg: #8f0000;
-  --superadmin-topbar-bg: #d90202;
+  --superadmin-topbar-bg: var(--superadmin-sidebar-bg);
 }
 
 @media (min-width: 1280px) {

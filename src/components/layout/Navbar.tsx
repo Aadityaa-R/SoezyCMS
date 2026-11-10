@@ -154,7 +154,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
         id="headerdiv"
         className={`h-[var(--nav-cell)] w-full flex items-center justify-between sticky top-0 z-20 shrink-0 transition-colors pl-2 sm:pl-3 ${
           isSuperAdmin
-            ? 'bg-[var(--superadmin-topbar-bg)] text-white border-b border-black/20'
+            ? 'bg-[var(--superadmin-sidebar-bg)] text-white border-b border-black/20'
             : 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100'
         }`}
         style={{
@@ -261,7 +261,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
               <Bell className={`w-4 h-4 ${isSuperAdmin ? 'text-white' : ''}`} />
               {totalUnreadCount > 0 && (
                 <span className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full ring-2 ${
-                  isSuperAdmin ? 'bg-white ring-[var(--superadmin-topbar-bg)]' : 'bg-teal-500 ring-white dark:ring-slate-900'
+                  isSuperAdmin ? 'bg-white ring-[var(--superadmin-sidebar-bg)]' : 'bg-teal-500 ring-white dark:ring-slate-900'
                 }`} />
               )}
             </button>
