@@ -68,7 +68,7 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
   });
 
   describe('1. Standardized Typography & Sentence Case', () => {
-    it('Overview (SuperAdminDashboard) renders 22px visible page title, 15px section headings, 13px toolbar controls, and sentence case', () => {
+    it('Overview (SuperAdminDashboard) renders 22px visible page title and 13px sentence case KPI cards', () => {
       const onNavigate = vi.fn();
       render(
         <SuperAdminProvider>
@@ -82,48 +82,24 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
       expect(pageTitle.className).toContain('text-[22px]');
       expect(pageTitle.className).toContain('font-semibold');
 
-      // Section headings (15px semibold)
-      const networkHeading = screen.getByRole('heading', { level: 2, name: /Clinic \/ branch network status/i });
-      expect(networkHeading.className).toContain('text-[15px]');
-      expect(networkHeading.className).toContain('font-semibold');
+      // Sentence case KPI cards with 13px medium labels
+      const card1Title = screen.getByText('Clinics & branches');
+      expect(card1Title.className).toContain('text-[13px]');
+      expect(card1Title.className).toContain('font-medium');
 
-      // Sentence case KPI cards
-      expect(screen.getByText('Registered clinics')).toBeTruthy();
-      expect(screen.getByText('Clinic admins')).toBeTruthy();
-      expect(screen.getByText('Licence agreements')).toBeTruthy();
-      expect(screen.getByText('Branch onboarding')).toBeTruthy();
+      const card2Title = screen.getByText('Admin assignments');
+      expect(card2Title.className).toContain('text-[13px]');
+      expect(card2Title.className).toContain('font-medium');
 
-      // Toolbar controls: 13px font
-      const statusFilter = screen.getByLabelText(/Filter by status/i);
-      expect(statusFilter.className).toContain('text-[13px]');
-      expect(statusFilter.className).toContain('font-medium');
+      const card3Title = screen.getByText('Licence agreements');
+      expect(card3Title.className).toContain('text-[13px]');
+      expect(card3Title.className).toContain('font-medium');
 
-      const facilityFilter = screen.getByLabelText(/Filter by facility/i);
-      expect(facilityFilter.className).toContain('text-[13px]');
-      expect(facilityFilter.className).toContain('font-medium');
-
-      const searchInput = screen.getByPlaceholderText(/Search clinics or branches/i);
-      expect(searchInput.className).toContain('text-[13px]');
-
-      const fullDirectoryBtn = screen.getByRole('button', { name: /Full directory/i });
-      expect(fullDirectoryBtn.className).toContain('text-[13px]');
-      expect(fullDirectoryBtn.className).toContain('font-medium');
-
-      // Agreement and Status labels in table body are 13px font-medium
-      const statusSpans = screen.getAllByText(/Active/i);
-      expect(statusSpans.length).toBeGreaterThan(0);
-      const activeIndicator = statusSpans.find(span => span.parentElement?.className.includes('text-[13px] font-medium'));
-      expect(activeIndicator).toBeTruthy();
-
-      // Manage clinic classifications button: 13px font-medium, sentence case
-      const manageClassificationsBtn = screen.getByRole('button', { name: /Manage clinic classifications/i });
-      expect(manageClassificationsBtn.className).toContain('text-[13px]');
-      expect(manageClassificationsBtn.className).toContain('font-medium');
-
-      // Full audit ledger link: 13px font-medium, sentence case
-      const fullAuditLedgerBtn = screen.getByRole('button', { name: /Full audit ledger/i });
-      expect(fullAuditLedgerBtn.className).toContain('text-[13px]');
-      expect(fullAuditLedgerBtn.className).toContain('font-medium');
+      // Removed items do not exist on Overview
+      expect(screen.queryByText('Branch onboarding')).toBeNull();
+      expect(screen.queryByText(/Clinic \/ branch network status/i)).toBeNull();
+      expect(screen.queryByText('Facility adoption')).toBeNull();
+      expect(screen.queryByText(/Recent administrative audit trail/i)).toBeNull();
     });
 
     it('Clinics & Branches renders 22px visible page title and 13px toolbar controls', () => {
@@ -226,7 +202,7 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
       expect(cssContent).toContain('.dark :focus-visible');
     });
 
-    it('allows interactive controls like Full Directory, inputs, and selects to gain keyboard focus', () => {
+    it('allows interactive controls like KPI cards, inputs, and selects to gain keyboard focus', () => {
       const onNavigate = vi.fn();
       render(
         <SuperAdminProvider>
@@ -234,17 +210,18 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
         </SuperAdminProvider>
       );
 
-      const fullDirectoryBtn = screen.getByRole('button', { name: /Full directory/i });
-      fullDirectoryBtn.focus();
-      expect(document.activeElement).toBe(fullDirectoryBtn);
+      // Entire KPI cards are interactive button navigation targets
+      const clinicsCard = screen.getByRole('button', { name: /Clinics & branches/i });
+      clinicsCard.focus();
+      expect(document.activeElement).toBe(clinicsCard);
 
-      const statusFilter = screen.getByLabelText(/Filter by status/i);
-      statusFilter.focus();
-      expect(document.activeElement).toBe(statusFilter);
+      const adminsCard = screen.getByRole('button', { name: /Admin assignments/i });
+      adminsCard.focus();
+      expect(document.activeElement).toBe(adminsCard);
 
-      const searchInput = screen.getByPlaceholderText(/Search clinics or branches/i);
-      searchInput.focus();
-      expect(document.activeElement).toBe(searchInput);
+      const agreementsCard = screen.getByRole('button', { name: /Licence agreements/i });
+      agreementsCard.focus();
+      expect(document.activeElement).toBe(agreementsCard);
     });
 
     it('preserves dialog Escape and close behavior in modals', async () => {
@@ -277,7 +254,7 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
       const onNavigate = vi.fn();
       render(
         <SuperAdminProvider>
-          <SuperAdminDashboard onNavigate={onNavigate} />
+          <ClinicBranchManagement onNavigate={onNavigate} />
         </SuperAdminProvider>
       );
 
@@ -287,11 +264,11 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
       expect(statusSelect.className).toContain('[background-image:none]');
       expect(statusSelect.className).toContain('bg-none');
 
-      // Facility filter select has appearance-none and background-image: none
-      const facilitySelect = screen.getByLabelText(/Filter by facility/i) as HTMLSelectElement;
-      expect(facilitySelect.className).toContain('appearance-none');
-      expect(facilitySelect.className).toContain('[background-image:none]');
-      expect(facilitySelect.className).toContain('bg-none');
+      // Branch type filter select has appearance-none and background-image: none
+      const branchTypeSelect = screen.getByLabelText(/Filter by branch type/i) as HTMLSelectElement;
+      expect(branchTypeSelect.className).toContain('appearance-none');
+      expect(branchTypeSelect.className).toContain('[background-image:none]');
+      expect(branchTypeSelect.className).toContain('bg-none');
 
       // Parent container contains exactly one SVG Lucide ChevronDown icon
       const statusContainer = statusSelect.parentElement;
@@ -299,10 +276,10 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
       expect(statusChevrons?.length).toBe(1);
       expect(statusChevrons?.[0].classList.contains('pointer-events-none')).toBe(true);
 
-      const facilityContainer = facilitySelect.parentElement;
-      const facilityChevrons = facilityContainer?.querySelectorAll('svg');
-      expect(facilityChevrons?.length).toBe(1);
-      expect(facilityChevrons?.[0].classList.contains('pointer-events-none')).toBe(true);
+      const branchTypeContainer = branchTypeSelect.parentElement;
+      const branchTypeChevrons = branchTypeContainer?.querySelectorAll('svg');
+      expect(branchTypeChevrons?.length).toBe(1);
+      expect(branchTypeChevrons?.[0].classList.contains('pointer-events-none')).toBe(true);
 
       // Verify mouse interaction works
       fireEvent.change(statusSelect, { target: { value: 'active' } });
@@ -418,14 +395,18 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
         window.innerWidth = vpWidth;
         window.dispatchEvent(new Event('resize'));
 
-        // Screen 1: Overview
+        // Screen 1: Overview (KPI-only dashboard)
         const { unmount: unmount1 } = render(
           <SuperAdminProvider>
             <SuperAdminDashboard onNavigate={onNavigate} />
           </SuperAdminProvider>
         );
-        expect(document.querySelector('[data-slot="smart-table-toolbar"]')?.className).toContain('flex-wrap');
-        expect(document.querySelector('[data-slot="smart-table"] .overflow-x-auto')).toBeTruthy();
+        const kpiGrid = document.querySelector('.grid');
+        expect(kpiGrid?.className).toContain('grid-cols-1');
+        expect(kpiGrid?.className).toContain('md:grid-cols-3');
+        expect(screen.getByRole('button', { name: /Clinics & branches/i })).toBeTruthy();
+        expect(screen.getByRole('button', { name: /Admin assignments/i })).toBeTruthy();
+        expect(screen.getByRole('button', { name: /Licence agreements/i })).toBeTruthy();
         unmount1();
 
         // Screen 2: Clinics

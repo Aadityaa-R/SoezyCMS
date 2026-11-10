@@ -98,7 +98,7 @@ describe('Super Admin Cleanup Phase 1 Verification', () => {
     expect(isTabAllowed('super_agreements', 'platform_super_admin', null)).toBe(true);
   });
 
-  it('SuperAdminDashboard: displays facility classifications in network table and limits facility filter options to All facilities, OPD, IPD, and Lab', () => {
+  it('SuperAdminDashboard: simplified to KPI-only dashboard while facility classification remains in clinic details', () => {
     const onNavigate = vi.fn();
     render(
       <SuperAdminProvider>
@@ -106,20 +106,17 @@ describe('Super Admin Cleanup Phase 1 Verification', () => {
       </SuperAdminProvider>
     );
 
-    // Facility filter options strictly limited to All facilities, OPD, IPD, Lab
-    const facilitySelect = screen.getByLabelText(/Filter by Facility/i) as HTMLSelectElement;
-    expect(facilitySelect).toBeTruthy();
-    const options = Array.from(facilitySelect.options).map((o) => o.text);
-    expect(options).toEqual(['All facilities', 'OPD', 'IPD', 'Lab']);
+    // Overview contains page title and 3 KPI cards
+    expect(screen.getByRole('heading', { level: 1, name: /Organisation overview/i })).toBeTruthy();
+    expect(screen.getByText('Clinics & branches')).toBeTruthy();
+    expect(screen.getByText('Admin assignments')).toBeTruthy();
+    expect(screen.getByText('Licence agreements')).toBeTruthy();
 
-    // Network table headers: Location, Appointed Admin, Facilities, Agreement, Status
-    expect(screen.getByRole('columnheader', { name: /Facilities/i })).toBeTruthy();
-    expect(screen.getByRole('columnheader', { name: /Appointed Admin/i })).toBeTruthy();
-    expect(screen.getByRole('columnheader', { name: /Agreement/i })).toBeTruthy();
-
-    // Table rows display formatted facility classifications (e.g., OPD, IPD, Lab) instead of "14 wings"
-    expect(screen.queryByText(/14 wings/i)).toBeNull();
-    expect(screen.getAllByText('OPD, IPD, Lab').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('OPD, IPD').length).toBeGreaterThan(0);
+    // Network table, filters, and extraneous sections are removed from Overview
+    expect(screen.queryByLabelText(/Filter by Facility/i)).toBeNull();
+    expect(screen.queryByLabelText(/Filter by Status/i)).toBeNull();
+    expect(screen.queryByRole('columnheader', { name: /Facilities/i })).toBeNull();
+    expect(screen.queryByText('Branch onboarding')).toBeNull();
+    expect(screen.queryByText('Facility adoption')).toBeNull();
   });
 });

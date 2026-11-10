@@ -11,7 +11,7 @@ import { SuperAdminSettings } from '../src/views/superadmin/SuperAdminSettings';
 import { BranchOnboarding } from '../src/views/superadmin/BranchOnboarding';
 
 describe('Super Admin Toolbar & Filter Cleanup (Dropdowns, Exact 36px, True Navigation)', () => {
-  it('Overview (SuperAdminDashboard) uses exact 36px height for search, filters, and Full Directory on the same toolbar row', () => {
+  it('Overview (SuperAdminDashboard) is a KPI-only dashboard without table toolbars', () => {
     const onNavigate = vi.fn();
     render(
       <SuperAdminProvider>
@@ -19,38 +19,17 @@ describe('Super Admin Toolbar & Filter Cleanup (Dropdowns, Exact 36px, True Navi
       </SuperAdminProvider>
     );
 
-    const statusFilter = screen.getByLabelText(/Filter by status/i);
-    expect(statusFilter.className).toContain('h-[36px]');
-    expect(statusFilter.className).toContain('min-h-[36px]');
-    expect(statusFilter.className).toContain('rounded-lg');
+    // Overview renders title and 3 KPI cards
+    expect(screen.getByRole('heading', { level: 1, name: /Organisation overview/i })).toBeTruthy();
+    expect(screen.getByText('Clinics & branches')).toBeTruthy();
+    expect(screen.getByText('Admin assignments')).toBeTruthy();
+    expect(screen.getByText('Licence agreements')).toBeTruthy();
 
-    const facilityFilter = screen.getByLabelText(/Filter by facility/i);
-    expect(facilityFilter.className).toContain('h-[36px]');
-    expect(facilityFilter.className).toContain('min-h-[36px]');
-    expect(facilityFilter.className).toContain('rounded-lg');
-
-    const searchInput = screen.getByPlaceholderText(/Search clinics or branches/i);
-    expect(searchInput.className).toContain('h-[36px]');
-    expect(searchInput.className).toContain('min-h-[36px]');
-    expect(searchInput.className).toContain('rounded-lg');
-    expect(searchInput.className).toContain('pl-9');
-
-    const fullDirectoryBtn = screen.getByRole('button', { name: /Full Directory/i });
-    expect(fullDirectoryBtn.className).toContain('h-[36px]');
-    expect(fullDirectoryBtn.className).toContain('min-h-[36px]');
-    expect(fullDirectoryBtn.className).toContain('!min-h-0');
-    expect(fullDirectoryBtn.className).toContain('rounded-lg');
-
-    // Verify search narrows results
-    fireEvent.change(searchInput, { target: { value: 'Subiksham' } });
-    expect((searchInput as HTMLInputElement).value).toBe('Subiksham');
-
-    // Reset search
-    fireEvent.change(searchInput, { target: { value: '' } });
-    expect((searchInput as HTMLInputElement).value).toBe('');
-
-    fireEvent.click(fullDirectoryBtn);
-    expect(onNavigate).toHaveBeenCalledWith('super_clinics');
+    // Table toolbar controls are removed from Overview
+    expect(screen.queryByLabelText(/Filter by status/i)).toBeNull();
+    expect(screen.queryByLabelText(/Filter by facility/i)).toBeNull();
+    expect(screen.queryByPlaceholderText(/Search clinics or branches/i)).toBeNull();
+    expect(screen.queryByRole('button', { name: /Full Directory/i })).toBeNull();
   });
 
   it('Clinics (ClinicBranchManagement) converts status button row to a labeled dropdown filter with counts and exact 36px height', () => {
