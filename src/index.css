@@ -76,6 +76,11 @@ select:focus-visible,
   --text-grey-strong: #475569;
   --brand-accent: #0d9488;
 
+  /* SOEZY Logo Red Theme Tokens Scoped to Super Admin Navigation */
+  --superadmin-sidebar-bg: #6d0000;
+  --superadmin-avatar-bg: #8f0000;
+  --superadmin-topbar-bg: #d90202;
+
   /* Spacing Tokens (Milestone M13) */
   --space-card: var(--card-pad);
   --space-section-gap: var(--section-gap);
@@ -115,6 +120,14 @@ select:focus-visible,
   :root {
     --page-pad: 12px;
   }
+}
+
+/* Super Admin Scoped Theme Tokens */
+.superadmin-theme,
+[data-theme-role="superadmin"] {
+  --superadmin-sidebar-bg: #6d0000;
+  --superadmin-avatar-bg: #8f0000;
+  --superadmin-topbar-bg: #d90202;
 }
 
 @media (min-width: 1280px) {

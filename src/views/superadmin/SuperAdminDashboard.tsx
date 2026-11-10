@@ -33,7 +33,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
         <button
           type="button"
           onClick={() => onNavigate('super_clinics')}
-          aria-label={`Clinics & branches: ${totalLocations} total locations, ${activeLocations} active locations. Open Clinics.`}
+          aria-label={`Clinics & branches: ${totalLocations} total locations, ${activeLocations} active. Open Clinics.`}
           className="text-left w-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group focus-visible:outline-2 focus-visible:outline-teal-600 focus-visible:outline-offset-2"
         >
           <div>
@@ -43,11 +43,11 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{totalLocations}</span>
-            <span className="text-[12px] text-slate-500 dark:text-slate-400 font-medium">total locations</span>
+            <span className="sr-only">total locations</span>
           </div>
-          <div className="mt-2 text-[12px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex items-center justify-between">
-            <span>Active locations</span>
-            <span className="font-medium text-slate-700 dark:text-slate-300">{activeLocations}</span>
+          <div className="mt-2 text-[12px] text-slate-500 dark:text-slate-400">
+            <span>{activeLocations} active</span>
+            <span className="sr-only">Active locations: {activeLocations}</span>
           </div>
         </button>
 
@@ -55,7 +55,7 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
         <button
           type="button"
           onClick={() => onNavigate('super_admins')}
-          aria-label={`Admin assignments: ${locationsWithAdmin} locations with appointed admin, ${locationsNeedingAdmin} locations still need an admin. Open Admins.`}
+          aria-label={`Admin assignments: ${locationsWithAdmin} locations with an appointed admin, ${locationsNeedingAdmin} locations still need an admin. Open Admins.`}
           className="text-left w-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-xs hover:border-slate-400 dark:hover:border-slate-700 transition-colors cursor-pointer group focus-visible:outline-2 focus-visible:outline-teal-600 focus-visible:outline-offset-2"
         >
           <div>
@@ -65,11 +65,11 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{locationsWithAdmin}</span>
-            <span className="text-[12px] text-slate-500 dark:text-slate-400 font-medium">with appointed admin</span>
+            <span className="sr-only">with appointed admin</span>
           </div>
-          <div className="mt-2 text-[12px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex items-center justify-between">
-            <span>Still need admin</span>
-            <span className="font-medium text-slate-700 dark:text-slate-300">{locationsNeedingAdmin} locations</span>
+          <div className="mt-2 text-[12px] text-slate-500 dark:text-slate-400">
+            <span>Locations with an appointed admin</span>
+            <span className="sr-only">Still need admin: {locationsNeedingAdmin} locations</span>
           </div>
         </button>
 
@@ -87,11 +87,11 @@ export const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onNavi
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{activeAgreements}</span>
-            <span className="text-[12px] text-slate-500 dark:text-slate-400 font-medium">active agreements</span>
+            <span className="sr-only">active agreements</span>
           </div>
-          <div className="mt-2 text-[12px] text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-2 flex items-center justify-between">
-            <span>Expiring soon: {expiringAgreements}</span>
-            <span>Expired: {expiredAgreements}</span>
+          <div className="mt-2 text-[12px] text-slate-500 dark:text-slate-400">
+            <span>Active agreements &bull; {expiringAgreements} expiring soon</span>
+            <span className="sr-only">Expiring soon: {expiringAgreements} Expired: {expiredAgreements}</span>
           </div>
         </button>
       </div>

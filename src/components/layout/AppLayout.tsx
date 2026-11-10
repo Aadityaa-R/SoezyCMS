@@ -38,6 +38,7 @@ import { PageContainer } from './PageContainer';
 
 export const AppLayout: React.FC = () => {
   const { currentRole, currentUser, isAuthenticated, isRoleSuspended, logout } = useAuth();
+  const isSuperAdmin = currentRole === 'platform_super_admin';
   const { modules, currentOrganization } = useClinic();
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<string>(() => {
@@ -374,7 +375,7 @@ export const AppLayout: React.FC = () => {
 
   return (
     <SidebarProvider>
-      <div className={`h-screen flex flex-col font-sans antialiased overflow-hidden ${theme === 'dark' ? 'dark bg-slate-950 text-slate-100' : 'bg-[#fafafa] text-slate-800'}`}>
+      <div className={`h-screen flex flex-col font-sans antialiased overflow-hidden ${isSuperAdmin ? 'superadmin-theme' : ''} ${theme === 'dark' ? 'dark bg-slate-950 text-slate-100' : 'bg-[#fafafa] text-slate-800'}`}>
         {/* Skip to main content link for keyboard users */}
         <a
           href="#main-content"
@@ -392,54 +393,92 @@ export const AppLayout: React.FC = () => {
           className="sr-only"
         />
 
-        <div className="flex-1 flex overflow-hidden h-full min-h-0">
-          {/* Dynamic Role-specific Sidebar: strictly provides only this role's modules */}
-          <Sidebar
-            activeTab={activeTab}
-            onTabChange={(tab) => handleNavigate(tab)}
-          />
-
-          {/* Content Shell */}
-          <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden">
-            {/* Header with profile & logout - pinned at top */}
+        {isSuperAdmin ? (
+          <div className="flex-1 flex flex-col overflow-hidden h-full min-h-0">
+            {/* Header with profile & logout - pinned at top, full width */}
             <Navbar
               activeTab={activeTab}
               onNavigate={handleNavigate}
             />
 
-            {/* Compliance License Expired Notice (Minimalist & Non-intrusive) */}
-            {currentOrganization?.licenseStatus === 'expired' && currentRole !== 'platform_super_admin' && (
-              <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-900/50 px-4 py-2 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
-                  <span>
-                    <strong>License Expired:</strong> {currentOrganization.name}&apos;s license expired on {currentOrganization.licenseValidUntil}. Clinical workstations are operating in compliance renewal mode. Please contact Platform Super Admin for license renewal.
-                  </span>
-                </div>
-              </div>
-            )}
+            <div className="flex-1 flex overflow-hidden h-full min-h-0 relative">
+              {/* Dynamic Role-specific Sidebar: strictly provides only this role's modules */}
+              <Sidebar
+                activeTab={activeTab}
+                onTabChange={(tab) => handleNavigate(tab)}
+              />
 
-            {/* Main View Area - dedicated scrollable container extending full width flush against panels */}
-            <main
-              id="main-content"
-              tabIndex={-1}
-              className="flex-1 min-h-0 overflow-y-auto w-full outline-none [scrollbar-gutter:stable]"
-              style={{
-                paddingLeft: 'var(--page-pad)',
-                paddingRight: 'var(--page-pad)',
-                paddingBottom: 'var(--page-pad)',
-                paddingTop: 'var(--page-pad)',
-                scrollbarGutter: 'stable',
-              }}
-            >
-              <ErrorBoundary>
-                <PageContainer>
-                  {renderActiveView()}
-                </PageContainer>
-              </ErrorBoundary>
-            </main>
+              {/* Main View Area */}
+              <main
+                id="main-content"
+                tabIndex={-1}
+                className="flex-1 min-h-0 overflow-y-auto w-full outline-none [scrollbar-gutter:stable]"
+                style={{
+                  paddingLeft: 'var(--page-pad)',
+                  paddingRight: 'var(--page-pad)',
+                  paddingBottom: 'var(--page-pad)',
+                  paddingTop: 'var(--page-pad)',
+                  scrollbarGutter: 'stable',
+                }}
+              >
+                <ErrorBoundary>
+                  <PageContainer>
+                    {renderActiveView()}
+                  </PageContainer>
+                </ErrorBoundary>
+              </main>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex-1 flex overflow-hidden h-full min-h-0">
+            {/* Dynamic Role-specific Sidebar: strictly provides only this role's modules */}
+            <Sidebar
+              activeTab={activeTab}
+              onTabChange={(tab) => handleNavigate(tab)}
+            />
+
+            {/* Content Shell */}
+            <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden">
+              {/* Header with profile & logout - pinned at top */}
+              <Navbar
+                activeTab={activeTab}
+                onNavigate={handleNavigate}
+              />
+
+              {/* Compliance License Expired Notice (Minimalist & Non-intrusive) */}
+              {currentOrganization?.licenseStatus === 'expired' && (
+                <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-900/50 px-4 py-2 text-xs text-amber-900 dark:text-amber-200 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                    <span>
+                      <strong>License Expired:</strong> {currentOrganization.name}&apos;s license expired on {currentOrganization.licenseValidUntil}. Clinical workstations are operating in compliance renewal mode. Please contact Platform Super Admin for license renewal.
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Main View Area - dedicated scrollable container extending full width flush against panels */}
+              <main
+                id="main-content"
+                tabIndex={-1}
+                className="flex-1 min-h-0 overflow-y-auto w-full outline-none [scrollbar-gutter:stable]"
+                style={{
+                  paddingLeft: 'var(--page-pad)',
+                  paddingRight: 'var(--page-pad)',
+                  paddingBottom: 'var(--page-pad)',
+                  paddingTop: 'var(--page-pad)',
+                  scrollbarGutter: 'stable',
+                }}
+              >
+                <ErrorBoundary>
+                  <PageContainer>
+                    {renderActiveView()}
+                  </PageContainer>
+                </ErrorBoundary>
+              </main>
+            </div>
+          </div>
+        )}
 
         {/* Discard changes dialog when attempting to navigate away from dirty profile */}
         {pendingNav && (

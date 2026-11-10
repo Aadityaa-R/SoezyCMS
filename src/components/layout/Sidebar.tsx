@@ -234,7 +234,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <>
       {/* Phone/tablet dimmed overlay (captures touches outside drawer and prevents under-press) */}
       <div
-        className={`fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-30 lg:hidden cursor-pointer transition-opacity duration-300 ease-in-out motion-reduce:transition-none ${
+        className={`fixed inset-0 ${isSuperAdmin ? 'top-[var(--nav-cell)] lg:top-0' : ''} bg-slate-900/60 backdrop-blur-xs z-30 lg:hidden cursor-pointer transition-opacity duration-300 ease-in-out motion-reduce:transition-none ${
           isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={close}
@@ -248,68 +248,81 @@ export const Sidebar: React.FC<SidebarProps> = ({
         aria-label="Sidebar navigation"
         inert={!isOpen && isMobile ? '' : undefined}
         aria-hidden={!isOpen && isMobile ? 'true' : undefined}
-        className={`fixed lg:static top-0 bottom-0 left-0 z-40 bg-white dark:bg-slate-900 transition-all duration-300 ease-in-out motion-reduce:transition-none flex flex-col shrink-0 select-none ${
-          isOpen ? 'w-64' : 'w-0 lg:w-[calc(var(--nav-cell)+0.75rem)]'
+        className={`fixed ${isSuperAdmin ? 'top-[var(--nav-cell)] lg:top-0' : 'top-0'} bottom-0 left-0 z-40 lg:static transition-all duration-300 ease-in-out motion-reduce:transition-none flex flex-col shrink-0 select-none ${
+          isSuperAdmin
+            ? 'bg-[var(--superadmin-sidebar-bg)] text-white'
+            : 'bg-white dark:bg-slate-900'
         } ${
+          isOpen ? 'w-[15rem]' : 'w-0 lg:w-[3.5rem]'
+        } will-change-[width,transform] ${
           isMobile
             ? (isOpen ? 'translate-x-0' : '-translate-x-full')
             : 'translate-x-0'
         }`}
       >
-        {/* Top Header: single toggle button level with navbar */}
-        <div className="h-[var(--nav-cell)] px-1.5 flex items-center justify-between shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center min-w-0">
-            <button
-              ref={toggleButtonRef}
-              type="button"
-              data-sidebar-ignore-outside="true"
-              onClick={(e) => {
-                toggle();
-                e.currentTarget.blur();
-              }}
-              className="w-[var(--nav-cell)] h-[var(--nav-cell)] flex items-center justify-center rounded-lg cursor-pointer shrink-0 outline-none focus:outline-none focus:ring-0 transition-colors duration-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800"
-              title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-              aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-              aria-expanded={isOpen}
-              aria-controls="sidebar-navigation"
-            >
-              {isOpen ? (
-                <PanelLeftClose className="w-5 h-5 text-slate-600 dark:text-slate-300" />
-              ) : (
-                <PanelLeftOpen className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-              )}
-            </button>
+        {/* Top Header: single toggle button level with navbar (omitted for superadmin as navbar is full-width) */}
+        {!isSuperAdmin && (
+          <div className="h-[var(--nav-cell)] px-1.5 flex items-center justify-between shrink-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+            <div className="flex items-center min-w-0">
+              <button
+                ref={toggleButtonRef}
+                type="button"
+                data-sidebar-ignore-outside="true"
+                onClick={(e) => {
+                  toggle();
+                  e.currentTarget.blur();
+                }}
+                className="w-[var(--nav-cell)] h-[var(--nav-cell)] flex items-center justify-center rounded-lg cursor-pointer shrink-0 outline-none focus:outline-none focus:ring-0 transition-colors duration-200 text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800"
+                title={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+                aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+                aria-expanded={isOpen}
+                aria-controls="sidebar-navigation"
+              >
+                {isOpen ? (
+                  <PanelLeftClose className="w-5 h-5 text-slate-600 dark:text-slate-300" />
+                ) : (
+                  <PanelLeftOpen className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                )}
+              </button>
 
-            {/* Clinic Portal Brand Details */}
-            <div
-              className={`overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out motion-reduce:transition-none ${
-                isOpen ? 'max-w-[170px] opacity-100 ml-2.5' : 'lg:max-w-0 lg:opacity-0 lg:ml-0 max-w-[170px] opacity-100 ml-2.5'
-              }`}
-            >
-              <div className="text-[10px] font-bold text-teal-600 dark:text-teal-400 tracking-wider uppercase">
-                {BRAND_CONFIG.subTitle}
-              </div>
-              <div className="text-xs font-semibold text-slate-800 dark:text-slate-100 capitalize truncate mt-0.5">
-                {roleTitle} Portal
+              {/* Clinic Portal Brand Details */}
+              <div
+                className={`overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out motion-reduce:transition-none ${
+                  isOpen ? 'max-w-[170px] opacity-100 ml-2.5' : 'lg:max-w-0 lg:opacity-0 lg:ml-0 max-w-[170px] opacity-100 ml-2.5'
+                }`}
+              >
+                <div className="text-[10px] font-bold text-teal-600 dark:text-teal-400 tracking-wider uppercase">
+                  {BRAND_CONFIG.subTitle}
+                </div>
+                <div className="text-xs font-semibold text-slate-800 dark:text-slate-100 capitalize truncate mt-0.5">
+                  {roleTitle} Portal
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Close button inside drawer on mobile */}
-          <button
-            type="button"
-            data-sidebar-ignore-outside="true"
-            onClick={close}
-            className="w-[var(--nav-cell)] h-[var(--nav-cell)] flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 shrink-0 transition-colors duration-200"
-            title="Close drawer"
-            aria-label="Close drawer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+            {/* Close button inside drawer on mobile */}
+            <button
+              type="button"
+              data-sidebar-ignore-outside="true"
+              onClick={close}
+              className="w-[var(--nav-cell)] h-[var(--nav-cell)] flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 shrink-0 transition-colors duration-200"
+              title="Close drawer"
+              aria-label="Close drawer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        )}
 
         {/* Navigation list */}
-        <nav aria-label="Main Navigation" className="flex-1 pt-1 pb-2 px-1.5 space-y-1 overflow-y-auto overflow-x-hidden border-r border-[#eef0f3] dark:border-slate-800">
+        <nav
+          aria-label="Main Navigation"
+          className={`flex-1 pt-2 pb-2 px-1.5 space-y-1 overflow-y-auto overflow-x-hidden ${
+            isSuperAdmin
+              ? 'border-r border-black/20'
+              : 'border-r border-[#eef0f3] dark:border-slate-800'
+          }`}
+        >
           {navItems.map((item) => {
             const isActive =
               activeTab === item.id ||
@@ -330,26 +343,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={(e) => {
                   onTabChange(item.id);
                   e.currentTarget.blur();
-                  if (isMobile) {
-                    close();
-                  }
+                  close();
                 }}
                 title={item.label}
                 aria-label={item.label}
                 aria-current={isActive ? 'page' : undefined}
                 className={`${
                   isOpen ? 'w-full px-2.5' : 'w-[var(--nav-cell)] justify-center'
-                } h-[var(--nav-cell)] flex items-center rounded-lg text-xs font-medium cursor-pointer outline-none focus:outline-none focus:ring-0 transition-colors duration-200 ${
-                  isActive
-                    ? 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 font-semibold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                } h-[var(--nav-cell)] flex items-center rounded-lg text-xs font-medium cursor-pointer transition-colors duration-200 ${
+                  isSuperAdmin
+                    ? (isActive
+                        ? 'bg-white/15 text-white font-semibold'
+                        : 'text-white/90 hover:text-white hover:bg-white/10')
+                    : (isActive
+                        ? 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 font-semibold'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800/50')
+                } ${
+                  isSuperAdmin
+                    ? 'focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none'
+                    : 'outline-none focus:outline-none focus:ring-0'
                 }`}
               >
                 <span
                   title={item.label}
                   aria-label={item.label}
                   className={`w-7 h-7 flex items-center justify-center shrink-0 ${
-                    isActive ? 'text-teal-600 dark:text-teal-400' : 'text-slate-400 dark:text-slate-500'
+                    isSuperAdmin
+                      ? (isActive ? 'text-white' : 'text-white/90')
+                      : (isActive ? 'text-teal-600 dark:text-teal-400' : 'text-slate-400 dark:text-slate-500')
                   }`}
                 >
                   {item.icon}

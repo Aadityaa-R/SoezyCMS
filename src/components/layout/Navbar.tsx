@@ -13,6 +13,8 @@ import {
   LogOut,
   Moon,
   Sun,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
@@ -150,64 +152,117 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
     <>
       <header
         id="headerdiv"
-        className="h-[var(--nav-cell)] w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 flex items-center justify-between sticky top-0 z-20 shrink-0 transition-colors pl-2 sm:pl-3"
+        className={`h-[var(--nav-cell)] w-full flex items-center justify-between sticky top-0 z-20 shrink-0 transition-colors pl-2 sm:pl-3 ${
+          isSuperAdmin
+            ? 'bg-[var(--superadmin-topbar-bg)] text-white border-b border-black/20'
+            : 'bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100'
+        }`}
         style={{
           paddingRight: 'var(--page-pad)',
         }}
       >
         {/* Brand / Clinic Title */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             type="button"
             data-sidebar-ignore-outside="true"
             onClick={onToggleSidebar || toggleSidebar}
-            className={`w-8 h-8 flex items-center justify-center p-1.5 rounded-lg lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 ${
-              isSidebarOpen
-                ? 'bg-slate-100 dark:bg-slate-800 text-teal-600 dark:text-teal-400'
-                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white'
-            }`}
-            title={isSidebarOpen ? 'Close menu' : 'Open menu'}
-            aria-label={isSidebarOpen ? 'Close menu' : 'Open menu'}
+            className={
+              isSuperAdmin
+                ? 'w-8 h-8 flex items-center justify-center p-1.5 rounded-lg text-white hover:bg-white/10 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-white transition-colors'
+                : `w-8 h-8 flex items-center justify-center p-1.5 rounded-lg lg:hidden cursor-pointer outline-none focus:outline-none focus:ring-0 ${
+                    isSidebarOpen
+                      ? 'bg-slate-100 dark:bg-slate-800 text-teal-600 dark:text-teal-400'
+                      : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white'
+                  }`
+            }
+            title={
+              isSuperAdmin
+                ? (isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar')
+                : (isSidebarOpen ? 'Close menu' : 'Open menu')
+            }
+            aria-label={
+              isSuperAdmin
+                ? (isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar')
+                : (isSidebarOpen ? 'Close menu' : 'Open menu')
+            }
             aria-expanded={isSidebarOpen}
             aria-controls="sidebar-navigation"
           >
-            {isSidebarOpen ? (
-              <X className="w-4 h-4 text-slate-700 dark:text-slate-200" />
+            {isSuperAdmin ? (
+              isSidebarOpen ? (
+                <PanelLeftClose className="w-5 h-5 text-white" />
+              ) : (
+                <PanelLeftOpen className="w-5 h-5 text-white" />
+              )
             ) : (
-              <Menu className="w-4 h-4 text-slate-700 dark:text-slate-200" />
+              isSidebarOpen ? (
+                <X className="w-4 h-4 text-slate-700 dark:text-slate-200" />
+              ) : (
+                <Menu className="w-4 h-4 text-slate-700 dark:text-slate-200" />
+              )
             )}
           </button>
-          <button
-            type="button"
-            onClick={() => onNavigate?.(currentRole === 'patient' ? 'overview' : (currentRole === 'platform_super_admin' ? 'super_dashboard' : 'dashboard'))}
-            className="flex items-center gap-2.5 text-left cursor-pointer outline-none focus:outline-none focus:ring-0 group p-0 m-0 border-0 bg-transparent"
-            title="SOEZY CMS Platform"
-          >
-            <img
-              src="/soezy-logo.png"
-              alt="SOEZY CMS"
-              className="h-8 w-auto object-contain shrink-0"
-              onError={(e) => {
-                const target = e.currentTarget as HTMLElement;
-                target.style.display = 'none';
-              }}
-            />
-          </button>
+
+          {isSuperAdmin ? (
+            <button
+              type="button"
+              onClick={() => onNavigate?.('super_dashboard')}
+              className="flex items-center cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-white rounded-lg p-0 m-0 border-0 bg-transparent"
+              title="SOEZY CMS Platform"
+              aria-label="SOEZY CMS Platform Overview"
+            >
+              <div className="bg-white px-2.5 py-1 rounded-md shadow-xs flex items-center justify-center shrink-0">
+                <img
+                  src="/soezy-logo.png"
+                  alt="SOEZY CMS"
+                  className="h-7 w-auto object-contain shrink-0"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLElement;
+                    target.style.display = 'none';
+                  }}
+                />
+              </div>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => onNavigate?.(currentRole === 'patient' ? 'overview' : 'dashboard')}
+              className="flex items-center gap-2.5 text-left cursor-pointer outline-none focus:outline-none focus:ring-0 group p-0 m-0 border-0 bg-transparent"
+              title="SOEZY CMS Platform"
+            >
+              <img
+                src="/soezy-logo.png"
+                alt="SOEZY CMS"
+                className="h-8 w-auto object-contain shrink-0"
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLElement;
+                  target.style.display = 'none';
+                }}
+              />
+            </button>
+          )}
         </div>
 
         {/* Right Section: Notifications, then User Block Trigger */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Notifications Indicator */}
           <div className="relative" ref={notificationsRef}>
             <button
               type="button"
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors cursor-pointer relative outline-none focus:outline-none focus:ring-0"
+              className={
+                isSuperAdmin
+                  ? "w-8 h-8 flex items-center justify-center rounded-lg text-white/90 hover:text-white hover:bg-white/10 transition-colors cursor-pointer relative outline-none focus-visible:ring-2 focus-visible:ring-white"
+                  : "w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors cursor-pointer relative outline-none focus:outline-none focus:ring-0"
+              }
               aria-label={`Notifications (${totalUnreadCount} unread)`}
             >
-              <Bell className="w-4 h-4" />
+              <Bell className={`w-4 h-4 ${isSuperAdmin ? 'text-white' : ''}`} />
               {totalUnreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-teal-500 rounded-full ring-2 ring-white dark:ring-slate-900" />
+                <span className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full ring-2 ${
+                  isSuperAdmin ? 'bg-white ring-[var(--superadmin-topbar-bg)]' : 'bg-teal-500 ring-white dark:ring-slate-900'
+                }`} />
               )}
             </button>
 
@@ -324,7 +379,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
           </div>
 
           {/* User Profile Dropdown Container: Avatar, Name, Hospital Line */}
-          <div className="relative pl-2.5 border-l border-slate-200 dark:border-slate-700" ref={dropdownRef}>
+          <div className={`relative pl-2.5 ${isSuperAdmin ? 'border-l border-white/25' : 'border-l border-slate-200 dark:border-slate-700'}`} ref={dropdownRef}>
             <button
               ref={avatarButtonRef}
               id="user-menu-button"
@@ -340,22 +395,32 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, onNavigate }) =
                 }
               }}
               onKeyDown={handleAvatarKeyDown}
-              className="flex items-center gap-2 text-left cursor-pointer outline-none focus:outline-none focus:ring-0 p-0 m-0 border-0 bg-transparent group"
+              className={`flex items-center gap-2 text-left cursor-pointer outline-none p-0 m-0 border-0 bg-transparent group ${
+                isSuperAdmin ? 'focus-visible:ring-2 focus-visible:ring-white rounded-lg p-0.5' : 'focus:outline-none focus:ring-0'
+              }`}
               aria-label="User profile menu"
               aria-haspopup="menu"
               aria-expanded={isDropdownOpen}
               aria-controls="user-menu"
             >
-              <div className="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-xs uppercase shrink-0 ring-1 ring-teal-500/30">
-                {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+              <div className={`w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-xs uppercase shrink-0 ${
+                isSuperAdmin
+                  ? 'bg-[var(--superadmin-avatar-bg)] ring-1 ring-white/30 border border-white/20'
+                  : 'bg-teal-600 ring-1 ring-teal-500/30'
+              }`}>
+                {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : (isSuperAdmin ? 'P' : 'U')}
               </div>
               {BRAND_CONFIG.showHeaderUserBlock && (
                 <div className="hidden md:flex flex-col justify-center min-w-0 pr-0 mr-0">
-                  <span className="font-semibold text-xs tracking-tight text-slate-800 dark:text-slate-100 truncate leading-tight">
-                    {currentUser?.name || 'Dr. Administrator'}
+                  <span className={`font-semibold text-xs tracking-tight truncate leading-tight ${
+                    isSuperAdmin ? 'text-white' : 'text-slate-800 dark:text-slate-100'
+                  }`}>
+                    {isSuperAdmin ? (currentUser?.name || 'Platform Super Admin') : (currentUser?.name || 'Dr. Administrator')}
                   </span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-tight truncate leading-tight">
-                    {BRAND_CONFIG.hospitalName}
+                  <span className={`text-[10px] font-medium tracking-tight truncate leading-tight ${
+                    isSuperAdmin ? 'text-white/80' : 'text-slate-500 dark:text-slate-400'
+                  }`}>
+                    {isSuperAdmin ? 'SOEZY CMS' : BRAND_CONFIG.hospitalName}
                   </span>
                 </div>
               )}

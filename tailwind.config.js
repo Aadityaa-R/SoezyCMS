@@ -35,6 +35,11 @@ export default {
         'fs-axis': 'var(--fs-axis)',
       },
       colors: {
+        superadmin: {
+          sidebar: 'var(--superadmin-sidebar-bg)',
+          avatar: 'var(--superadmin-avatar-bg)',
+          topbar: 'var(--superadmin-topbar-bg)',
+        },
         clinic: {
           50: '#f0fdfa',
           100: '#ccfbf1',
