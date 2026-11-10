@@ -110,6 +110,29 @@ select:focus-visible,
   min-height: 36px !important;
 }
 
+/* Super Admin Ruby Action Button Variant */
+.btn-superadmin-primary {
+  background-color: var(--superadmin-avatar-bg, #8f0000) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: filter 150ms ease-in-out, background-color 150ms ease-in-out;
+}
+.btn-superadmin-primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+.btn-superadmin-primary:active:not(:disabled) {
+  filter: brightness(0.95);
+}
+.btn-superadmin-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-superadmin-primary:focus-visible {
+  outline: 2px solid var(--superadmin-avatar-bg, #8f0000) !important;
+  outline-offset: 2px !important;
+}
+
 @media (min-width: 640px) {
   :root {
     --page-pad: 12px;

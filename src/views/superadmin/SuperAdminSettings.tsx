@@ -3,9 +3,9 @@ import {
   Search,
   Save,
   Check,
-  ChevronDown,
 } from 'lucide-react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
+import { Select } from '@/components/ui/Select';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
 import { SuperAdminAuditAction, PlatformOrganizationSettings } from '../../types/superAdmin';
 
@@ -251,7 +251,7 @@ export const SuperAdminSettings: React.FC = () => {
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-[13px] font-medium bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
+              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-[13px] font-medium btn-superadmin-primary text-white rounded-lg inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
               <Save className="w-3.5 h-3.5" />
               <span>Save organization settings</span>
@@ -279,41 +279,43 @@ export const SuperAdminSettings: React.FC = () => {
             toolbar={
               <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
                 <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-                  <div className="relative shrink-0">
-                    <select
+                  {/* Action Type Filter Combobox */}
+                  <div className="shrink-0 min-w-[170px] sm:min-w-[190px]">
+                    <Select
+                      size="filter"
+                      searchable={false}
+                      aria-label="Filter by action type"
                       value={actionFilter}
                       onChange={(e) => setActionFilter(e.target.value as any)}
-                      className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
-                      aria-label="Filter by action type"
-                    >
-                      <option value="all">All action types</option>
-                      <option value="clinic_created">Clinic created</option>
-                      <option value="clinic_status_changed">Clinic status changed</option>
-                      <option value="admin_appointed">Admin appointed</option>
-                      <option value="admin_reassigned">Admin reassigned</option>
-                      <option value="agreement_created">Agreement created</option>
-                      <option value="agreement_renewed">Agreement renewed</option>
-                      <option value="facility_entitlement_changed">Facility entitlement changed</option>
-                      <option value="onboarding_override">Onboarding override</option>
-                      <option value="branch_activated">Branch activated</option>
-                      <option value="branch_suspended">Branch suspended</option>
-                    </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      options={[
+                        { value: 'all', label: 'All action types' },
+                        { value: 'clinic_created', label: 'Clinic created' },
+                        { value: 'clinic_status_changed', label: 'Clinic status changed' },
+                        { value: 'admin_appointed', label: 'Admin appointed' },
+                        { value: 'admin_reassigned', label: 'Admin reassigned' },
+                        { value: 'agreement_created', label: 'Agreement created' },
+                        { value: 'agreement_renewed', label: 'Agreement renewed' },
+                        { value: 'facility_entitlement_changed', label: 'Facility entitlement changed' },
+                        { value: 'onboarding_override', label: 'Onboarding override' },
+                        { value: 'branch_activated', label: 'Branch activated' },
+                        { value: 'branch_suspended', label: 'Branch suspended' },
+                      ]}
+                    />
                   </div>
 
-                  <div className="relative shrink-0">
-                    <select
+                  {/* Branch Filter Combobox */}
+                  <div className="shrink-0 min-w-[170px] sm:min-w-[190px]">
+                    <Select
+                      size="filter"
+                      searchable={false}
+                      aria-label="Filter by branch"
                       value={clinicFilter}
                       onChange={(e) => setClinicFilter(e.target.value)}
-                      className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
-                      aria-label="Filter by branch"
-                    >
-                      <option value="all">All branches</option>
-                      {clinics.map(c => (
-                        <option key={c.id} value={c.id}>{c.name} ({c.code})</option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      options={[
+                        { value: 'all', label: 'All branches' },
+                        ...clinics.map((c) => ({ value: c.id, label: `${c.name} (${c.code})` })),
+                      ]}
+                    />
                   </div>
 
                   <div className="relative flex-1 min-w-[180px] sm:min-w-[240px]">

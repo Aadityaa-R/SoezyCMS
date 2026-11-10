@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
+import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import {
   Plus,
   Search,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
   FileText,
@@ -541,12 +541,12 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
               Side branch &bull; {viewingSideBranch.code} &bull; {viewingSideBranch.city}, {viewingSideBranch.state}
-              {parentOfSideBranch && ` &bull; Affiliated with ${parentOfSideBranch.name}`}
+              {parentOfSideBranch && <> &bull; Affiliated with {parentOfSideBranch.name}</>}
             </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <div className="text-[13px] font-medium text-slate-700 dark:text-slate-300">
               Status: <span className="font-semibold text-emerald-600 dark:text-emerald-400 capitalize">{viewingSideBranch.status.replace(/_/g, ' ')}</span>
             </div>
             <button
@@ -557,7 +557,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                 setStatusReason('');
                 setFormError('');
               }}
-              className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center cursor-pointer"
+              className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors inline-flex items-center cursor-pointer"
             >
               {viewingSideBranch.status === 'active' ? 'Suspend Branch' : 'Activate Branch'}
             </button>
@@ -568,8 +568,8 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-5 shadow-xs space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
-                Facility Classification
+              <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+                Facility classification
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
                 Choose the services offered at this location.
@@ -579,7 +579,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
               type="button"
               disabled={isSavingSideClassification}
               onClick={handleSaveSideClassification}
-              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-xs font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white cursor-pointer transition-colors shrink-0 disabled:opacity-50"
+              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-[13px] font-medium rounded-lg btn-superadmin-primary text-white cursor-pointer transition-colors shrink-0 disabled:opacity-50"
             >
               {isSavingSideClassification ? 'Saving...' : 'Save classification'}
             </button>
@@ -629,8 +629,8 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         {/* Section A: Side Branch Overview */}
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Side Branch Administrative Details
+            <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+              Administrative details
             </h2>
             <div className="flex items-center gap-2">
               {renderStatusBadge(viewingSideBranch.status)}
@@ -696,13 +696,13 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         {/* Section C: Agreement Details */}
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Licence Agreement Details
+            <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+              Licence agreement details
             </h2>
             <button
               type="button"
               onClick={() => onNavigate('super_agreements')}
-              className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+              className="text-[13px] text-teal-600 dark:text-teal-400 hover:underline cursor-pointer font-medium"
             >
               Open Agreements Module &rarr;
             </button>
@@ -750,13 +750,13 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         {/* Section E: Onboarding Details */}
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Branch Onboarding Details
+            <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+              Onboarding details
             </h2>
             <button
               type="button"
               onClick={() => onNavigate('super_onboarding')}
-              className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+              className="text-[13px] text-teal-600 dark:text-teal-400 hover:underline cursor-pointer font-medium"
             >
               Review Full Checklist &rarr;
             </button>
@@ -795,8 +795,8 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         {/* Section F: Administrative Activity */}
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Administrative Activity & Audit Trail
+            <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+              Administrative activity and audit trail
             </h2>
           </div>
 
@@ -915,7 +915,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
               type="button"
               disabled={isSavingMainClassification}
               onClick={handleSaveMainClassification}
-              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-[13px] font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white cursor-pointer transition-colors shrink-0 disabled:opacity-50"
+              className="h-[36px] min-h-[36px] !min-h-0 px-4 text-[13px] font-medium rounded-lg btn-superadmin-primary text-white cursor-pointer transition-colors shrink-0 disabled:opacity-50"
             >
               {isSavingMainClassification ? 'Saving...' : 'Save classification'}
             </button>
@@ -1012,7 +1012,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                         <button
                           type="button"
                           onClick={() => setViewingSideBranchId(side.id)}
-                          className="text-xs font-semibold text-teal-600 dark:text-teal-400 hover:text-teal-700 hover:underline cursor-pointer"
+                          className="text-[13px] font-semibold text-teal-600 dark:text-teal-400 hover:text-teal-700 hover:underline cursor-pointer"
                         >
                           View details
                         </button>
@@ -1029,8 +1029,8 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
             <div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-                Main Branch Administrative Details
+              <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+                Administrative details
               </h2>
             </div>
             <div className="flex items-center gap-3">
@@ -1102,13 +1102,13 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         {/* Section C: Agreement Details */}
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Licence Agreement Details
+            <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+              Licence agreement details
             </h2>
             <button
               type="button"
               onClick={() => onNavigate('super_agreements')}
-              className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+              className="text-[13px] text-teal-600 dark:text-teal-400 hover:underline cursor-pointer font-medium"
             >
               Open Agreements Module &rarr;
             </button>
@@ -1156,13 +1156,13 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         {/* Section E: Onboarding Details */}
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Section E: Branch Onboarding Details
+            <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+              Onboarding details
             </h2>
             <button
               type="button"
               onClick={() => onNavigate('super_onboarding')}
-              className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+              className="text-[13px] text-teal-600 dark:text-teal-400 hover:underline cursor-pointer font-medium"
             >
               Review Full Checklist &rarr;
             </button>
@@ -1201,8 +1201,8 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
         {/* Section F: Administrative Activity */}
         <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
-              Section F: Administrative Activity & Audit Trail
+            <h2 className="text-[15px] font-semibold text-slate-900 dark:text-slate-100">
+              Administrative activity and audit trail
             </h2>
           </div>
 
@@ -1253,36 +1253,38 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
       <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
         {/* Left: Search and Filters */}
         <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-          {/* Status Filter Dropdown */}
-          <div className="relative shrink-0">
-            <select
+          {/* Status Filter Combobox */}
+          <div className="shrink-0 min-w-[160px] sm:min-w-[180px]">
+            <Select
+              size="filter"
+              searchable={false}
+              aria-label="Filter by status"
               value={activeTabFilter}
               onChange={(e) => handleTabFilterChange(e.target.value as any)}
-              className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
-              aria-label="Filter by status"
-            >
-              <option value="all">All statuses ({mainBranches.length})</option>
-              <option value="active">Active ({mainBranches.filter((c) => c.status === 'active').length})</option>
-              <option value="pending">Pending ({mainBranches.filter((c) => c.status === 'pending_onboarding' || c.status === 'pending_activation').length})</option>
-              <option value="inactive">Inactive / Suspended ({mainBranches.filter((c) => c.status === 'inactive' || c.status === 'suspended').length})</option>
-            </select>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              options={[
+                { value: 'all', label: `All statuses (${mainBranches.length})` },
+                { value: 'active', label: `Active (${mainBranches.filter((c) => c.status === 'active').length})` },
+                { value: 'pending', label: `Pending (${mainBranches.filter((c) => c.status === 'pending_onboarding' || c.status === 'pending_activation').length})` },
+                { value: 'inactive', label: `Inactive / Suspended (${mainBranches.filter((c) => c.status === 'inactive' || c.status === 'suspended').length})` },
+              ]}
+            />
           </div>
 
-          {/* Branch-Type Filter */}
-          <div className="relative shrink-0">
-            <select
+          {/* Branch-Type Filter Combobox */}
+          <div className="shrink-0 min-w-[160px]">
+            <Select
+              size="filter"
+              searchable={false}
+              aria-label="Filter by branch type"
               value={branchTypeFilter}
               onChange={(e) => handleBranchTypeChange(e.target.value)}
-              className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
-              aria-label="Filter by branch type"
-            >
-              <option value="all">All branch types</option>
-              <option value="main_hospital">Main hospital</option>
-              <option value="speciality_center">Speciality center</option>
-              <option value="outpatient_clinic">Outpatient clinic</option>
-            </select>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              options={[
+                { value: 'all', label: 'All branch types' },
+                { value: 'main_hospital', label: 'Main hospital' },
+                { value: 'speciality_center', label: 'Speciality center' },
+                { value: 'outpatient_clinic', label: 'Outpatient clinic' },
+              ]}
+            />
           </div>
 
           {/* Search Input - grows into available space */}
@@ -1306,7 +1308,7 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
             setFormError('');
             setIsRegisterModalOpen(true);
           }}
-          className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
+          className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg btn-superadmin-primary text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm"
         >
           <Plus className="w-3.5 h-3.5 shrink-0" />
           <span>Register clinic</span>
@@ -1505,11 +1507,11 @@ export const ClinicBranchManagement: React.FC<ClinicBranchManagementProps> = ({
                 Cancel
               </Button>
               <Button
-                variant="primary"
+                variant="superadmin-primary"
                 size="sm"
                 onClick={handleRegisterSubmit}
                 disabled={isSubmitting}
-                className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
+                className="text-xs rounded text-white"
               >
                 {isSubmitting ? 'Registering...' : 'Register Clinic Branch'}
               </Button>

@@ -6,8 +6,8 @@ import {
   PauseCircle,
   PlayCircle,
   ChevronRight,
-  ChevronDown,
 } from 'lucide-react';
+import { Select } from '@/components/ui/Select';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
 import { OnboardingChecklistItemKey, OnboardingProgressStatus } from '../../types/superAdmin';
 
@@ -128,20 +128,21 @@ export const BranchOnboarding: React.FC = () => {
       {/* Standardized Toolbar: Onboarding status filter on left, Results summary on right */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-2.5 shadow-xs">
         <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-          <div className="relative shrink-0">
-            <select
+          <div className="shrink-0 min-w-[170px] sm:min-w-[190px]">
+            <Select
+              size="filter"
+              searchable={false}
+              aria-label="Filter by onboarding status"
               value={activeStatusFilter}
               onChange={(e) => setActiveStatusFilter(e.target.value as any)}
-              className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
-              aria-label="Filter by onboarding status"
-            >
-              <option value="all">All statuses ({clinics.length})</option>
-              <option value="pending">Pending ({clinics.filter((c) => c.onboardingStatus === 'pending').length})</option>
-              <option value="in_progress">In progress ({clinics.filter((c) => c.onboardingStatus === 'in_progress').length})</option>
-              <option value="ready_for_review">Ready for review ({clinics.filter((c) => c.onboardingStatus === 'ready_for_review').length})</option>
-              <option value="completed">Completed ({clinics.filter((c) => c.onboardingStatus === 'completed').length})</option>
-            </select>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              options={[
+                { value: 'all', label: `All statuses (${clinics.length})` },
+                { value: 'pending', label: `Pending (${clinics.filter((c) => c.onboardingStatus === 'pending').length})` },
+                { value: 'in_progress', label: `In progress (${clinics.filter((c) => c.onboardingStatus === 'in_progress').length})` },
+                { value: 'ready_for_review', label: `Ready for review (${clinics.filter((c) => c.onboardingStatus === 'ready_for_review').length})` },
+                { value: 'completed', label: `Completed (${clinics.filter((c) => c.onboardingStatus === 'completed').length})` },
+              ]}
+            />
           </div>
         </div>
 
@@ -255,9 +256,9 @@ export const BranchOnboarding: React.FC = () => {
                           action: 'activate',
                           reason: '',
                         })}
-                        className={`h-[36px] min-h-[36px] !min-h-0 px-3.5 text-xs font-medium inline-flex items-center gap-1.5 rounded-lg transition-colors border shrink-0 ${
+                        className={`h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium inline-flex items-center gap-1.5 rounded-lg transition-colors border shrink-0 ${
                           allMandatorySatisfied
-                            ? 'bg-teal-600 text-white hover:bg-teal-700 border-transparent cursor-pointer shadow-sm'
+                            ? 'btn-superadmin-primary text-white border-transparent cursor-pointer shadow-sm'
                             : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700 cursor-not-allowed'
                         }`}
                         title={

@@ -250,7 +250,7 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
       });
     });
 
-    it('verifies filter selects render exactly one Lucide chevron with background-image: none and work with mouse and keyboard', () => {
+    it('verifies Super Admin filter menus use accessible combobox component with 36px trigger, 13px text, single chevron, mouse/keyboard selection, Escape dismissal, and focus return', () => {
       const onNavigate = vi.fn();
       render(
         <SuperAdminProvider>
@@ -258,38 +258,120 @@ describe('SOEZY CMS Super Admin Polish Verification', () => {
         </SuperAdminProvider>
       );
 
-      // Status filter select has appearance-none and background-image: none
-      const statusSelect = screen.getByLabelText(/Filter by status/i) as HTMLSelectElement;
-      expect(statusSelect.className).toContain('appearance-none');
-      expect(statusSelect.className).toContain('[background-image:none]');
-      expect(statusSelect.className).toContain('bg-none');
+      // Status filter combobox has role="combobox", 36px height token, and 13px text
+      const statusTrigger = screen.getByLabelText(/Filter by status/i);
+      expect(statusTrigger.getAttribute('role')).toBe('combobox');
+      expect(statusTrigger.className).toContain('h-[36px]');
+      expect(statusTrigger.className).toContain('text-[13px]');
 
-      // Branch type filter select has appearance-none and background-image: none
-      const branchTypeSelect = screen.getByLabelText(/Filter by branch type/i) as HTMLSelectElement;
-      expect(branchTypeSelect.className).toContain('appearance-none');
-      expect(branchTypeSelect.className).toContain('[background-image:none]');
-      expect(branchTypeSelect.className).toContain('bg-none');
+      // Branch type filter combobox has role="combobox", 36px height, and 13px text
+      const branchTypeTrigger = screen.getByLabelText(/Filter by branch type/i);
+      expect(branchTypeTrigger.getAttribute('role')).toBe('combobox');
+      expect(branchTypeTrigger.className).toContain('h-[36px]');
+      expect(branchTypeTrigger.className).toContain('text-[13px]');
 
-      // Parent container contains exactly one SVG Lucide ChevronDown icon
-      const statusContainer = statusSelect.parentElement;
-      const statusChevrons = statusContainer?.querySelectorAll('svg');
-      expect(statusChevrons?.length).toBe(1);
-      expect(statusChevrons?.[0].classList.contains('pointer-events-none')).toBe(true);
+      // Each trigger contains exactly one SVG Lucide ChevronDown icon
+      const statusChevrons = statusTrigger.querySelectorAll('svg');
+      expect(statusChevrons.length).toBe(1);
+      expect(statusChevrons[0].classList.contains('pointer-events-none')).toBe(true);
 
-      const branchTypeContainer = branchTypeSelect.parentElement;
-      const branchTypeChevrons = branchTypeContainer?.querySelectorAll('svg');
-      expect(branchTypeChevrons?.length).toBe(1);
-      expect(branchTypeChevrons?.[0].classList.contains('pointer-events-none')).toBe(true);
+      const branchTypeChevrons = branchTypeTrigger.querySelectorAll('svg');
+      expect(branchTypeChevrons.length).toBe(1);
+      expect(branchTypeChevrons[0].classList.contains('pointer-events-none')).toBe(true);
 
-      // Verify mouse interaction works
-      fireEvent.change(statusSelect, { target: { value: 'active' } });
-      expect(statusSelect.value).toBe('active');
+      // Verify keyboard interaction: focus and open on ArrowDown
+      statusTrigger.focus();
+      expect(document.activeElement).toBe(statusTrigger);
 
-      // Verify keyboard interaction (focus, change, blur) works
-      statusSelect.focus();
-      expect(document.activeElement).toBe(statusSelect);
-      fireEvent.change(statusSelect, { target: { value: 'all' } });
-      expect(statusSelect.value).toBe('all');
+      fireEvent.keyDown(statusTrigger, { key: 'ArrowDown' });
+      // Listbox is now open
+      const listbox = screen.getByRole('listbox');
+      expect(listbox).toBeTruthy();
+
+      // Verify Escape dismissal and focus return
+      fireEvent.keyDown(statusTrigger, { key: 'Escape' });
+      expect(screen.queryByRole('listbox')).toBeNull();
+      expect(document.activeElement).toBe(statusTrigger);
+
+      // Verify mouse selection works
+      fireEvent.click(statusTrigger);
+      const activeOption = screen.getByRole('option', { name: /^Active/i });
+      fireEvent.click(activeOption);
+      // Trigger updates with selected label
+      expect(statusTrigger.textContent).toContain('Active');
+      expect(screen.queryByRole('listbox')).toBeNull();
+      expect(document.activeElement).toBe(statusTrigger);
+    });
+
+    it('verifies primary Super Admin actions (Register clinic, Appoint admin, Add agreement) use ruby profile avatar shade', () => {
+      const onNavigate = vi.fn();
+      const { unmount: unmountClinics } = render(
+        <SuperAdminProvider>
+          <ClinicBranchManagement onNavigate={onNavigate} />
+        </SuperAdminProvider>
+      );
+      const registerBtn = screen.getByRole('button', { name: /Register clinic/i });
+      expect(registerBtn.className).toContain('btn-superadmin-primary');
+      unmountClinics();
+
+      const { unmount: unmountAdmins } = render(
+        <SuperAdminProvider>
+          <AdminManagement onNavigateTab={onNavigate} />
+        </SuperAdminProvider>
+      );
+      const appointBtn = screen.getByRole('button', { name: /Appoint admin/i });
+      expect(appointBtn.className).toContain('btn-superadmin-primary');
+      unmountAdmins();
+
+      const { unmount: unmountAgreements } = render(
+        <SuperAdminProvider>
+          <AgreementManagement onNavigateTab={onNavigate} />
+        </SuperAdminProvider>
+      );
+      const addAgreementBtn = screen.getByRole('button', { name: /Add agreement/i });
+      expect(addAgreementBtn.className).toContain('btn-superadmin-primary');
+      unmountAgreements();
+    });
+
+    it('verifies main clinic and side branch detail pages match in 15px section headings, 13px action text, and ruby Save classification', () => {
+      const onNavigate = vi.fn();
+      render(
+        <SuperAdminProvider>
+          <ClinicBranchManagement onNavigate={onNavigate} />
+        </SuperAdminProvider>
+      );
+
+      // Open main clinic details
+      const viewDetailsButtons = screen.getAllByRole('button', { name: /View details/i });
+      fireEvent.click(viewDetailsButtons[0]);
+
+      // Check main clinic headings and actions
+      const mainSaveBtn = screen.getByRole('button', { name: /Save classification/i });
+      expect(mainSaveBtn.className).toContain('text-[13px]');
+      expect(mainSaveBtn.className).toContain('h-[36px]');
+      expect(mainSaveBtn.className).toContain('btn-superadmin-primary');
+
+      const mainAdminHeading = screen.getByRole('heading', { level: 2, name: 'Administrative details' });
+      expect(mainAdminHeading.className).toContain('text-[15px]');
+      expect(mainAdminHeading.className).toContain('font-semibold');
+
+      // Now open side branch details
+      const sideViewDetails = screen.getAllByRole('button', { name: /View details/i });
+      fireEvent.click(sideViewDetails[0]);
+
+      // Check side branch headings and actions
+      const sideSaveBtn = screen.getByRole('button', { name: /Save classification/i });
+      expect(sideSaveBtn.className).toContain('text-[13px]');
+      expect(sideSaveBtn.className).toContain('h-[36px]');
+      expect(sideSaveBtn.className).toContain('btn-superadmin-primary');
+
+      const sideAdminHeading = screen.getByRole('heading', { level: 2, name: 'Administrative details' });
+      expect(sideAdminHeading.className).toContain('text-[15px]');
+      expect(sideAdminHeading.className).toContain('font-semibold');
+
+      const sideAgreementHeading = screen.getByRole('heading', { level: 2, name: 'Licence agreement details' });
+      expect(sideAgreementHeading.className).toContain('text-[15px]');
+      expect(sideAgreementHeading.className).toContain('font-semibold');
     });
 
     it('verifies scoped CSS override sets background-image: none only on selects with bg-none / [background-image:none]', () => {

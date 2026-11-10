@@ -9,6 +9,7 @@ export interface SelectOption {
 
 export interface SelectProps {
   label?: string;
+  'aria-label'?: string;
   value?: string | number;
   options: SelectOption[];
   onChange?: (e: { target: { value: string } }) => void;
@@ -23,11 +24,12 @@ export interface SelectProps {
   icon?: React.ReactNode;
   searchable?: boolean;
   searchPlaceholder?: string;
-  size?: 'sm' | 'md' | 'lg' | 'compact';
+  size?: 'sm' | 'md' | 'lg' | 'compact' | 'filter';
 }
 
 export const Select: React.FC<SelectProps> = ({
   label,
+  'aria-label': ariaLabel,
   value,
   options,
   onChange,
@@ -53,6 +55,7 @@ export const Select: React.FC<SelectProps> = ({
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   const selectedOption = options.find((opt) => String(opt.value) === String(value));
@@ -91,6 +94,11 @@ export const Select: React.FC<SelectProps> = ({
     setSearchQuery('');
     setHighlightedIndex(-1);
     setIsOpen(false);
+    if (searchable) {
+      inputRef.current?.focus();
+    } else {
+      buttonRef.current?.focus();
+    }
   };
 
   const filteredOptions = searchable && isSearching && searchQuery.trim()
@@ -121,28 +129,31 @@ export const Select: React.FC<SelectProps> = ({
     if (isOpen && highlightedIndex >= 0 && listRef.current) {
       const optionElements = listRef.current.querySelectorAll('[data-option-index]');
       const activeEl = optionElements[highlightedIndex] as HTMLElement | undefined;
-      if (activeEl) {
+      if (activeEl && typeof activeEl.scrollIntoView === 'function') {
         activeEl.scrollIntoView({ block: 'nearest' });
       }
     }
   }, [highlightedIndex, isOpen]);
 
-  const triggerSizeClasses: Record<'sm' | 'md' | 'lg' | 'compact', string> = {
+  const triggerSizeClasses: Record<'sm' | 'md' | 'lg' | 'compact' | 'filter', string> = {
     compact: 'h-8 py-0 text-[0.875rem] font-normal rounded-lg min-h-0',
+    filter: 'h-[36px] min-h-[36px] max-h-[36px] py-0 text-[13px] font-medium rounded-lg min-h-0 leading-normal',
     sm: 'py-1.5 text-fs-body rounded-xl min-h-[36px]',
     md: 'py-2 text-fs-body font-medium rounded-xl min-h-[38px]',
     lg: 'py-2.5 sm:py-3 text-fs-body font-medium rounded-xl min-h-[44px]',
   };
 
-  const triggerPaddingClasses: Record<'sm' | 'md' | 'lg' | 'compact', string> = {
+  const triggerPaddingClasses: Record<'sm' | 'md' | 'lg' | 'compact' | 'filter', string> = {
     compact: icon ? 'pl-8 pr-7' : 'px-2.5 pr-7',
+    filter: icon ? 'pl-8 pr-8' : 'px-3 pr-8',
     sm: icon ? 'pl-8 pr-8' : 'px-3 pr-8',
     md: icon ? 'pl-9 pr-9' : 'px-3.5 pr-9',
     lg: icon ? 'pl-11 pr-10' : 'px-4 pr-10',
   };
 
-  const optionItemSizeClasses: Record<'sm' | 'md' | 'lg' | 'compact', string> = {
+  const optionItemSizeClasses: Record<'sm' | 'md' | 'lg' | 'compact' | 'filter', string> = {
     compact: 'px-2.5 py-1 text-[0.875rem]',
+    filter: 'px-3 py-1.5 text-[13px]',
     sm: 'px-2.5 py-1.5 text-fs-body',
     md: 'px-3 py-2 text-fs-body',
     lg: 'px-4 py-2.5 text-fs-body',
@@ -196,10 +207,12 @@ export const Select: React.FC<SelectProps> = ({
             }}
             onKeyDown={(e) => {
               if (e.key === 'Escape') {
+                e.preventDefault();
                 setIsOpen(false);
                 setIsSearching(false);
                 setSearchQuery('');
                 setHighlightedIndex(-1);
+                inputRef.current?.focus();
               } else if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 if (!isOpen) {
@@ -242,11 +255,12 @@ export const Select: React.FC<SelectProps> = ({
             role="combobox"
             aria-expanded={isOpen}
             aria-haspopup="listbox"
+            aria-label={ariaLabel || label}
             aria-invalid={!!error}
             aria-describedby={error ? errorId : helperText ? helperId : undefined}
             className={`w-full ${triggerSizeClasses[size]} ${
               isSearching && searchQuery ? 'pr-14' : triggerPaddingClasses[size]
-            } ${icon ? (size === 'lg' ? 'pl-11' : size === 'sm' ? 'pl-8' : 'pl-9') : (size === 'lg' ? 'pl-4' : 'pl-3.5')} border bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-left focus:outline-none focus:ring-0 focus:border-teal-500 ${
+            } ${icon ? (size === 'lg' ? 'pl-11' : size === 'sm' || size === 'filter' ? 'pl-8' : 'pl-9') : (size === 'lg' ? 'pl-4' : 'pl-3.5')} border bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-left focus:outline-none focus:ring-0 focus:border-teal-500 ${
               disabled
                 ? 'opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-800'
                 : 'cursor-text'
@@ -291,20 +305,65 @@ export const Select: React.FC<SelectProps> = ({
             className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 dark:text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer"
           >
             <ChevronDown
-              className="w-4 h-4"
+              className="w-4 h-4 pointer-events-none"
               style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }}
             />
           </button>
         </div>
       ) : (
         <button
+          ref={buttonRef}
           type="button"
           id={id}
           disabled={disabled}
           onClick={() => !disabled && setIsOpen((prev) => !prev)}
+          onKeyDown={(e) => {
+            if (disabled) return;
+            if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              if (!isOpen) {
+                setIsOpen(true);
+              } else if (filteredOptions.length > 0) {
+                setHighlightedIndex((prev) =>
+                  prev < filteredOptions.length - 1 ? prev + 1 : 0
+                );
+              }
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              if (!isOpen) {
+                setIsOpen(true);
+              } else if (filteredOptions.length > 0) {
+                setHighlightedIndex((prev) =>
+                  prev > 0 ? prev - 1 : filteredOptions.length - 1
+                );
+              }
+            } else if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              if (!isOpen) {
+                setIsOpen(true);
+              } else if (filteredOptions.length > 0) {
+                const targetIdx =
+                  highlightedIndex >= 0 && highlightedIndex < filteredOptions.length
+                    ? highlightedIndex
+                    : 0;
+                handleSelect(filteredOptions[targetIdx].value);
+              }
+            } else if (e.key === 'Escape') {
+              e.preventDefault();
+              if (isOpen) {
+                setIsOpen(false);
+                buttonRef.current?.focus();
+              }
+            } else if (e.key === 'Tab') {
+              if (isOpen) {
+                setIsOpen(false);
+              }
+            }
+          }}
           role="combobox"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
+          aria-label={ariaLabel || label}
           aria-invalid={!!error}
           aria-describedby={error ? errorId : helperText ? helperId : undefined}
           className={`w-full relative flex items-center justify-between ${triggerSizeClasses[size]} ${triggerPaddingClasses[size]} border bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-left focus:outline-none focus:ring-0 focus:border-teal-500 ${
@@ -336,7 +395,7 @@ export const Select: React.FC<SelectProps> = ({
             {selectedOption ? selectedOption.label : placeholder}
           </span>
           <ChevronDown
-            className="w-4 h-4 text-slate-500 dark:text-slate-400 ml-2 shrink-0"
+            className="w-4 h-4 text-slate-500 dark:text-slate-400 ml-2 shrink-0 pointer-events-none"
             style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }}
           />
         </button>
@@ -352,9 +411,10 @@ export const Select: React.FC<SelectProps> = ({
         <div
           ref={listRef}
           role="listbox"
-          className={`absolute left-0 mt-1.5 w-full ${
+          aria-label={ariaLabel || label}
+          className={`absolute left-0 mt-1.5 min-w-full w-max max-w-xs sm:max-w-md ${
             size === 'lg' ? 'max-h-80' : 'max-h-64'
-          } overflow-y-auto bg-white dark:bg-slate-900 rounded-xl shadow-modal dark:shadow-none print:shadow-none border border-slate-200 dark:border-slate-700 py-1.5 z-50 animate-fadeIn`}
+          } overflow-y-auto bg-white dark:bg-slate-900 rounded-lg shadow-modal dark:shadow-none print:shadow-none border border-slate-200 dark:border-slate-700 py-1.5 z-50 animate-fadeIn`}
         >
           {filteredOptions.length === 0 ? (
             <div className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 text-center">
@@ -367,10 +427,24 @@ export const Select: React.FC<SelectProps> = ({
               return (
                 <button
                   key={opt.value || `__empty_${idx}__`}
+                  id={`${selectId}-opt-${idx}`}
+                  role="option"
+                  aria-selected={isSelected}
                   type="button"
                   data-option-index={idx}
                   onMouseEnter={() => setHighlightedIndex(idx)}
                   onClick={() => handleSelect(opt.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      e.preventDefault();
+                      setIsOpen(false);
+                      if (searchable) {
+                        inputRef.current?.focus();
+                      } else {
+                        buttonRef.current?.focus();
+                      }
+                    }
+                  }}
                   className={`w-full flex items-center justify-between ${optionItemSizeClasses[size]} text-left cursor-pointer ${
                     isSelected
                       ? 'bg-teal-50 dark:bg-teal-950/50 text-teal-700 dark:text-teal-300 font-semibold'

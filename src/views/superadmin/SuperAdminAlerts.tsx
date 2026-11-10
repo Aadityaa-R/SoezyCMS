@@ -4,9 +4,9 @@ import {
   Send,
   Plus,
   ArrowRight,
-  ChevronDown,
   X
 } from 'lucide-react';
+import { Select } from '@/components/ui/Select';
 import { useSuperAdmin } from '../../context/SuperAdminContext';
 
 type AlertSeverity = 'critical' | 'warning' | 'info';
@@ -107,7 +107,7 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
         {activeSubTab === 'announcements' && (
           <button
             onClick={() => setShowAnnouncementModal(true)}
-            className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium bg-teal-600 hover:bg-teal-700 text-white transition-colors inline-flex items-center gap-1.5 rounded-lg shrink-0 shadow-sm cursor-pointer"
+            className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium btn-superadmin-primary text-white inline-flex items-center gap-1.5 rounded-lg shrink-0 shadow-sm cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Publish broadcast</span>
@@ -120,35 +120,39 @@ export const SuperAdminAlerts: React.FC<SuperAdminAlertsProps> = ({ onNavigateTa
           {/* Filter Bar */}
           <div className="flex flex-wrap items-center justify-between gap-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 shadow-xs">
             <div className="flex flex-wrap items-center gap-2">
-              <div className="relative shrink-0">
-                <select
+              {/* Severity Filter Combobox */}
+              <div className="shrink-0 min-w-[150px]">
+                <Select
+                  size="filter"
+                  searchable={false}
+                  aria-label="Filter by severity"
                   value={severityFilter}
                   onChange={(e) => setSeverityFilter(e.target.value as any)}
-                  className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
-                  aria-label="Filter by severity"
-                >
-                  <option value="all">All severities</option>
-                  <option value="critical">Critical only</option>
-                  <option value="warning">Warning only</option>
-                  <option value="info">Info only</option>
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  options={[
+                    { value: 'all', label: 'All severities' },
+                    { value: 'critical', label: 'Critical only' },
+                    { value: 'warning', label: 'Warning only' },
+                    { value: 'info', label: 'Info only' },
+                  ]}
+                />
               </div>
 
-              <div className="relative shrink-0">
-                <select
+              {/* Trigger Type Filter Combobox */}
+              <div className="shrink-0 min-w-[170px]">
+                <Select
+                  size="filter"
+                  searchable={false}
+                  aria-label="Filter by trigger type"
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
-                  aria-label="Filter by trigger type"
-                >
-                  <option value="all">All trigger types</option>
-                  <option value="agreement_expiry">Licence expiry</option>
-                  <option value="admin_missing">Unassigned branch</option>
-                  <option value="onboarding_pending">Onboarding blocked</option>
-                  <option value="facility_mismatch">Entitlement mismatch</option>
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  options={[
+                    { value: 'all', label: 'All trigger types' },
+                    { value: 'agreement_expiry', label: 'Licence expiry' },
+                    { value: 'admin_missing', label: 'Unassigned branch' },
+                    { value: 'onboarding_pending', label: 'Onboarding blocked' },
+                    { value: 'facility_mismatch', label: 'Entitlement mismatch' },
+                  ]}
+                />
               </div>
             </div>
 

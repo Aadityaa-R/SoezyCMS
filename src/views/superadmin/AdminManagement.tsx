@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
+import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, StatusDot } from '@/components/ui/Table';
 import {
   Plus,
   Search,
-  ChevronDown,
 } from 'lucide-react';
 import {
   AdminAssignmentRecord,
@@ -177,21 +177,22 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
     <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
       {/* Search and filters on the left */}
       <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-        {/* Status Filter Dropdown */}
-        <div className="relative shrink-0">
-          <select
+        {/* Status Filter Combobox */}
+        <div className="shrink-0 min-w-[170px] sm:min-w-[190px]">
+          <Select
+            size="filter"
+            searchable={false}
+            aria-label="Filter by status"
             value={tabFilter}
             onChange={(e) => setTabFilter(e.target.value as any)}
-            className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
-            aria-label="Filter by status"
-          >
-            <option value="all">All statuses ({admins.length})</option>
-            <option value="active">Active ({admins.filter((a) => a.status === 'active').length})</option>
-            <option value="unassigned">Unassigned Clinics ({unassignedClinics.length})</option>
-            <option value="pending">Pending Invitations ({admins.filter((a) => a.status === 'pending_invitation').length})</option>
-            <option value="inactive">Reassigned / Inactive ({admins.filter((a) => a.status === 'reassigned' || a.status === 'deactivated').length})</option>
-          </select>
-          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            options={[
+              { value: 'all', label: `All statuses (${admins.length})` },
+              { value: 'active', label: `Active (${admins.filter((a) => a.status === 'active').length})` },
+              { value: 'unassigned', label: `Unassigned Clinics (${unassignedClinics.length})` },
+              { value: 'pending', label: `Pending Invitations (${admins.filter((a) => a.status === 'pending_invitation').length})` },
+              { value: 'inactive', label: `Reassigned / Inactive (${admins.filter((a) => a.status === 'reassigned' || a.status === 'deactivated').length})` },
+            ]}
+          />
         </div>
 
         {/* Search Input - grows into available space */}
@@ -215,7 +216,7 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
           setFormError('');
           setIsAppointModalOpen(true);
         }}
-        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
+        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg btn-superadmin-primary text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm"
       >
         <Plus className="w-3.5 h-3.5 shrink-0" />
         <span>Appoint admin</span>
@@ -397,11 +398,11 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                 Cancel
               </Button>
               <Button
-                variant="primary"
+                variant="superadmin-primary"
                 size="sm"
                 onClick={handleAppointSubmit}
                 disabled={isSubmitting}
-                className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
+                className="text-xs rounded text-white"
               >
                 {isSubmitting ? 'Recording Appointment...' : 'Confirm Appointment'}
               </Button>
@@ -540,11 +541,11 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                   Cancel
                 </Button>
                 <Button
-                  variant="primary"
+                  variant="superadmin-primary"
                   size="sm"
                   onClick={handleReassignSubmit}
                   disabled={isSubmitting}
-                  className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
+                  className="text-xs rounded text-white"
                 >
                   {isSubmitting ? 'Recording Reassignment...' : 'Confirm Reassignment'}
                 </Button>
@@ -661,11 +662,11 @@ export const AdminManagement: React.FC<AdminManagementProps> = ({ onNavigateTab:
                 Cancel
               </Button>
               <Button
-                variant="primary"
+                variant="superadmin-primary"
                 size="sm"
                 onClick={handleStatusChangeSubmit}
                 disabled={isSubmitting}
-                className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
+                className="text-xs rounded text-white"
               >
                 {isSubmitting ? 'Updating...' : 'Confirm Account Action'}
               </Button>

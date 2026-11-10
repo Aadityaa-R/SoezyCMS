@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'soft';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'soft' | 'superadmin-primary';
   size?: 'compact' | 'xs' | 'sm' | 'md' | 'lg' | 'toolbar';
   isLoading?: boolean;
   icon?: React.ReactNode;
@@ -42,6 +42,8 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({
       'bg-transparent text-slate-600 hover:text-slate-900 border-none shadow-none',
     soft:
       'bg-transparent text-[#28465a] dark:text-slate-200 hover:text-[#00c060] dark:hover:text-[#00c060] border-none shadow-none',
+    'superadmin-primary':
+      'bg-[var(--superadmin-avatar-bg,#8f0000)] text-white hover:brightness-110 active:brightness-95 border border-transparent shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--superadmin-avatar-bg,#8f0000)]',
   };
 
   return (

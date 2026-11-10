@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { useSuperAdmin } from '@/context/SuperAdminContext';
 import { Button } from '@/components/ui/Button';
+import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, StatusDot } from '@/components/ui/Table';
 import {
   Plus,
   Search,
   Download,
-  ChevronDown,
 } from 'lucide-react';
 import {
   LicenceAgreementRecord,
@@ -206,22 +206,23 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
     <div className="flex flex-wrap items-center justify-between gap-2.5 w-full">
       {/* Search and filters on the left */}
       <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-        {/* Status Filter Dropdown */}
-        <div className="relative shrink-0">
-          <select
+        {/* Status Filter Combobox */}
+        <div className="shrink-0 min-w-[170px] sm:min-w-[190px]">
+          <Select
+            size="filter"
+            searchable={false}
+            aria-label="Filter by status"
             value={tabFilter}
             onChange={(e) => setTabFilter(e.target.value as any)}
-            className="appearance-none [background-image:none] bg-none h-[36px] min-h-[36px] pl-3 pr-8 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
-            aria-label="Filter by status"
-          >
-            <option value="all">All statuses ({agreements.length})</option>
-            <option value="active">Active ({agreements.filter((a) => a.status === 'active').length})</option>
-            <option value="expiring">Expiring soon ({agreements.filter((a) => a.status === 'expiring_soon').length})</option>
-            <option value="pending">Pending signature ({agreements.filter((a) => a.status === 'pending_signature').length})</option>
-            <option value="expired">Expired ({agreements.filter((a) => a.status === 'expired').length})</option>
-            <option value="renewed">Renewed / terminated ({agreements.filter((a) => a.status === 'renewed' || a.status === 'terminated').length})</option>
-          </select>
-          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            options={[
+              { value: 'all', label: `All statuses (${agreements.length})` },
+              { value: 'active', label: `Active (${agreements.filter((a) => a.status === 'active').length})` },
+              { value: 'expiring', label: `Expiring soon (${agreements.filter((a) => a.status === 'expiring_soon').length})` },
+              { value: 'pending', label: `Pending signature (${agreements.filter((a) => a.status === 'pending_signature').length})` },
+              { value: 'expired', label: `Expired (${agreements.filter((a) => a.status === 'expired').length})` },
+              { value: 'renewed', label: `Renewed / terminated (${agreements.filter((a) => a.status === 'renewed' || a.status === 'terminated').length})` },
+            ]}
+          />
         </div>
 
         {/* Search Input - grows into available space */}
@@ -245,7 +246,7 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
           setFormError('');
           setIsAddModalOpen(true);
         }}
-        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg bg-teal-600 hover:bg-teal-700 text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-colors shadow-sm"
+        className="h-[36px] min-h-[36px] !min-h-0 px-3.5 text-[13px] font-medium rounded-lg btn-superadmin-primary text-white inline-flex items-center gap-1.5 shrink-0 cursor-pointer shadow-sm"
       >
         <Plus className="w-3.5 h-3.5 shrink-0" />
         <span>Add agreement</span>
@@ -388,11 +389,11 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
                 Cancel
               </Button>
               <Button
-                variant="primary"
+                variant="superadmin-primary"
                 size="sm"
                 onClick={handleAddSubmit}
                 disabled={isSubmitting}
-                className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
+                className="text-xs rounded text-white"
               >
                 {isSubmitting ? 'Registering...' : 'Record Agreement'}
               </Button>
@@ -551,11 +552,11 @@ export const AgreementManagement: React.FC<AgreementManagementProps> = ({ onNavi
                 Cancel
               </Button>
               <Button
-                variant="primary"
+                variant="superadmin-primary"
                 size="sm"
                 onClick={handleRenewSubmit}
                 disabled={isSubmitting}
-                className="text-xs rounded bg-teal-600 hover:bg-teal-700 text-white"
+                className="text-xs rounded text-white"
               >
                 {isSubmitting ? 'Recording Renewal...' : 'Confirm Agreement Renewal'}
               </Button>
